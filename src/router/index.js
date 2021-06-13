@@ -33,7 +33,14 @@ const routes = [
     component: () => import("../views/Dashboard.vue"),
     meta: {
       auth: true,
-      companyAuth: true,
+    },
+  },
+  {
+    path: "/project/create",
+    name: "ProjectCreate",
+    component: () => import("../views/ProjectCreate.vue"),
+    meta: {
+      auth: true,
     },
   },
 ];
