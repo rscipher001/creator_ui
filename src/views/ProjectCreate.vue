@@ -26,16 +26,21 @@
 
         <div class="card-content">
           <div class="content">
-            <b-field label="Name *">
-              <b-input v-model="projectInput.name" required></b-input>
-            </b-field>
-
-            <b-field label="Database *">
-              <b-select expanded placeholder="Select Database" required>
-                <option value="mysql">MySQL</option>
-                <option value="pg">PostgreSQL</option>
-              </b-select>
-            </b-field>
+            <div class="columns">
+              <div class="column">
+                <b-field label="Name *">
+                  <b-input v-model="projectInput.name" required></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Database *">
+                  <b-select expanded placeholder="Select Database" required>
+                    <option value="mysql">MySQL</option>
+                    <option value="pg">PostgreSQL</option>
+                  </b-select>
+                </b-field>
+              </div>
+            </div>
 
             <b-field
               label="Select Project Type *"
@@ -131,31 +136,52 @@
               </b-checkbox>
             </b-field>
 
-            <div class="has-background-light p-2">
-              <b-field label="Min Length *">
-                <b-input
-                  v-model="projectInput.auth.table.columns[0].meta.minlength"
-                ></b-input>
-              </b-field>
-              <b-field label="Max Length *">
-                <b-input
-                  v-model="projectInput.auth.table.columns[0].meta.maxlength"
-                ></b-input>
-              </b-field>
+            <div class="has-background-light p-2 mt-4">
+              <h4 class="is-size-6">Name Column Details</h4>
+              <div class="columns">
+                <div class="column">
+                  <b-field label="Min Length *">
+                    <b-input
+                      v-model="
+                        projectInput.auth.table.columns[0].meta.minlength
+                      "
+                    ></b-input>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field label="Max Length *">
+                    <b-input
+                      v-model="
+                        projectInput.auth.table.columns[0].meta.maxlength
+                      "
+                    ></b-input>
+                  </b-field>
+                </div>
+              </div>
             </div>
 
-            <h4 class="is-size-6 mt-4">Email Column Details</h4>
-            <div class="has-background-light p-2">
-              <b-field label="Min Length *">
-                <b-input
-                  v-model="projectInput.auth.table.columns[1].meta.minlength"
-                ></b-input>
-              </b-field>
-              <b-field label="Max Length *">
-                <b-input
-                  v-model="projectInput.auth.table.columns[1].meta.maxlength"
-                ></b-input>
-              </b-field>
+            <div class="has-background-light mt-4 p-2">
+              <h4 class="is-size-6">Email Column Details</h4>
+              <div class="columns">
+                <div class="column">
+                  <b-field label="Min Length *">
+                    <b-input
+                      v-model="
+                        projectInput.auth.table.columns[1].meta.minlength
+                      "
+                    ></b-input>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field label="Max Length *">
+                    <b-input
+                      v-model="
+                        projectInput.auth.table.columns[1].meta.maxlength
+                      "
+                    ></b-input>
+                  </b-field>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -330,6 +356,16 @@
                   </b-field>
                 </div>
               </div>
+              <div v-if="column.type === 'string'" class="columns">
+                <div class="column">
+                  <b-field
+                    label="DB Length"
+                    message="For fields like password with having different length at DB level and UI level"
+                  >
+                    <b-input v-model="column.meta.dbLength"></b-input>
+                  </b-field>
+                </div>
+              </div>
 
               <div
                 v-if="['decimal', 'integer'].includes(column.type)"
@@ -346,6 +382,39 @@
                   </b-field>
                 </div>
               </div>
+
+              <b-field
+                message="Default value will be set at database level"
+                label="Default Value"
+              >
+                <b-input
+                  v-if="column.type === 'string'"
+                  v-model="column.meta.defaultTo"
+                ></b-input>
+                <b-input
+                  v-if="column.type === 'integer'"
+                  v-model="column.meta.defaultTo"
+                  type="number"
+                >
+                </b-input>
+                <b-input
+                  v-if="column.type === 'decimal'"
+                  v-model="column.meta.defaultTo"
+                  type="number"
+                >
+                </b-input>
+                <b-switch
+                  v-if="column.type === 'boolean'"
+                  v-model="column.meta.defaultTo"
+                  >{{ column.meta.defaultTo }}
+                </b-switch>
+                <b-datepicker
+                  v-if="column.type === 'date'"
+                  v-model="column.meta.defaultTo"
+                  >{{ column.meta.defaultTo }}</b-datepicker
+                >
+              </b-field>
+
               <b-field v-if="column.type === 'string'">
                 <b-checkbox v-model="column.meta.multiline"
                   >Multiline</b-checkbox
@@ -355,13 +424,6 @@
                 <b-checkbox v-model="column.meta.expose">Expose</b-checkbox>
               </b-field>
               <b-field
-                message="Some fields like password have different length at DB level and UI level"
-              >
-                <b-checkbox v-model="column.meta.dbLength"
-                  >DB Length</b-checkbox
-                >
-              </b-field>
-              <b-field
                 message="These fields won't return in response, ex: password"
               >
                 <b-checkbox v-model="column.meta.secret">Secret</b-checkbox>
@@ -369,8 +431,13 @@
               <b-field message="Create database index for faster searching">
                 <b-checkbox v-model="column.meta.index">Index</b-checkbox>
               </b-field>
-              <b-field message="Default value will be set at database level">
-                <b-input v-model="column.meta.index"></b-input>
+
+              <h2>Validation</h2>
+              <b-field
+                v-if="column.type === 'string'"
+                message="Check if field type is email"
+              >
+                <b-checkbox v-model="column.meta.email">Email</b-checkbox>
               </b-field>
             </div>
 
