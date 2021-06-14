@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <form method="POST" @submit.prevent="generate">
+    <form method="POST" @submit.prevent="store">
       <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3">
         <template #trigger="props">
           <div
@@ -48,9 +48,9 @@
             >
               <b-taginput
                 v-model="projectInput.types"
+                :data="filteredTypes"
                 autocomplete
                 placeholder="Select Project Type"
-                required
               >
               </b-taginput>
             </b-field>
@@ -143,7 +143,7 @@
                   <b-field label="Min Length *">
                     <b-input
                       v-model="
-                        projectInput.auth.table.columns[0].meta.minlength
+                        projectInput.auth.table.columns[0].meta.minLength
                       "
                     ></b-input>
                   </b-field>
@@ -152,7 +152,7 @@
                   <b-field label="Max Length *">
                     <b-input
                       v-model="
-                        projectInput.auth.table.columns[0].meta.maxlength
+                        projectInput.auth.table.columns[0].meta.maxLength
                       "
                     ></b-input>
                   </b-field>
@@ -167,7 +167,7 @@
                   <b-field label="Min Length *">
                     <b-input
                       v-model="
-                        projectInput.auth.table.columns[1].meta.minlength
+                        projectInput.auth.table.columns[1].meta.minLength
                       "
                     ></b-input>
                   </b-field>
@@ -176,7 +176,7 @@
                   <b-field label="Max Length *">
                     <b-input
                       v-model="
-                        projectInput.auth.table.columns[1].meta.maxlength
+                        projectInput.auth.table.columns[1].meta.maxLength
                       "
                     ></b-input>
                   </b-field>
@@ -347,12 +347,12 @@
               <div v-if="column.type === 'string'" class="columns">
                 <div class="column">
                   <b-field label="Min Length">
-                    <b-input v-model="column.meta.minlength"></b-input>
+                    <b-input v-model="column.meta.minLength"></b-input>
                   </b-field>
                 </div>
                 <div class="column">
                   <b-field label="Max Length">
-                    <b-input v-model="column.meta.maxlength"></b-input>
+                    <b-input v-model="column.meta.maxLength"></b-input>
                   </b-field>
                 </div>
               </div>
@@ -432,6 +432,53 @@
                 <b-checkbox v-model="column.meta.index">Index</b-checkbox>
               </b-field>
 
+              <div v-if="webOrSpa">
+                <h2>Input Field Details</h2>
+                <div class="columns">
+                  <div class="column">
+                    <b-field label="Input Type *">
+                      <b-select
+                        v-model="column.input.type"
+                        placeholder="Select input type"
+                        expanded
+                        required
+                      >
+                        <option
+                          v-for="(inputType, inputTypeIndex) in inputTypes"
+                          :key="inputTypeIndex"
+                        >
+                          {{ inputType }}
+                        </option>
+                      </b-select>
+                    </b-field>
+                  </div>
+                  <div class="column">
+                    <b-field
+                      label="Display Name"
+                      message="This will be used as label in UI"
+                    >
+                      <b-input v-model="column.input.displayName"></b-input>
+                    </b-field>
+                  </div>
+                </div>
+
+                <div v-if="column.input.type === 'select'">
+                  <div class="columns">
+                    <div class="column">
+                      <b-field
+                        label="Options Type *"
+                        message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
+                      >
+                        <b-select expanded>
+                          <option value="string">String</option>
+                          <option value="kv">Key/Value</option>
+                        </b-select>
+                      </b-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <h2>Validation</h2>
               <b-field
                 v-if="column.type === 'string'"
@@ -446,7 +493,9 @@
         </div>
       </b-collapse>
 
-      <b-button type="is-primary is-fullwidth mt-4">Generate</b-button>
+      <b-button native-type="submit" type="is-primary is-fullwidth mt-4">
+        Generate
+      </b-button>
     </form>
   </section>
 </template>
@@ -460,11 +509,16 @@ export default {
   data() {
     return {
       types: ["string", "decimal", "integer", "date", "boolean"],
+      inputTypes: ["input", "select", "radio", "checkbox", "file"],
       projectInput: {
         name: "",
         database: "mysql",
         types: ["api"],
         camelCaseStrategy: false,
+        tech: {
+          backend: "adonis",
+          frontend: "buefy",
+        },
         generate: {
           api: {
             generate: true,
@@ -490,6 +544,7 @@ export default {
         auth: {
           register: true,
           table: {
+            operations: [],
             name: "User",
             timestamps: true,
             columns: [
@@ -501,6 +556,9 @@ export default {
                   required: true,
                   minLength: 2,
                   maxLength: 127,
+                },
+                input: {
+                  type: "input",
                 },
               },
               {
@@ -514,6 +572,9 @@ export default {
                   email: true,
                   unique: true,
                 },
+                input: {
+                  type: "input",
+                },
               },
               {
                 name: "password",
@@ -526,6 +587,9 @@ export default {
                   minLength: 8,
                   dbLength: 255,
                   required: true,
+                },
+                input: {
+                  type: "input",
                 },
               },
               {
@@ -551,9 +615,7 @@ export default {
 
     async store() {
       try {
-        await this.storeAction({
-          name: this.form.name,
-        });
+        await this.storeAction(this.projectInput);
         this.$router.push("/project");
         this.$buefy.toast.open({
           message: "project created",
@@ -596,6 +658,9 @@ export default {
               minLength: 2,
               maxLength: 127,
             },
+            input: {
+              type: "input",
+            },
           },
         ],
       });
@@ -605,12 +670,30 @@ export default {
       table.columns.push({
         meta: {
           required: false,
+          expose: true,
+        },
+        input: {
+          type: "input",
+        },
+        select: {
+          types: ["object", "string", "number"],
+          type: "object",
+          options: [],
+        },
+        radio: {
+          options: [],
+        },
+        checkbox: {
+          options: [],
         },
       });
     },
   },
 
   computed: {
+    filteredTypes() {
+      return ["api", "ssr"];
+    },
     ...mapState("auth", {
       user: (state) => state.user,
     }),
@@ -624,6 +707,12 @@ export default {
     webOrApi: function () {
       return (
         this.projectInput.generate.api.generate ||
+        this.projectInput.generate.website.generate
+      );
+    },
+    webOrSpa: function () {
+      return (
+        this.projectInput.generate.spa.generate ||
         this.projectInput.generate.website.generate
       );
     },
