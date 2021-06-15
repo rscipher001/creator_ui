@@ -33,27 +33,20 @@
                 </b-field>
               </div>
               <div class="column">
-                <b-field label="Database *">
-                  <b-select expanded placeholder="Select Database" required>
-                    <option value="mysql">MySQL</option>
-                    <option value="pg">PostgreSQL</option>
-                  </b-select>
+                <b-field
+                  label="Select Project Type *"
+                  message="It can be API or SSR or both"
+                >
+                  <b-taginput
+                    v-model="projectInput.types"
+                    :data="filteredTypes"
+                    autocomplete
+                    placeholder="Select Project Type"
+                  >
+                  </b-taginput>
                 </b-field>
               </div>
             </div>
-
-            <b-field
-              label="Select Project Type *"
-              message="It can be API or SSR or both"
-            >
-              <b-taginput
-                v-model="projectInput.types"
-                :data="filteredTypes"
-                autocomplete
-                placeholder="Select Project Type"
-              >
-              </b-taginput>
-            </b-field>
 
             <b-field
               label="Camelcase / Snakcase Convention *"
@@ -207,6 +200,12 @@
 
         <div class="card-content">
           <div class="content">
+            <b-field label="Database *">
+              <b-select expanded placeholder="Select Database" required>
+                <option value="mysql">MySQL</option>
+                <option value="pg">PostgreSQL</option>
+              </b-select>
+            </b-field>
             <b-field label="Generate CRUD">
               <b-checkbox v-model="projectInput.generate.api.crud">
                 Generate CRUD APIs
@@ -469,10 +468,26 @@
                         label="Options Type *"
                         message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
                       >
-                        <b-select expanded>
+                        <b-select v-model="column.input.select.type" expanded>
                           <option value="string">String</option>
                           <option value="kv">Key/Value</option>
                         </b-select>
+                      </b-field>
+                    </div>
+                  </div>
+
+                  <div
+                    class="columns"
+                    v-if="column.input.select.type === 'string'"
+                  >
+                    <div class="column">
+                      <b-field label="Add Options">
+                        <b-taginput
+                          v-model="column.input.select.options"
+                          placeholder="Options"
+                          aria-close-label="Remove this option"
+                        >
+                        </b-taginput>
                       </b-field>
                     </div>
                   </div>
@@ -616,7 +631,7 @@ export default {
     async store() {
       try {
         await this.storeAction(this.projectInput);
-        this.$router.push("/project");
+        // this.$router.push("/project");
         this.$buefy.toast.open({
           message: "project created",
           position: "is-bottom-right",
@@ -648,21 +663,7 @@ export default {
           "storeMany",
           "destroyMany",
         ],
-        columns: [
-          {
-            name: "name",
-            type: "string",
-            meta: {
-              displayName: "Name",
-              required: true,
-              minLength: 2,
-              maxLength: 127,
-            },
-            input: {
-              type: "input",
-            },
-          },
-        ],
+        columns: [],
       });
     },
 
@@ -674,17 +675,17 @@ export default {
         },
         input: {
           type: "input",
-        },
-        select: {
-          types: ["object", "string", "number"],
-          type: "object",
-          options: [],
-        },
-        radio: {
-          options: [],
-        },
-        checkbox: {
-          options: [],
+          select: {
+            types: ["object", "string", "number"],
+            type: "string",
+            options: [],
+          },
+          radio: {
+            options: [],
+          },
+          checkbox: {
+            options: [],
+          },
         },
       });
     },
