@@ -382,6 +382,14 @@
                 </div>
               </div>
 
+              <b-field v-if="column.type === 'decimal'" label="Step">
+                <b-input
+                  v-model="column.input.decimal.step"
+                  step="any"
+                  message="Change any to step value you want to use"
+                ></b-input>
+              </b-field>
+
               <b-field
                 message="Default value will be set at database level"
                 label="Default Value"
@@ -414,6 +422,9 @@
                 >
               </b-field>
 
+              <b-field v-if="column.type === 'string'">
+                <b-checkbox v-model="column.meta.trim">Trim</b-checkbox>
+              </b-field>
               <b-field v-if="column.type === 'string'">
                 <b-checkbox v-model="column.meta.multiline"
                   >Multiline</b-checkbox
@@ -489,6 +500,43 @@
                         >
                         </b-taginput>
                       </b-field>
+                    </div>
+                  </div>
+
+                  <div v-if="column.input.select.type === 'kv'">
+                    <div class="columns">
+                      <div class="column">
+                        <b-button @click="addSelectOption(column)"
+                          >Add An Option</b-button
+                        >
+                      </div>
+                    </div>
+                    <div
+                      class="columns"
+                      v-for="(option, optionIndex) in column.input.select
+                        .options"
+                      :key="optionIndex"
+                    >
+                      <div class="column">
+                        <b-field label="Label">
+                          <b-input
+                            v-model="option.label"
+                            placeholder="Label"
+                            aria-close-label="Remove this option"
+                          >
+                          </b-input>
+                        </b-field>
+                      </div>
+                      <div class="column">
+                        <b-field label="Value">
+                          <b-input
+                            v-model="option.value"
+                            placeholder="Value"
+                            aria-close-label="Remove this option"
+                          >
+                          </b-input>
+                        </b-field>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -672,9 +720,13 @@ export default {
         meta: {
           required: false,
           expose: true,
+          trim: false,
         },
         input: {
           type: "input",
+          decimal: {
+            step: "any",
+          },
           select: {
             types: ["object", "string", "number"],
             type: "string",
@@ -688,6 +740,10 @@ export default {
           },
         },
       });
+    },
+
+    addSelectOption(column) {
+      column.input.select.options.push({ value: "", label: "" });
     },
   },
 
