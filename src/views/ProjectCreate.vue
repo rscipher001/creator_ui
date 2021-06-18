@@ -540,6 +540,75 @@
                     </div>
                   </div>
                 </div>
+
+                <div v-if="column.input.type === 'radio'">
+                  <div class="columns">
+                    <div class="column">
+                      <b-field
+                        label="Options Type *"
+                        message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
+                      >
+                        <b-select v-model="column.input.radio.type" expanded>
+                          <option value="string">String</option>
+                          <option value="kv">Key/Value</option>
+                        </b-select>
+                      </b-field>
+                    </div>
+                  </div>
+
+                  <div
+                    class="columns"
+                    v-if="column.input.radio.type === 'string'"
+                  >
+                    <div class="column">
+                      <b-field label="Add Options">
+                        <b-taginput
+                          v-model="column.input.radio.options"
+                          placeholder="Options"
+                          aria-close-label="Remove this option"
+                        >
+                        </b-taginput>
+                      </b-field>
+                    </div>
+                  </div>
+
+                  <div v-if="column.input.radio.type === 'kv'">
+                    <div class="columns">
+                      <div class="column">
+                        <b-button @click="addRadioOption(column)"
+                          >Add An Option</b-button
+                        >
+                      </div>
+                    </div>
+                    <div
+                      class="columns"
+                      v-for="(option, optionIndex) in column.input.radio
+                        .options"
+                      :key="optionIndex"
+                    >
+                      <div class="column">
+                        <b-field label="Label">
+                          <b-input
+                            v-model="option.label"
+                            placeholder="Label"
+                            aria-close-label="Remove this option"
+                          >
+                          </b-input>
+                        </b-field>
+                      </div>
+                      <div class="column">
+                        <b-field label="Value">
+                          <b-input
+                            v-model="option.value"
+                            placeholder="Value"
+                            aria-close-label="Remove this option"
+                          >
+                          </b-input>
+                        </b-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <h2>Validation</h2>
@@ -733,6 +802,8 @@ export default {
             options: [],
           },
           radio: {
+            types: ["object", "string", "number"],
+            type: "string",
             options: [],
           },
           checkbox: {
@@ -744,6 +815,10 @@ export default {
 
     addSelectOption(column) {
       column.input.select.options.push({ value: "", label: "" });
+    },
+
+    addRadioOption(column) {
+      column.input.radio.options.push({ value: "", label: "" });
     },
   },
 
