@@ -268,15 +268,23 @@
         </template>
 
         <div class="card-content">
+          <div class="level">
+            <div class="level-left is-size-4">Tables</div>
+            <div class="level-right">
+              <b-button @click="addTable" type="is-light">
+                Add New Table
+              </b-button>
+            </div>
+          </div>
           <div class="content">
             <ol>
-              <li v-for="(table, index) in projectInput.tables" :key="index">
+              <li
+                v-for="(table, tableIndex) in projectInput.tables"
+                :key="'tableIndex' + tableIndex"
+              >
                 {{ table.name }}
               </li>
             </ol>
-            <b-button @click="addTable" type="is-primary is-fullwidth mt-4">
-              Add New Table
-            </b-button>
           </div>
         </div>
       </b-collapse>
@@ -286,7 +294,7 @@
         animation="slide"
         aria-id="contentIdForA11y3"
         v-for="(table, tableIndex) in projectInput.tables"
-        :key="tableIndex"
+        :key="'tableIndex' + tableIndex"
       >
         <template #trigger="props">
           <div
@@ -313,10 +321,55 @@
               </b-checkbox>
             </b-field>
 
+            <div class="level">
+              <div class="level-left is-size-4">Relations</div>
+              <div class="level-right">
+                <b-button @click="addRelation(table)" type="is-light">
+                  Add New Relation
+                </b-button>
+              </div>
+            </div>
+            <div
+              class="columns"
+              v-for="(relation, relationIndex) in table.relations"
+              :key="'relationIndex' + relationIndex"
+            >
+              <div class="column">
+                <b-field label="Relation Type">
+                  <b-select expanded>
+                    <option value="oneToOne">One to one</option>
+                    <option value="oneToMany">One to many</option>
+                    <option value="manyToMany">Many to many</option>
+                  </b-select>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Table">
+                  <b-select expanded>
+                    <option
+                      v-for="(t, ti) in projectInput.tables"
+                      :key="'ti' + ti"
+                    >
+                      {{ t.name }}
+                    </option>
+                  </b-select>
+                </b-field>
+              </div>
+            </div>
+
+            <div class="level">
+              <div class="level-left is-size-4">Columns</div>
+              <div class="level-right">
+                <b-button @click="addColumn(table)" type="is-light">
+                  Add New Columns
+                </b-button>
+              </div>
+            </div>
+
             <div
               class="has-background-light p-2 mt-5"
               v-for="(column, columnIndex) in table.columns"
-              :key="columnIndex"
+              :key="'columnIndex' + columnIndex"
             >
               <div class="columns">
                 <div class="column">
@@ -334,7 +387,7 @@
                     >
                       <option
                         v-for="(type, typeIndex) in types"
-                        :key="typeIndex"
+                        :key="'typeIndex' + typeIndex"
                       >
                         {{ type }}
                       </option>
@@ -455,7 +508,7 @@
                       >
                         <option
                           v-for="(inputType, inputTypeIndex) in inputTypes"
-                          :key="inputTypeIndex"
+                          :key="'inputTypeIndex' + inputTypeIndex"
                         >
                           {{ inputType }}
                         </option>
@@ -515,7 +568,7 @@
                       class="columns"
                       v-for="(option, optionIndex) in column.input.select
                         .options"
-                      :key="optionIndex"
+                      :key="'optionIndex' + optionIndex"
                     >
                       <div class="column">
                         <b-field label="Label">
@@ -584,7 +637,7 @@
                       class="columns"
                       v-for="(option, optionIndex) in column.input.radio
                         .options"
-                      :key="optionIndex"
+                      :key="'optionIndex' + optionIndex"
                     >
                       <div class="column">
                         <b-field label="Label">
@@ -619,8 +672,6 @@
                 <b-checkbox v-model="column.meta.email">Email</b-checkbox>
               </b-field>
             </div>
-
-            <b-button @click="addColumn(table)">Add Column</b-button>
           </div>
         </div>
       </b-collapse>
@@ -781,6 +832,7 @@ export default {
           "destroyMany",
         ],
         columns: [],
+        relations: [],
       });
     },
 
@@ -819,6 +871,13 @@ export default {
 
     addRadioOption(column) {
       column.input.radio.options.push({ value: "", label: "" });
+    },
+
+    addRelation(table) {
+      table.relations.push({
+        type: "oneToOne",
+        table: null,
+      });
     },
   },
 
