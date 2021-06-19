@@ -336,16 +336,20 @@
             >
               <div class="column">
                 <b-field label="Relation Type">
-                  <b-select expanded>
-                    <option value="oneToOne">One to one</option>
-                    <option value="oneToMany">One to many</option>
+                  <b-select v-model="relation.type" expanded>
+                    <option value="hasOne">Has One</option>
+                    <option value="hasMany">Has Many</option>
                     <option value="manyToMany">Many to many</option>
+                    <option value="belongsTo">Belongs To</option>
                   </b-select>
                 </b-field>
               </div>
               <div class="column">
                 <b-field label="Table">
-                  <b-select expanded>
+                  <b-select v-model="relation.withModel" expanded>
+                    <option value="$auth">
+                      {{ projectInput.auth.table.name }} (Auth)
+                    </option>
                     <option
                       v-for="(t, ti) in projectInput.tables"
                       :key="'ti' + ti"
@@ -876,7 +880,7 @@ export default {
     addRelation(table) {
       table.relations.push({
         type: "oneToOne",
-        table: null,
+        withModel: null,
       });
     },
   },
