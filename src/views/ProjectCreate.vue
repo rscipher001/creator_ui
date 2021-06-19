@@ -129,6 +129,50 @@
               </b-checkbox>
             </b-field>
 
+            <div class="level">
+              <div class="level-left is-size-4">Relations</div>
+              <div class="level-right">
+                <b-button
+                  @click="addRelation(projectInput.auth.table)"
+                  type="is-light"
+                >
+                  Add New Relation
+                </b-button>
+              </div>
+            </div>
+            <div
+              class="columns"
+              v-for="(relation, relationIndex) in projectInput.auth.table
+                .relations"
+              :key="'relationIndex' + relationIndex"
+            >
+              <div class="column">
+                <b-field label="Relation Type">
+                  <b-select v-model="relation.type" expanded>
+                    <option value="hasOne">Has One</option>
+                    <option value="hasMany">Has Many</option>
+                    <option value="manyToMany">Many to many</option>
+                    <option value="belongsTo">Belongs To</option>
+                  </b-select>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Table">
+                  <b-select v-model="relation.withModel" expanded>
+                    <option value="$auth">
+                      {{ projectInput.auth.table.name }} (Auth)
+                    </option>
+                    <option
+                      v-for="(t, ti) in projectInput.tables"
+                      :key="'ti' + ti"
+                    >
+                      {{ t.name }}
+                    </option>
+                  </b-select>
+                </b-field>
+              </div>
+            </div>
+
             <div class="has-background-light p-2 mt-4">
               <h4 class="is-size-6">Name Column Details</h4>
               <div class="columns">
@@ -732,6 +776,7 @@ export default {
           register: true,
           table: {
             operations: [],
+            relations: [],
             name: "User",
             timestamps: true,
             columns: [
