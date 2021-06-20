@@ -173,16 +173,23 @@
               </div>
               <div class="column">
                 <b-field
-                  label="Custom Column Name"
-                  message="Optional column name in camelCase/PascalCase"
+                  label="Relation Name"
+                  message="Optional relation name in camelCase/PascalCase"
                 >
-                  <b-input v-model="relation.columnName"></b-input>
+                  <b-input v-model="relation.name"></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Required">
+                  <b-checkbox v-model="relation.required">Required</b-checkbox>
                 </b-field>
               </div>
               <div class="column">
                 <b-field label="Remove">
                   <b-button
-                    @click="removeRelation(table, relationIndex)"
+                    @click="
+                      removeRelation(projectInput.auth.table, relationIndex)
+                    "
                     class="is-danger is-light is-fullwidth"
                     >Delete this relation</b-button
                   >
@@ -431,10 +438,15 @@
               </div>
               <div class="column">
                 <b-field
-                  label="Custom Column Name"
-                  message="Optional column name in camelCase/PascalCase"
+                  label="Relation Name"
+                  message="Optional relation name in camelCase/PascalCase"
                 >
-                  <b-input v-model="relation.columnName"></b-input>
+                  <b-input v-model="relation.name"></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Required">
+                  <b-checkbox v-model="relation.required">Required</b-checkbox>
                 </b-field>
               </div>
               <div class="column">
@@ -458,7 +470,7 @@
             </div>
 
             <div
-              class="has-background-light p-4"
+              class="has-background-light p-4 mt-4"
               v-for="(column, columnIndex) in table.columns"
               :key="'columnIndex' + columnIndex"
             >
@@ -776,11 +788,13 @@
               >
                 <b-checkbox v-model="column.meta.email">Email</b-checkbox>
               </b-field>
-              <b-button type="is-danger">Delete Column</b-button>
             </div>
           </div>
         </div>
       </b-collapse>
+      <b-button native-type="submit" type="is-primary is-fullwidth mt-4">
+        Generate
+      </b-button>
     </form>
   </section>
 </template>
@@ -992,7 +1006,8 @@ export default {
       table.relations.push({
         type: "oneToOne",
         withModel: null,
-        columnName: "",
+        name: "",
+        required: true, // Only applicable to belongsTo
       });
     },
   },
