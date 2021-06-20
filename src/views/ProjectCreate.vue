@@ -147,8 +147,8 @@
               :key="'relationIndex' + relationIndex"
             >
               <div class="column">
-                <b-field label="Relation Type">
-                  <b-select v-model="relation.type" expanded>
+                <b-field label="Relation Type *">
+                  <b-select v-model="relation.type" expanded required>
                     <option value="hasOne">Has One</option>
                     <option value="hasMany">Has Many</option>
                     <option value="manyToMany">Many to many</option>
@@ -157,8 +157,8 @@
                 </b-field>
               </div>
               <div class="column">
-                <b-field label="Table">
-                  <b-select v-model="relation.withModel" expanded>
+                <b-field label="Table *">
+                  <b-select v-model="relation.withModel" expanded required>
                     <option value="$auth">
                       {{ projectInput.auth.table.name }} (Auth)
                     </option>
@@ -171,52 +171,62 @@
                   </b-select>
                 </b-field>
               </div>
-            </div>
-
-            <div class="has-background-light p-2 mt-4">
-              <h4 class="is-size-6">Name Column Details</h4>
-              <div class="columns">
-                <div class="column">
-                  <b-field label="Min Length *">
-                    <b-input
-                      v-model="
-                        projectInput.auth.table.columns[0].meta.minLength
-                      "
-                    ></b-input>
-                  </b-field>
-                </div>
-                <div class="column">
-                  <b-field label="Max Length *">
-                    <b-input
-                      v-model="
-                        projectInput.auth.table.columns[0].meta.maxLength
-                      "
-                    ></b-input>
-                  </b-field>
-                </div>
+              <div class="column">
+                <b-field
+                  label="Custom Column Name"
+                  message="Optional column name in camelCase/PascalCase"
+                >
+                  <b-input v-model="relation.columnName"></b-input>
+                </b-field>
               </div>
             </div>
 
-            <div class="has-background-light mt-4 p-2">
-              <h4 class="is-size-6">Email Column Details</h4>
-              <div class="columns">
-                <div class="column">
-                  <b-field label="Min Length *">
-                    <b-input
-                      v-model="
-                        projectInput.auth.table.columns[1].meta.minLength
-                      "
-                    ></b-input>
-                  </b-field>
+            <div class="columns">
+              <div class="has-background-light m-1 column">
+                <h4 class="is-size-6">Name Column Details</h4>
+                <div class="columns">
+                  <div class="column">
+                    <b-field label="Min Length *">
+                      <b-input
+                        v-model="
+                          projectInput.auth.table.columns[0].meta.minLength
+                        "
+                      ></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column">
+                    <b-field label="Max Length *">
+                      <b-input
+                        v-model="
+                          projectInput.auth.table.columns[0].meta.maxLength
+                        "
+                      ></b-input>
+                    </b-field>
+                  </div>
                 </div>
-                <div class="column">
-                  <b-field label="Max Length *">
-                    <b-input
-                      v-model="
-                        projectInput.auth.table.columns[1].meta.maxLength
-                      "
-                    ></b-input>
-                  </b-field>
+              </div>
+
+              <div class="has-background-light m-1 column">
+                <h4 class="is-size-6">Email Column Details</h4>
+                <div class="columns">
+                  <div class="column">
+                    <b-field label="Min Length *">
+                      <b-input
+                        v-model="
+                          projectInput.auth.table.columns[1].meta.minLength
+                        "
+                      ></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column">
+                    <b-field label="Max Length *">
+                      <b-input
+                        v-model="
+                          projectInput.auth.table.columns[1].meta.maxLength
+                        "
+                      ></b-input>
+                    </b-field>
+                  </div>
                 </div>
               </div>
             </div>
@@ -245,7 +255,12 @@
         <div class="card-content">
           <div class="content">
             <b-field label="Database *">
-              <b-select expanded placeholder="Select Database" required>
+              <b-select
+                v-model="projectInput.database"
+                placeholder="Select Database"
+                expanded
+                required
+              >
                 <option value="mysql">MySQL</option>
                 <option value="pg">PostgreSQL</option>
               </b-select>
@@ -321,14 +336,16 @@
             </div>
           </div>
           <div class="content">
-            <ol>
-              <li
+            <div class="buttons">
+              <b-button
                 v-for="(table, tableIndex) in projectInput.tables"
                 :key="'tableIndex' + tableIndex"
-              >
-                {{ table.name }}
-              </li>
-            </ol>
+                :label="table.name"
+                @click="removeTable(tableIndex)"
+                type="is-primary is-light"
+                icon-right="close"
+              />
+            </div>
           </div>
         </div>
       </b-collapse>
@@ -379,7 +396,7 @@
               :key="'relationIndex' + relationIndex"
             >
               <div class="column">
-                <b-field label="Relation Type">
+                <b-field label="Relation Type *">
                   <b-select v-model="relation.type" expanded>
                     <option value="hasOne">Has One</option>
                     <option value="hasMany">Has Many</option>
@@ -389,7 +406,7 @@
                 </b-field>
               </div>
               <div class="column">
-                <b-field label="Table">
+                <b-field label="Table *">
                   <b-select v-model="relation.withModel" expanded>
                     <option value="$auth">
                       {{ projectInput.auth.table.name }} (Auth)
@@ -401,6 +418,23 @@
                       {{ t.name }}
                     </option>
                   </b-select>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field
+                  label="Custom Column Name"
+                  message="Optional column name in camelCase/PascalCase"
+                >
+                  <b-input v-model="relation.columnName"></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Remove">
+                  <b-button
+                    @click="removeRelation(table, relationIndex)"
+                    class="is-danger is-light is-fullwidth"
+                    >Delete this relation</b-button
+                  >
                 </b-field>
               </div>
             </div>
@@ -415,7 +449,7 @@
             </div>
 
             <div
-              class="has-background-light p-2 mt-5"
+              class="has-background-light p-4"
               v-for="(column, columnIndex) in table.columns"
               :key="'columnIndex' + columnIndex"
             >
@@ -440,6 +474,16 @@
                         {{ type }}
                       </option>
                     </b-select>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field label="Remove">
+                    <b-button
+                      @click="removeColumn(table, columnIndex)"
+                      type="is-dark is-fullwidth"
+                    >
+                      Remove Column
+                    </b-button>
                   </b-field>
                 </div>
               </div>
@@ -490,7 +534,6 @@
                   message="Change any to step value you want to use"
                 ></b-input>
               </b-field>
-
               <b-field
                 message="Default value will be set at database level"
                 label="Default Value"
@@ -521,6 +564,11 @@
                   v-model="column.meta.defaultTo"
                   >{{ column.meta.defaultTo }}</b-datepicker
                 >
+              </b-field>
+              <b-field>
+                <b-checkbox v-model="column.meta.required">
+                  Required *
+                </b-checkbox>
               </b-field>
 
               <b-field v-if="column.type === 'string'">
@@ -719,14 +767,11 @@
               >
                 <b-checkbox v-model="column.meta.email">Email</b-checkbox>
               </b-field>
+              <b-button type="is-danger">Delete Column</b-button>
             </div>
           </div>
         </div>
       </b-collapse>
-
-      <b-button native-type="submit" type="is-primary is-fullwidth mt-4">
-        Generate
-      </b-button>
     </form>
   </section>
 </template>
@@ -745,7 +790,7 @@ export default {
         name: "",
         database: "mysql",
         types: ["api"],
-        camelCaseStrategy: false,
+        camelCaseStrategy: true,
         tech: {
           backend: "adonis",
           frontend: "buefy",
@@ -885,6 +930,18 @@ export default {
       });
     },
 
+    removeTable(index) {
+      this.projectInput.tables.splice(index, 1);
+    },
+
+    removeRelation(table, relationIndex) {
+      table.relations.splice(relationIndex, 1);
+    },
+
+    removeColumn(table, columnIndex) {
+      table.columns.splice(columnIndex, 1);
+    },
+
     addColumn(table) {
       table.columns.push({
         meta: {
@@ -926,6 +983,7 @@ export default {
       table.relations.push({
         type: "oneToOne",
         withModel: null,
+        columnName: "",
       });
     },
   },
