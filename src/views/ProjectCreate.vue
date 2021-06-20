@@ -179,6 +179,15 @@
                   <b-input v-model="relation.columnName"></b-input>
                 </b-field>
               </div>
+              <div class="column">
+                <b-field label="Remove">
+                  <b-button
+                    @click="removeRelation(table, relationIndex)"
+                    class="is-danger is-light is-fullwidth"
+                    >Delete this relation</b-button
+                  >
+                </b-field>
+              </div>
             </div>
 
             <div class="columns">
