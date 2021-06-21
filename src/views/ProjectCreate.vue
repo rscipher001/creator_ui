@@ -261,6 +261,79 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
+            <p class="card-header-title">Tenant Options</p>
+            <a class="card-header-icon">
+              <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
+            </a>
+          </div>
+        </template>
+
+        <div class="card-content">
+          <div class="content">
+            <div class="columns">
+              <div class="column">
+                <b-field label="Tenant/Company *">
+                  <b-select
+                    v-model="projectInput.tenantSettings.tenant"
+                    expanded
+                  >
+                    <option :value="0">No Tenant</option>
+                    <option :value="1">One Tenant</option>
+                    <option value="n">Many Tenant</option>
+                  </b-select>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="User *">
+                  <b-select
+                    :disabled="!projectInput.tenantSettings.tenant"
+                    v-model="projectInput.tenantSettings.user"
+                    expanded
+                  >
+                    <option :value="1">One User</option>
+                    <option value="n">Many Users</option>
+                  </b-select>
+                </b-field>
+              </div>
+            </div>
+            <div
+              v-if="
+                projectInput.tenantSettings.tenant && projectInput.tables.length
+              "
+              class="columns"
+            >
+              <div class="column">
+                <b-field label="Tenant Table">
+                  <b-select
+                    v-model="projectInput.tenantSettings.table"
+                    expanded
+                    required
+                  >
+                    <option
+                      v-for="(t, ti) in projectInput.tables"
+                      :key="'ti' + ti"
+                    >
+                      {{ t.name }}
+                    </option>
+                  </b-select>
+                </b-field>
+              </div>
+            </div>
+          </div>
+        </div>
+      </b-collapse>
+
+      <b-collapse
+        class="card mt-5"
+        animation="slide"
+        aria-id="contentIdForA11y3"
+      >
+        <template #trigger="props">
+          <div
+            class="card-header"
+            role="button"
+            aria-controls="contentIdForA11y3"
+          >
             <p class="card-header-title">API Options</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
@@ -902,6 +975,11 @@ export default {
               },
             ],
           },
+        },
+        tenantSettings: {
+          user: 1,
+          tenant: 1,
+          table: null,
         },
         tables: [],
       },
