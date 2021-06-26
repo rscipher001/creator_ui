@@ -466,8 +466,20 @@
             </b-field>
 
             <b-field v-if="webOrApi">
-              <b-checkbox v-model="projectInput.auth.table.timestamps">
+              <b-checkbox v-model="table.timestamps">
                 Generate Timestamps
+              </b-checkbox>
+            </b-field>
+
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.generateRoute">
+                Generate Route
+              </b-checkbox>
+            </b-field>
+
+            <b-field v-if="webOrApi && table.generateRoute">
+              <b-checkbox v-model="table.rootLevelRoute">
+                Generate Root Level Route
               </b-checkbox>
             </b-field>
 
@@ -1030,6 +1042,8 @@ export default {
       this.projectInput.tables.push({
         name: "Country",
         timestamps: true,
+        rootLevelRoute: false,
+        generateRoute: false,
         operations: [
           "index",
           "store",
