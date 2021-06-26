@@ -542,326 +542,338 @@
               </div>
             </div>
 
-            <div
-              class="has-background-light p-4 mt-4"
+            <b-collapse
+              animation="slide"
+              class="has-background-light mt-4"
               v-for="(column, columnIndex) in table.columns"
               :key="'columnIndex' + columnIndex"
             >
-              <div class="columns">
-                <div class="column">
-                  <b-field label="Column Name *">
-                    <b-input v-model="column.name"></b-input>
-                  </b-field>
-                </div>
-                <div class="column">
-                  <b-field label="Column Type *">
-                    <b-select
-                      v-model="column.type"
-                      placeholder="Select a name"
-                      expanded
-                      required
-                    >
-                      <option
-                        v-for="(type, typeIndex) in types"
-                        :key="'typeIndex' + typeIndex"
-                      >
-                        {{ type }}
-                      </option>
-                    </b-select>
-                  </b-field>
-                </div>
-                <div class="column">
-                  <b-field label="Remove">
-                    <b-button
-                      @click="removeColumn(table, columnIndex)"
-                      type="is-dark is-fullwidth"
-                    >
-                      Remove Column
-                    </b-button>
-                  </b-field>
-                </div>
-              </div>
-
-              <div v-if="column.type === 'string'" class="columns">
-                <div class="column">
-                  <b-field label="Min Length">
-                    <b-input v-model="column.meta.minLength"></b-input>
-                  </b-field>
-                </div>
-                <div class="column">
-                  <b-field label="Max Length">
-                    <b-input v-model="column.meta.maxLength"></b-input>
-                  </b-field>
-                </div>
-              </div>
-              <div v-if="column.type === 'string'" class="columns">
-                <div class="column">
-                  <b-field
-                    label="DB Length"
-                    message="For fields like password with having different length at DB level and UI level"
-                  >
-                    <b-input v-model="column.meta.dbLength"></b-input>
-                  </b-field>
-                </div>
-              </div>
-
-              <div
-                v-if="['decimal', 'integer'].includes(column.type)"
-                class="columns"
-              >
-                <div class="column">
-                  <b-field label="Min">
-                    <b-input v-model="column.meta.min"></b-input>
-                  </b-field>
-                </div>
-                <div class="column">
-                  <b-field label="Max">
-                    <b-input v-model="column.meta.max"></b-input>
-                  </b-field>
-                </div>
-              </div>
-
-              <b-field v-if="column.type === 'decimal'" label="Step">
-                <b-input
-                  v-model="column.input.decimal.step"
-                  step="any"
-                  message="Change any to step value you want to use"
-                ></b-input>
-              </b-field>
-              <b-field
-                message="Default value will be set at database level"
-                label="Default Value"
-              >
-                <b-input
-                  v-if="column.type === 'string'"
-                  v-model="column.meta.defaultTo"
-                ></b-input>
-                <b-input
-                  v-if="column.type === 'integer'"
-                  v-model="column.meta.defaultTo"
-                  type="number"
+              <template #trigger>
+                <div
+                  class="panel-heading"
+                  role="button"
+                  aria-controls="contentIdForA11y2"
                 >
-                </b-input>
-                <b-input
-                  v-if="column.type === 'decimal'"
-                  v-model="column.meta.defaultTo"
-                  type="number"
-                >
-                </b-input>
-                <b-switch
-                  v-if="column.type === 'boolean'"
-                  v-model="column.meta.defaultTo"
-                  >{{ column.meta.defaultTo }}
-                </b-switch>
-                <b-datepicker
-                  v-if="column.type === 'date'"
-                  v-model="column.meta.defaultTo"
-                  >{{ column.meta.defaultTo }}</b-datepicker
-                >
-              </b-field>
-              <b-field>
-                <b-checkbox v-model="column.meta.required">
-                  Required *
-                </b-checkbox>
-              </b-field>
-
-              <b-field v-if="column.type === 'string'">
-                <b-checkbox v-model="column.meta.trim">Trim</b-checkbox>
-              </b-field>
-              <b-field v-if="column.type === 'string'">
-                <b-checkbox v-model="column.meta.multiline"
-                  >Multiline</b-checkbox
-                >
-              </b-field>
-              <b-field message="Generate form">
-                <b-checkbox v-model="column.meta.expose">Expose</b-checkbox>
-              </b-field>
-              <b-field
-                message="These fields won't return in response, ex: password"
-              >
-                <b-checkbox v-model="column.meta.secret">Secret</b-checkbox>
-              </b-field>
-              <b-field message="Create database index for faster searching">
-                <b-checkbox v-model="column.meta.index">Index</b-checkbox>
-              </b-field>
-
-              <div v-if="webOrSpa">
-                <h2>Input Field Details</h2>
+                  <strong>{{ column.name }}</strong>
+                </div>
+              </template>
+              <div class="panel-body p-4">
                 <div class="columns">
                   <div class="column">
-                    <b-field label="Input Type *">
+                    <b-field label="Column Name *">
+                      <b-input v-model="column.name"></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column">
+                    <b-field label="Column Type *">
                       <b-select
-                        v-model="column.input.type"
-                        placeholder="Select input type"
+                        v-model="column.type"
+                        placeholder="Select a name"
                         expanded
                         required
                       >
                         <option
-                          v-for="(inputType, inputTypeIndex) in inputTypes"
-                          :key="'inputTypeIndex' + inputTypeIndex"
+                          v-for="(type, typeIndex) in types"
+                          :key="'typeIndex' + typeIndex"
                         >
-                          {{ inputType }}
+                          {{ type }}
                         </option>
                       </b-select>
                     </b-field>
                   </div>
                   <div class="column">
-                    <b-field
-                      label="Display Name"
-                      message="This will be used as label in UI"
-                    >
-                      <b-input v-model="column.input.displayName"></b-input>
+                    <b-field label="Remove">
+                      <b-button
+                        @click="removeColumn(table, columnIndex)"
+                        type="is-dark is-fullwidth"
+                      >
+                        Remove Column
+                      </b-button>
                     </b-field>
                   </div>
                 </div>
 
-                <div v-if="column.input.type === 'select'">
+                <div v-if="column.type === 'string'" class="columns">
+                  <div class="column">
+                    <b-field label="Min Length">
+                      <b-input v-model="column.meta.minLength"></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column">
+                    <b-field label="Max Length">
+                      <b-input v-model="column.meta.maxLength"></b-input>
+                    </b-field>
+                  </div>
+                </div>
+                <div v-if="column.type === 'string'" class="columns">
+                  <div class="column">
+                    <b-field
+                      label="DB Length"
+                      message="For fields like password with having different length at DB level and UI level"
+                    >
+                      <b-input v-model="column.meta.dbLength"></b-input>
+                    </b-field>
+                  </div>
+                </div>
+
+                <div
+                  v-if="['decimal', 'integer'].includes(column.type)"
+                  class="columns"
+                >
+                  <div class="column">
+                    <b-field label="Min">
+                      <b-input v-model="column.meta.min"></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column">
+                    <b-field label="Max">
+                      <b-input v-model="column.meta.max"></b-input>
+                    </b-field>
+                  </div>
+                </div>
+
+                <b-field v-if="column.type === 'decimal'" label="Step">
+                  <b-input
+                    v-model="column.input.decimal.step"
+                    step="any"
+                    message="Change any to step value you want to use"
+                  ></b-input>
+                </b-field>
+                <b-field
+                  message="Default value will be set at database level"
+                  label="Default Value"
+                >
+                  <b-input
+                    v-if="column.type === 'string'"
+                    v-model="column.meta.defaultTo"
+                  ></b-input>
+                  <b-input
+                    v-if="column.type === 'integer'"
+                    v-model="column.meta.defaultTo"
+                    type="number"
+                  >
+                  </b-input>
+                  <b-input
+                    v-if="column.type === 'decimal'"
+                    v-model="column.meta.defaultTo"
+                    type="number"
+                  >
+                  </b-input>
+                  <b-switch
+                    v-if="column.type === 'boolean'"
+                    v-model="column.meta.defaultTo"
+                    >{{ column.meta.defaultTo }}
+                  </b-switch>
+                  <b-datepicker
+                    v-if="column.type === 'date'"
+                    v-model="column.meta.defaultTo"
+                    >{{ column.meta.defaultTo }}</b-datepicker
+                  >
+                </b-field>
+                <b-field>
+                  <b-checkbox v-model="column.meta.required">
+                    Required *
+                  </b-checkbox>
+                </b-field>
+
+                <b-field v-if="column.type === 'string'">
+                  <b-checkbox v-model="column.meta.trim">Trim</b-checkbox>
+                </b-field>
+                <b-field v-if="column.type === 'string'">
+                  <b-checkbox v-model="column.meta.multiline"
+                    >Multiline</b-checkbox
+                  >
+                </b-field>
+                <b-field message="Generate form">
+                  <b-checkbox v-model="column.meta.expose">Expose</b-checkbox>
+                </b-field>
+                <b-field
+                  message="These fields won't return in response, ex: password"
+                >
+                  <b-checkbox v-model="column.meta.secret">Secret</b-checkbox>
+                </b-field>
+                <b-field message="Create database index for faster searching">
+                  <b-checkbox v-model="column.meta.index">Index</b-checkbox>
+                </b-field>
+
+                <div v-if="webOrSpa">
+                  <h2>Input Field Details</h2>
                   <div class="columns">
                     <div class="column">
-                      <b-field
-                        label="Options Type *"
-                        message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
-                      >
-                        <b-select v-model="column.input.select.type" expanded>
-                          <option value="string">String</option>
-                          <option value="kv">Key/Value</option>
+                      <b-field label="Input Type *">
+                        <b-select
+                          v-model="column.input.type"
+                          placeholder="Select input type"
+                          expanded
+                          required
+                        >
+                          <option
+                            v-for="(inputType, inputTypeIndex) in inputTypes"
+                            :key="'inputTypeIndex' + inputTypeIndex"
+                          >
+                            {{ inputType }}
+                          </option>
                         </b-select>
                       </b-field>
                     </div>
-                  </div>
-
-                  <div
-                    class="columns"
-                    v-if="column.input.select.type === 'string'"
-                  >
                     <div class="column">
-                      <b-field label="Add Options">
-                        <b-taginput
-                          v-model="column.input.select.options"
-                          placeholder="Options"
-                          aria-close-label="Remove this option"
-                        >
-                        </b-taginput>
+                      <b-field
+                        label="Display Name"
+                        message="This will be used as label in UI"
+                      >
+                        <b-input v-model="column.input.displayName"></b-input>
                       </b-field>
                     </div>
                   </div>
 
-                  <div v-if="column.input.select.type === 'kv'">
+                  <div v-if="column.input.type === 'select'">
                     <div class="columns">
                       <div class="column">
-                        <b-button @click="addSelectOption(column)"
-                          >Add An Option</b-button
+                        <b-field
+                          label="Options Type *"
+                          message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
                         >
+                          <b-select v-model="column.input.select.type" expanded>
+                            <option value="string">String</option>
+                            <option value="kv">Key/Value</option>
+                          </b-select>
+                        </b-field>
                       </div>
                     </div>
+
                     <div
                       class="columns"
-                      v-for="(option, optionIndex) in column.input.select
-                        .options"
-                      :key="'optionIndex' + optionIndex"
+                      v-if="column.input.select.type === 'string'"
                     >
                       <div class="column">
-                        <b-field label="Label">
-                          <b-input
-                            v-model="option.label"
-                            placeholder="Label"
+                        <b-field label="Add Options">
+                          <b-taginput
+                            v-model="column.input.select.options"
+                            placeholder="Options"
                             aria-close-label="Remove this option"
                           >
-                          </b-input>
+                          </b-taginput>
                         </b-field>
                       </div>
+                    </div>
+
+                    <div v-if="column.input.select.type === 'kv'">
+                      <div class="columns">
+                        <div class="column">
+                          <b-button @click="addSelectOption(column)"
+                            >Add An Option</b-button
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="columns"
+                        v-for="(option, optionIndex) in column.input.select
+                          .options"
+                        :key="'optionIndex' + optionIndex"
+                      >
+                        <div class="column">
+                          <b-field label="Label">
+                            <b-input
+                              v-model="option.label"
+                              placeholder="Label"
+                              aria-close-label="Remove this option"
+                            >
+                            </b-input>
+                          </b-field>
+                        </div>
+                        <div class="column">
+                          <b-field label="Value">
+                            <b-input
+                              v-model="option.value"
+                              placeholder="Value"
+                              aria-close-label="Remove this option"
+                            >
+                            </b-input>
+                          </b-field>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="column.input.type === 'radio'">
+                    <div class="columns">
                       <div class="column">
-                        <b-field label="Value">
-                          <b-input
-                            v-model="option.value"
-                            placeholder="Value"
+                        <b-field
+                          label="Options Type *"
+                          message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
+                        >
+                          <b-select v-model="column.input.radio.type" expanded>
+                            <option value="string">String</option>
+                            <option value="kv">Key/Value</option>
+                          </b-select>
+                        </b-field>
+                      </div>
+                    </div>
+
+                    <div
+                      class="columns"
+                      v-if="column.input.radio.type === 'string'"
+                    >
+                      <div class="column">
+                        <b-field label="Add Options">
+                          <b-taginput
+                            v-model="column.input.radio.options"
+                            placeholder="Options"
                             aria-close-label="Remove this option"
                           >
-                          </b-input>
+                          </b-taginput>
                         </b-field>
+                      </div>
+                    </div>
+
+                    <div v-if="column.input.radio.type === 'kv'">
+                      <div class="columns">
+                        <div class="column">
+                          <b-button @click="addRadioOption(column)"
+                            >Add An Option</b-button
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="columns"
+                        v-for="(option, optionIndex) in column.input.radio
+                          .options"
+                        :key="'optionIndex' + optionIndex"
+                      >
+                        <div class="column">
+                          <b-field label="Label">
+                            <b-input
+                              v-model="option.label"
+                              placeholder="Label"
+                              aria-close-label="Remove this option"
+                            >
+                            </b-input>
+                          </b-field>
+                        </div>
+                        <div class="column">
+                          <b-field label="Value">
+                            <b-input
+                              v-model="option.value"
+                              placeholder="Value"
+                              aria-close-label="Remove this option"
+                            >
+                            </b-input>
+                          </b-field>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div v-if="column.input.type === 'radio'">
-                  <div class="columns">
-                    <div class="column">
-                      <b-field
-                        label="Options Type *"
-                        message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
-                      >
-                        <b-select v-model="column.input.radio.type" expanded>
-                          <option value="string">String</option>
-                          <option value="kv">Key/Value</option>
-                        </b-select>
-                      </b-field>
-                    </div>
-                  </div>
-
-                  <div
-                    class="columns"
-                    v-if="column.input.radio.type === 'string'"
-                  >
-                    <div class="column">
-                      <b-field label="Add Options">
-                        <b-taginput
-                          v-model="column.input.radio.options"
-                          placeholder="Options"
-                          aria-close-label="Remove this option"
-                        >
-                        </b-taginput>
-                      </b-field>
-                    </div>
-                  </div>
-
-                  <div v-if="column.input.radio.type === 'kv'">
-                    <div class="columns">
-                      <div class="column">
-                        <b-button @click="addRadioOption(column)"
-                          >Add An Option</b-button
-                        >
-                      </div>
-                    </div>
-                    <div
-                      class="columns"
-                      v-for="(option, optionIndex) in column.input.radio
-                        .options"
-                      :key="'optionIndex' + optionIndex"
-                    >
-                      <div class="column">
-                        <b-field label="Label">
-                          <b-input
-                            v-model="option.label"
-                            placeholder="Label"
-                            aria-close-label="Remove this option"
-                          >
-                          </b-input>
-                        </b-field>
-                      </div>
-                      <div class="column">
-                        <b-field label="Value">
-                          <b-input
-                            v-model="option.value"
-                            placeholder="Value"
-                            aria-close-label="Remove this option"
-                          >
-                          </b-input>
-                        </b-field>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <h2>Validation</h2>
+                <b-field
+                  v-if="column.type === 'string'"
+                  message="Check if field type is email"
+                >
+                  <b-checkbox v-model="column.meta.email">Email</b-checkbox>
+                </b-field>
               </div>
-
-              <h2>Validation</h2>
-              <b-field
-                v-if="column.type === 'string'"
-                message="Check if field type is email"
-              >
-                <b-checkbox v-model="column.meta.email">Email</b-checkbox>
-              </b-field>
-            </div>
+            </b-collapse>
           </div>
         </div>
       </b-collapse>
