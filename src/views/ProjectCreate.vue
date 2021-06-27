@@ -17,7 +17,7 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
-            <p class="card-header-title">Project Options</p>
+            <p class="card-header-title">Project</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
             </a>
@@ -97,7 +97,7 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
-            <p class="card-header-title">Auth Options</p>
+            <p class="card-header-title">Auth</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
             </a>
@@ -261,7 +261,7 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
-            <p class="card-header-title">Tenant Options</p>
+            <p class="card-header-title">Tenant</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
             </a>
@@ -324,6 +324,7 @@
       </b-collapse>
 
       <b-collapse
+        v-if="false"
         class="card mt-5"
         animation="slide"
         aria-id="contentIdForA11y3"
@@ -369,6 +370,7 @@
       </b-collapse>
 
       <b-collapse
+        v-if="false"
         class="card mt-5"
         animation="slide"
         aria-id="contentIdForA11y3"
@@ -408,7 +410,7 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
-            <p class="card-header-title">CRUD Options</p>
+            <p class="card-header-title">Tables</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
             </a>
@@ -477,11 +479,43 @@
               </b-checkbox>
             </b-field>
 
-            <b-field v-if="webOrApi && table.generateRoute">
-              <b-checkbox v-model="table.rootLevelRoute">
-                Generate Root Level Route
-              </b-checkbox>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.singleton">Singleton</b-checkbox>
             </b-field>
+
+            <b-field label="Parent *" v-if="webOrApi">
+              <b-select expanded v-model="table.parent">
+                <option :value="null">No Parent(Global Singleton)</option>
+                <option
+                  v-for="(
+                    routeBelongsTo, routeBelongsToIndex
+                  ) in getBelongsToListFull(table)"
+                  :key="routeBelongsToIndex"
+                >
+                  {{ routeBelongsTo.withModel }}
+                </option>
+              </b-select>
+            </b-field>
+
+            <div
+              class="columns"
+              v-if="table.generateRoute && getBelongsToList(table).length"
+            >
+              <div class="column">
+                <b-field label="Level 1 route nesting">
+                  <b-select expanded v-model="table.routeParents[0]">
+                    <option
+                      v-for="(
+                        routeBelongsTo, routeBelongsToIndex
+                      ) in getBelongsToList(table)"
+                      :key="routeBelongsToIndex"
+                    >
+                      {{ routeBelongsTo.withModel }}
+                    </option>
+                  </b-select>
+                </b-field>
+              </div>
+            </div>
 
             <div class="level">
               <div class="level-left is-size-4">Relations</div>
@@ -511,6 +545,12 @@
                   <b-select v-model="relation.withModel" expanded>
                     <option value="$auth">
                       {{ projectInput.auth.table.name }} (Auth)
+                    </option>
+                    <option
+                      v-if="projectInput.tenantSettings.table"
+                      value="$tenant"
+                    >
+                      {{ projectInput.tenantSettings.table }} (Tenant)
                     </option>
                     <option
                       v-for="(t, ti) in projectInput.tables"
@@ -1040,10 +1080,12 @@ export default {
 
     addTable() {
       this.projectInput.tables.push({
-        name: "Country",
+        name: `Table ${this.projectInput.tables.length + 1}`,
         timestamps: true,
-        rootLevelRoute: false,
         generateRoute: false,
+        singleton: false,
+        parent: null,
+        routeParents: [],
         operations: [
           "index",
           "store",
@@ -1113,6 +1155,21 @@ export default {
         name: "",
         required: true, // Only applicable to belongsTo
       });
+    },
+
+    /**
+     * Returns a list of belongs to relations excluding tenant and auth
+     */
+    getBelongsToList(table) {
+      return table.relations.filter(
+        (relation) =>
+          relation.type === "belongsTo" && !relation.withModel.startsWith("$")
+      );
+    },
+    getBelongsToListFull(table) {
+      return table.relations.filter(
+        (relation) => relation.type === "belongsTo"
+      );
     },
   },
 
