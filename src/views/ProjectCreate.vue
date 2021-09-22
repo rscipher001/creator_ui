@@ -483,7 +483,7 @@
               <b-checkbox v-model="table.singleton">Singleton</b-checkbox>
             </b-field>
 
-            <b-field label="Parent *" v-if="webOrApi">
+            <b-field label="Parent *" v-if="webOrApi && table.singleton">
               <b-select expanded v-model="table.parent">
                 <option :value="null">No Parent(Global Singleton)</option>
                 <option
