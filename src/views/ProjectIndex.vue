@@ -26,6 +26,18 @@
               :icon-right="active ? 'menu-up' : 'menu-down'"
             />
           </template>
+          <b-dropdown-item
+            v-if="props.row.input.types.includes('api')"
+            @click="download(props.row.id, 'api')"
+            aria-role="listitem"
+            >Download API Code</b-dropdown-item
+          >
+          <b-dropdown-item
+            v-if="props.row.input.types.includes('web')"
+            @click="download(props.row.id, 'web')"
+            aria-role="listitem"
+            >Download Web Code</b-dropdown-item
+          >
           <b-dropdown-item @click="destroy(props.row.id)" aria-role="listitem"
             >Delete</b-dropdown-item
           >
@@ -85,6 +97,7 @@ export default {
       indexAction: "index",
       storeAction: "store",
       destroyAction: "destroy",
+      generateSignedUrl: "generateSignedUrl",
     }),
 
     index() {
@@ -124,6 +137,20 @@ export default {
           }
         },
       });
+    },
+
+    async download(id, type) {
+      try {
+        const url = await this.generateSignedUrl({ id, type });
+        return window.open(`${process.env.VUE_APP_API_URL}${url}`);
+      } catch (e) {
+        console.error(e);
+        this.$buefy.toast.open({
+          message: "Unable to start download",
+          type: "is-danger",
+          position: "is-bottom-right",
+        });
+      }
     },
   },
 

@@ -104,6 +104,10 @@ export default {
         throw e;
       }
     },
+
+    async generateSignedUrl(_, { id, type }) {
+      return HttpService.authGet(`/${resource}/${id}/generate/${type}`);
+    },
   },
 
   mutations: {
