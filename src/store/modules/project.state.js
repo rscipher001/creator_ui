@@ -27,6 +27,10 @@ export default {
           `/${resource}`,
           filter
         );
+        items.map((item) => {
+          item.input = JSON.parse(item.rawInput);
+          return item;
+        });
         commit("load", { items, meta });
         commit("setLoading", { key: "index", value: false });
       } catch (e) {

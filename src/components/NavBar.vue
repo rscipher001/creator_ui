@@ -16,6 +16,12 @@
         <b-navbar-item tag="router-link" :to="{ path: '/about' }"
           >About</b-navbar-item
         >
+        <b-navbar-item tag="router-link" :to="{ path: '/project' }"
+          >Project List</b-navbar-item
+        >
+        <b-navbar-item tag="router-link" :to="{ path: '/project/create' }"
+          >Project Create</b-navbar-item
+        >
       </b-navbar-dropdown>
     </template>
 
