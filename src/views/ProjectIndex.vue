@@ -11,7 +11,7 @@
     </div>
     <b-table v-if="items.length" :data="items">
       <b-table-column field="name" label="Name" v-slot="props">
-        {{ props.row.input.name }}
+        {{ props.row.name }}
       </b-table-column>
       <b-table-column field="email" label="Status" v-slot="props">
         {{ props.row.status }}
@@ -27,16 +27,16 @@
             />
           </template>
           <b-dropdown-item
-            v-if="props.row.input.types.includes('api')"
+            v-if="props.row.input.generate.api.generate"
             @click="download(props.row.id, 'api')"
             aria-role="listitem"
             >Download API Code</b-dropdown-item
           >
           <b-dropdown-item
-            v-if="props.row.input.types.includes('web')"
-            @click="download(props.row.id, 'web')"
+            v-if="props.row.input.generate.spa.generate"
+            @click="download(props.row.id, 'spa')"
             aria-role="listitem"
-            >Download Web Code</b-dropdown-item
+            >Download SPA Code</b-dropdown-item
           >
           <b-dropdown-item @click="destroy(props.row.id)" aria-role="listitem"
             >Delete</b-dropdown-item

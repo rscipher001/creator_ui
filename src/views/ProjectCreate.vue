@@ -1058,7 +1058,7 @@ export default {
     async store() {
       try {
         await this.storeAction(this.projectInput);
-        // this.$router.push("/project");
+        this.$router.push("/project");
         this.$buefy.toast.open({
           message: "project created",
           position: "is-bottom-right",

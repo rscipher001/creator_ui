@@ -90,7 +90,7 @@ export default {
           type: "is-success",
           position: "is-bottom-right",
         });
-        this.$router.push("/dashboard");
+        this.$router.push("/project");
       } catch (e) {
         let message = "Login failed";
         if (e instanceof ValidationException) {
