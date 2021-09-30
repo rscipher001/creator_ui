@@ -261,6 +261,77 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
+            <p class="card-header-title">Mailer</p>
+            <a class="card-header-icon">
+              <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
+            </a>
+          </div>
+        </template>
+
+        <div class="card-content">
+          <div class="content">
+            <b-field>
+              <b-checkbox native-value="smtp" v-model="projectInput.mailers"
+                >SMTP</b-checkbox
+              >
+            </b-field>
+            <b-field>
+              <b-checkbox native-value="ses" v-model="projectInput.mailers"
+                >SES</b-checkbox
+              >
+            </b-field>
+            <b-field>
+              <b-checkbox native-value="mailgun" v-model="projectInput.mailers"
+                >Mailgun</b-checkbox
+              >
+            </b-field>
+            <b-field>
+              <b-checkbox
+                native-value="sparkpost"
+                v-model="projectInput.mailers"
+                >Sparkpost</b-checkbox
+              >
+            </b-field>
+            <b-field v-if="projectInput.mailers.length" label="Default Mailer">
+              <b-select v-model="projectInput.defaultMailer" expanded>
+                <option
+                  v-if="projectInput.mailers.includes('smtp')"
+                  value="smtp"
+                >
+                  SMTP
+                </option>
+                <option v-if="projectInput.mailers.includes('ses')" value="ses">
+                  SES
+                </option>
+                <option
+                  v-if="projectInput.mailers.includes('mailgun')"
+                  value="mailgun"
+                >
+                  Mailgun
+                </option>
+                <option
+                  v-if="projectInput.mailers.includes('sparkpost')"
+                  value="sparkpost"
+                >
+                  Sparkpost
+                </option>
+              </b-select>
+            </b-field>
+          </div>
+        </div>
+      </b-collapse>
+
+      <b-collapse
+        class="card mt-5"
+        animation="slide"
+        aria-id="contentIdForA11y3"
+      >
+        <template #trigger="props">
+          <div
+            class="card-header"
+            role="button"
+            aria-controls="contentIdForA11y3"
+          >
             <p class="card-header-title">Tenant</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
@@ -949,6 +1020,8 @@ export default {
       projectInput: {
         name: "",
         database: "mysql",
+        defaultMailer: null,
+        mailers: [],
         types: ["api"],
         camelCaseStrategy: true,
         tech: {
