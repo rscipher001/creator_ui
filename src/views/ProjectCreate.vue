@@ -129,6 +129,18 @@
               </b-checkbox>
             </b-field>
 
+            <b-field>
+              <b-checkbox v-model="projectInput.auth.password_reset">
+                Generate Password Reset
+              </b-checkbox>
+            </b-field>
+
+            <b-field>
+              <b-checkbox v-model="projectInput.auth.password_change">
+                Generate Password Change
+              </b-checkbox>
+            </b-field>
+
             <div class="level">
               <div class="level-left is-size-4">Relations</div>
               <div class="level-right">
@@ -1052,6 +1064,8 @@ export default {
         },
         auth: {
           register: true,
+          password_reset: true,
+          password_change: true,
           table: {
             operations: [],
             relations: [],
@@ -1115,7 +1129,7 @@ export default {
         },
         tenantSettings: {
           user: 1,
-          tenant: 1,
+          tenant: 0,
           table: null,
         },
         tables: [],
