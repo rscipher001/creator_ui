@@ -551,6 +551,22 @@
             </b-field>
 
             <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.skipController">
+                Skip Controller
+              </b-checkbox>
+            </b-field>
+
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.skipModel"> Skip Model </b-checkbox>
+            </b-field>
+
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.skipMigration">
+                Skip Migration
+              </b-checkbox>
+            </b-field>
+
+            <b-field v-if="webOrApi">
               <b-checkbox v-model="table.timestamps">
                 Generate Timestamps
               </b-checkbox>
@@ -1170,6 +1186,9 @@ export default {
         name: `Table ${this.projectInput.tables.length + 1}`,
         timestamps: true,
         generateRoute: false,
+        skipModel: false,
+        skipController: false,
+        skipMigration: false,
         singleton: false,
         parent: null,
         routeParents: [],
