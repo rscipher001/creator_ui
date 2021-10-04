@@ -28,6 +28,22 @@ const routes = [
     },
   },
   {
+    path: "/forgot_password/request",
+    name: "Forgot Password Request",
+    component: () => import("../views/ForgotPasswordRequest.vue"),
+    meta: {
+      guest: true,
+    },
+  },
+  {
+    path: "/forgot_password/verify",
+    name: "Forgot Password Verify",
+    component: () => import("../views/ForgotPasswordUpdate.vue"),
+    meta: {
+      guest: true,
+    },
+  },
+  {
     path: "/dashboard",
     name: "Dashboard",
     component: () => import("../views/Dashboard.vue"),

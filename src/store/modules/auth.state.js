@@ -9,6 +9,9 @@ export default {
       login: false,
       register: false,
       logout: false,
+      forgotPasswordRequest: false,
+      forgotPasswordVerify: false,
+      forgotPasswordUpdate: false,
     },
     token: undefined, // Authorization token
     user: undefined, // Logged in user basic profile
@@ -62,6 +65,60 @@ export default {
         commit("setLoading", { key: "register", value: false });
       } catch (e) {
         commit("setLoading", { key: "register", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async forgotPasswordRequest({ commit }, input) {
+      commit("setLoading", { key: "forgotPasswordRequest", value: true });
+      try {
+        const message = await HttpService.post(
+          "/password/forget/request",
+          input
+        );
+        commit("setLoading", { key: "forgotPasswordRequest", value: false });
+        return message;
+      } catch (e) {
+        commit("setLoading", { key: "forgotPasswordRequest", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async forgotPasswordVerify({ commit }, input) {
+      commit("setLoading", { key: "forgotPasswordVerify", value: true });
+      try {
+        const message = await HttpService.post(
+          "/password/forget/verify",
+          input
+        );
+        commit("setLoading", { key: "forgotPasswordVerify", value: false });
+        return message;
+      } catch (e) {
+        commit("setLoading", { key: "forgotPasswordVerify", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async forgotPasswordUpdate({ commit }, input) {
+      commit("setLoading", { key: "forgotPasswordUpdate", value: true });
+      try {
+        const message = await HttpService.post(
+          "/password/forget/update",
+          input
+        );
+        commit("setLoading", { key: "forgotPasswordUpdate", value: false });
+        return message;
+      } catch (e) {
+        commit("setLoading", { key: "forgotPasswordUpdate", value: false });
         if (e.response && e.response.status === 422) {
           throw new ValidationException(e.message, e.response.data.errors);
         }

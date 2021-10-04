@@ -2,8 +2,10 @@
   <section class="hero is-fullheight-with-navbar is-light">
     <div class="hero-body container">
       <div class="card p-5">
-        <form method="POST" @submit.prevent="login">
-          <h1 class="is-size-3 has-text-centered pb-5">Login</h1>
+        <form method="POST" @submit.prevent="forgotPasswordRequest">
+          <h1 class="is-size-3 has-text-centered pb-5">
+            Forgot Password Request
+          </h1>
 
           <b-field
             label="Email *"
@@ -11,7 +13,7 @@
             :message="errors.email"
           >
             <b-input
-              ref="loginEmail"
+              ref="emailInput"
               type="email"
               v-model="form.email"
               maxlength="127"
@@ -19,42 +21,20 @@
             ></b-input>
           </b-field>
 
-          <b-field
-            label="Password *"
-            :type="errors.password ? 'is-danger' : ''"
-            :message="errors.password"
-          >
-            <b-input
-              v-model="form.password"
-              type="password"
-              maxlength="127"
-              password-reveal
-              required
-            ></b-input>
-          </b-field>
-
           <b-button
-            :loading="loading.login"
+            :loading="loading.forgotPasswordRequest"
             type="is-primary is-fullwidth"
             native-type="submit"
-            >Login</b-button
+            >Send Password Reset Link</b-button
           >
         </form>
         <b-button
           class="is-fullwidth mt-2"
           tag="router-link"
-          to="/register"
+          to="/login"
           type="is-light"
         >
-          Create an Account
-        </b-button>
-        <b-button
-          class="is-fullwidth mt-2"
-          tag="router-link"
-          to="/forgot_password/request"
-          type="is-ghost"
-        >
-          Forgot password?
+          Back to Login?
         </b-button>
       </div>
     </div>
@@ -66,10 +46,10 @@ import { mapState, mapActions } from "vuex";
 import ValidationException from "../exceptions/ValidationException";
 
 export default {
-  name: "Login",
+  name: "ForgotPasswordRequest",
 
   mounted() {
-    this.$refs.loginEmail.focus();
+    this.$refs.emailInput.focus();
   },
 
   data() {
@@ -77,30 +57,28 @@ export default {
       errors: {},
       form: {
         email: "",
-        password: "",
       },
     };
   },
 
   methods: {
     ...mapActions("auth", {
-      loginAction: "login",
+      forgotPasswordRequestAction: "forgotPasswordRequest",
     }),
 
-    async login() {
+    async forgotPasswordRequest() {
       try {
-        await this.loginAction({
+        const message = await this.forgotPasswordRequestAction({
           email: this.form.email,
-          password: this.form.password,
         });
         this.$buefy.toast.open({
-          message: "Login success!",
+          message,
           type: "is-success",
           position: "is-bottom-right",
+          duration: 20000,
         });
-        this.$router.push("/project");
       } catch (e) {
-        let message = "Login failed";
+        let message = "Unable to request password reset mail";
         if (e instanceof ValidationException) {
           this.errors = e.errors;
           message = "Validation Error";

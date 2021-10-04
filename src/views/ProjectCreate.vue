@@ -130,13 +130,13 @@
             </b-field>
 
             <b-field>
-              <b-checkbox v-model="projectInput.auth.password_reset">
+              <b-checkbox v-model="projectInput.auth.passwordReset">
                 Generate Password Reset
               </b-checkbox>
             </b-field>
 
             <b-field>
-              <b-checkbox v-model="projectInput.auth.password_change">
+              <b-checkbox v-model="projectInput.auth.passwordChange">
                 Generate Password Change
               </b-checkbox>
             </b-field>
@@ -1080,8 +1080,8 @@ export default {
         },
         auth: {
           register: true,
-          password_reset: true,
-          password_change: true,
+          passwordReset: true,
+          passwordChange: true,
           table: {
             operations: [],
             relations: [],
