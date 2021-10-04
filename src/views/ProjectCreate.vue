@@ -1048,8 +1048,8 @@ export default {
       projectInput: {
         name: "",
         database: "mysql",
-        defaultMailer: null,
-        mailers: [],
+        defaultMailer: "smtp",
+        mailers: ["smtp"],
         types: ["api"],
         camelCaseStrategy: true,
         tech: {
