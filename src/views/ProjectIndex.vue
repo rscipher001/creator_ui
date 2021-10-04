@@ -2,7 +2,7 @@
   <section class="container mt-5">
     <b-loading is-full-page v-model="isLoading"></b-loading>
     <div class="level">
-      <div class="level-left is-size-3">{{ items.length }} Projects</div>
+      <div class="level-left is-size-3">{{ meta.total }} Projects</div>
       <div class="level-right">
         <b-button tag="router-link" to="/project/create" type="is-light"
           >New</b-button
@@ -62,7 +62,7 @@
     <b-pagination
       v-model="current"
       :total="meta.total"
-      :per-page="meta.per_page"
+      :per-page="meta.perPage"
       order="is-centered"
       aria-next-label="Next page"
       aria-previous-label="Previous page"
