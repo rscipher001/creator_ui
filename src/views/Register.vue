@@ -12,6 +12,7 @@
           >
             <b-input
               v-model="form.name"
+              ref="registerName"
               maxlength="127"
               minlength="2"
               required
@@ -78,6 +79,10 @@ import ValidationException from "../exceptions/ValidationException";
 
 export default {
   name: "RegisterPage",
+
+  mounted() {
+    if (this.$refs.registerName) this.$refs.registerName.focus();
+  },
 
   data() {
     return {

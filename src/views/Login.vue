@@ -66,10 +66,10 @@ import { mapState, mapActions } from "vuex";
 import ValidationException from "../exceptions/ValidationException";
 
 export default {
-  name: "Login",
+  name: "LoginPage",
 
   mounted() {
-    this.$refs.loginEmail.focus();
+    if (this.$refs.loginEmail) this.$refs.loginEmail.focus();
   },
 
   data() {

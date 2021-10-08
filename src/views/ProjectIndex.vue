@@ -60,6 +60,7 @@
       </div>
     </div>
     <b-pagination
+      class="mt-5"
       v-model="current"
       :total="meta.total"
       :per-page="meta.perPage"
