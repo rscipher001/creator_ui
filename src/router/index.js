@@ -67,6 +67,14 @@ const routes = [
       auth: true,
     },
   },
+  {
+    path: "/setting",
+    name: "Setting",
+    component: () => import("../views/Setting.vue"),
+    meta: {
+      auth: true,
+    },
+  },
 ];
 // RoutesEnd
 

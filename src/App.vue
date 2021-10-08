@@ -1,7 +1,11 @@
 <template>
   <div id="app" class="has-background-light">
-    <nav-bar></nav-bar>
-    <router-view />
+    <div class="block">
+      <nav-bar></nav-bar>
+    </div>
+    <div class="block">
+      <router-view />
+    </div>
   </div>
 </template>
 
