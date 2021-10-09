@@ -1,6 +1,6 @@
 import Vue from "vue";
-import VueRouter from "vue-router";
 import store from "@/store";
+import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
@@ -14,7 +14,8 @@ const routes = [
   {
     path: "/login",
     name: "Login",
-    component: () => import("../views/Login.vue"),
+    component: () =>
+      import(/* webpackChunkName: "login" */ "../views/Login.vue"),
     meta: {
       guest: true,
     },
@@ -22,23 +23,30 @@ const routes = [
   {
     path: "/register",
     name: "Register",
-    component: () => import("../views/Register.vue"),
+    component: () =>
+      import(/* webpackChunkName: "register" */ "../views/Register.vue"),
     meta: {
       guest: true,
     },
   },
   {
     path: "/forgot_password/request",
-    name: "Forgot Password Request",
-    component: () => import("../views/ForgotPasswordRequest.vue"),
+    name: "ForgotPasswordRequest",
+    component: () =>
+      import(
+        /* webpackChunkName: "forgotPasswordRequest" */ "../views/ForgotPasswordRequest.vue"
+      ),
     meta: {
       guest: true,
     },
   },
   {
     path: "/forgot_password/verify",
-    name: "Forgot Password Verify",
-    component: () => import("../views/ForgotPasswordUpdate.vue"),
+    name: "ForgotPasswordVerify",
+    component: () =>
+      import(
+        /* webpackChunkName: "forgotPasswordUpdate" */ "../views/ForgotPasswordUpdate.vue"
+      ),
     meta: {
       guest: true,
     },
@@ -46,7 +54,8 @@ const routes = [
   {
     path: "/dashboard",
     name: "Dashboard",
-    component: () => import("../views/Dashboard.vue"),
+    component: () =>
+      import(/* webpackChunkName: "dashboard" */ "../views/Dashboard.vue"),
     meta: {
       auth: true,
     },
@@ -54,7 +63,10 @@ const routes = [
   {
     path: "/project",
     name: "ProjectIndex",
-    component: () => import("../views/ProjectIndex.vue"),
+    component: () =>
+      import(
+        /* webpackChunkName: "projectIndex" */ "../views/ProjectIndex.vue"
+      ),
     meta: {
       auth: true,
     },
@@ -62,7 +74,10 @@ const routes = [
   {
     path: "/project/create",
     name: "ProjectCreate",
-    component: () => import("../views/ProjectCreate.vue"),
+    component: () =>
+      import(
+        /* webpackChunkName: "projectCreate" */ "../views/ProjectCreate.vue"
+      ),
     meta: {
       auth: true,
     },
@@ -70,10 +85,37 @@ const routes = [
   {
     path: "/setting",
     name: "Setting",
-    component: () => import("../views/Setting.vue"),
+    component: () =>
+      import(/* webpackChunkName: "setting" */ "../views/Setting.vue"),
     meta: {
       auth: true,
     },
+    children: [
+      {
+        path: "security",
+        name: "SettingSecurity",
+        component: () =>
+          import(
+            /* webpackChunkName: "settingSecurity" */ "../views/setting/Security.vue"
+          ),
+      },
+      {
+        path: "account",
+        name: "SettingAccount",
+        component: () =>
+          import(
+            /* webpackChunkName: "settingAccount" */ "../views/setting/Account.vue"
+          ),
+      },
+      {
+        path: "profile",
+        name: "SettingProfile",
+        component: () =>
+          import(
+            /* webpackChunkName: "settingProfile" */ "../views/setting/Profile.vue"
+          ),
+      },
+    ],
   },
 ];
 // RoutesEnd
@@ -98,13 +140,13 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-  // if (meta.auth) {
-  //   if (!store.state.auth.token) {
-  //     return next({
-  //       name: 'Login',
-  //     });
-  //   }
-  // }
+  if (meta.auth) {
+    if (!store.state.auth.token) {
+      return next({
+        name: "Login",
+      });
+    }
+  }
 
   return next();
 });

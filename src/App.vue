@@ -1,20 +1,21 @@
 <template>
-  <div id="app" class="has-background-light">
+  <div id="app" class="has-background-white">
+    <nav-bar></nav-bar>
+    <router-view />
     <div class="block">
-      <nav-bar></nav-bar>
-    </div>
-    <div class="block">
-      <router-view />
+      <app-footer></app-footer>
     </div>
   </div>
 </template>
 
 <script>
 import NavBar from "./components/NavBar.vue";
+import Footer from "./components/Footer.vue";
 
 export default {
   components: {
     "nav-bar": NavBar,
+    "app-footer": Footer,
   },
   created() {},
   methods: {},
