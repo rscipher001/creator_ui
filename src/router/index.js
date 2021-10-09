@@ -52,6 +52,12 @@ const routes = [
     },
   },
   {
+    path: "/email/verify",
+    name: "VerifyEmail",
+    component: () =>
+      import(/* webpackChunkName: verifyEmail */ "@/views/VerifyEmail.vue"),
+  },
+  {
     path: "/dashboard",
     name: "Dashboard",
     component: () =>

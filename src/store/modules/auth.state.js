@@ -9,6 +9,7 @@ export default {
       login: false,
       logout: false,
       register: false,
+      emailVerify: false,
       updateProfile: false,
       updateAccount: false,
       forgotPasswordVerify: false,
@@ -97,6 +98,21 @@ export default {
         return message;
       } catch (e) {
         commit("setLoading", { key: "forgotPasswordVerify", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async verifyEmail({ commit }, input) {
+      commit("setLoading", { key: "verifyEmail", value: true });
+      try {
+        const message = await HttpService.post("/email/verify", input);
+        commit("setLoading", { key: "verifyEmail", value: false });
+        return message;
+      } catch (e) {
+        commit("setLoading", { key: "verifyEmail", value: false });
         if (e.response && e.response.status === 422) {
           throw new ValidationException(e.message, e.response.data.errors);
         }
