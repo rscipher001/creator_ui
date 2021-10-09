@@ -60,7 +60,6 @@
     </div>
   </section>
 </template>
-
 <script>
 import { mapState, mapActions } from "vuex";
 import ValidationException from "@/exceptions/ValidationException";

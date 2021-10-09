@@ -9,7 +9,10 @@
       </h1>
       <p class="mt-2">Please check your inbox or spam folder</p>
       <div class="mb-6 mt-3 buttons is-centered">
-        <b-button tag="router-link" to="/register" type="is-primary"
+        <b-button
+          @click="resendVerificationEmail"
+          type="is-primary"
+          :is-loading="loading.resendVerificationEmail"
           >Resend Verification Email</b-button
         >
       </div>
@@ -25,7 +28,46 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+import ValidationException from "@/exceptions/ValidationException";
+
 export default {
-  name: "Home",
+  name: "EmailVerificationPending",
+
+  methods: {
+    ...mapActions("auth", {
+      resendVerificationEmailAction: "resendVerificationEmail",
+    }),
+
+    async resendVerificationEmail() {
+      try {
+        await this.resendVerificationEmailAction({
+          email: this.user.email,
+        });
+        this.$buefy.toast.open({
+          message: "Email verification mail sent successfully!",
+          type: "is-success",
+          position: "is-bottom-right",
+        });
+        this.$router.push("/project");
+      } catch (e) {
+        let message = "Unable to send verification email";
+        if (e instanceof ValidationException) {
+          this.errors = e.errors;
+          message = "Validation Error";
+        }
+        this.$buefy.toast.open({
+          message,
+          type: "is-danger",
+          position: "is-bottom-right",
+        });
+      }
+    },
+  },
+
+  computed: mapState("auth", {
+    user: (state) => state.user,
+    loading: (state) => state.loading,
+  }),
 };
 </script>

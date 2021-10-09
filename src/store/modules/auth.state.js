@@ -15,6 +15,7 @@ export default {
       forgotPasswordVerify: false,
       forgotPasswordUpdate: false,
       forgotPasswordRequest: false,
+      resendVerificationEmail: false,
     },
     token: undefined, // Authorization token
     user: undefined, // Logged in user basic profile
@@ -105,6 +106,21 @@ export default {
       }
     },
 
+    async resendVerificationEmail({ commit }, input) {
+      commit("setLoading", { key: "resendVerificationEmail", value: true });
+      try {
+        const message = await HttpService.authPost("/email/resend", input);
+        commit("setLoading", { key: "resendVerificationEmail", value: false });
+        return message;
+      } catch (e) {
+        commit("setLoading", { key: "resendVerificationEmail", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
     async verifyEmail({ commit }, input) {
       commit("setLoading", { key: "verifyEmail", value: true });
       try {
@@ -183,7 +199,7 @@ export default {
     },
 
     async logout({ dispatch }) {
-      await HttpService.post("/logout");
+      await HttpService.authPost("/logout");
       dispatch("unsetTokens");
     },
   },
