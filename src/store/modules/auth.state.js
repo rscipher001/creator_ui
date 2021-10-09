@@ -1,5 +1,5 @@
-import HttpService from "../../services/http.service";
-import ValidationException from "../../exceptions/ValidationException";
+import HttpService from "@/services/http.service";
+import ValidationException from "@/exceptions/ValidationException";
 
 export default {
   namespaced: true,
@@ -7,34 +7,30 @@ export default {
   state: () => ({
     loading: {
       login: false,
-      register: false,
       logout: false,
-      forgotPasswordRequest: false,
+      register: false,
+      updateProfile: false,
+      updateAccount: false,
       forgotPasswordVerify: false,
       forgotPasswordUpdate: false,
+      forgotPasswordRequest: false,
     },
     token: undefined, // Authorization token
     user: undefined, // Logged in user basic profile
   }),
 
   actions: {
-    // Initialize state from localStorage
-    bootstrap({ commit }) {
-      try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const user = JSON.parse(localStorage.getItem("user"));
-          commit("setTokens", { token, user });
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    },
-
     setUserToken({ commit }, { user, token }) {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
       commit("setUserToken", { user, token });
+    },
+
+    /**
+     * Update user keys
+     */
+    updateUser({ commit }, user) {
+      commit("setUser", user);
     },
 
     unsetTokens({ commit }) {
@@ -119,6 +115,50 @@ export default {
         return message;
       } catch (e) {
         commit("setLoading", { key: "forgotPasswordUpdate", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async updateProfile({ commit, dispatch }, input) {
+      commit("setLoading", { key: "updateProfile", value: true });
+      try {
+        const user = await HttpService.authPost("/profile", input);
+        dispatch("updateUser", user);
+        commit("setLoading", { key: "updateProfile", value: false });
+      } catch (e) {
+        commit("setLoading", { key: "updateProfile", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async updateAccount({ commit, dispatch }, input) {
+      commit("setLoading", { key: "updateAccount", value: true });
+      try {
+        const user = await HttpService.authPost("/profile/account", input);
+        dispatch("updateUser", user);
+        commit("setLoading", { key: "updateAccount", value: false });
+      } catch (e) {
+        commit("setLoading", { key: "updateAccount", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async updatePassword({ commit }, input) {
+      commit("setLoading", { key: "updatePassword", value: true });
+      try {
+        await HttpService.authPost("/profile/password", input);
+        commit("setLoading", { key: "updatePassword", value: false });
+      } catch (e) {
+        commit("setLoading", { key: "updatePassword", value: false });
         if (e.response && e.response.status === 422) {
           throw new ValidationException(e.message, e.response.data.errors);
         }

@@ -63,7 +63,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import ValidationException from "../exceptions/ValidationException";
+import ValidationException from "@/exceptions/ValidationException";
 
 export default {
   name: "LoginPage",

@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="mt-4">
     <div class="container is-max-desktop">
       <div class="columns">
         <aside class="box column is-3 has-background-white">
