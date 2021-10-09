@@ -55,7 +55,18 @@ const routes = [
     path: "/email/verify",
     name: "VerifyEmail",
     component: () =>
-      import(/* webpackChunkName: verifyEmail */ "@/views/VerifyEmail.vue"),
+      import(/* webpackChunkName: "verifyEmail" */ "@/views/VerifyEmail.vue"),
+  },
+  {
+    path: "/email/verificationPending",
+    name: "EmailVerificationPending",
+    component: () =>
+      import(
+        /* webpackChunkName: "verificationPending" */ "@/views/EmailVerificationPending.vue"
+      ),
+    meta: {
+      auth: true,
+    },
   },
   {
     path: "/dashboard",
@@ -64,6 +75,7 @@ const routes = [
       import(/* webpackChunkName: "dashboard" */ "@/views/Dashboard.vue"),
     meta: {
       auth: true,
+      ensureEmailIsVerified: true,
     },
   },
   {
@@ -73,6 +85,7 @@ const routes = [
       import(/* webpackChunkName: "projectIndex" */ "@/views/ProjectIndex.vue"),
     meta: {
       auth: true,
+      ensureEmailIsVerified: true,
     },
   },
   {
@@ -84,6 +97,7 @@ const routes = [
       ),
     meta: {
       auth: true,
+      ensureEmailIsVerified: true,
     },
   },
   {
@@ -93,6 +107,7 @@ const routes = [
       import(/* webpackChunkName: "setting" */ "@/views/Setting.vue"),
     meta: {
       auth: true,
+      ensureEmailIsVerified: true,
     },
     children: [
       {
@@ -102,6 +117,10 @@ const routes = [
           import(
             /* webpackChunkName: "settingSecurity" */ "@/views/setting/Security.vue"
           ),
+        meta: {
+          auth: true,
+          ensureEmailIsVerified: true,
+        },
       },
       {
         path: "account",
@@ -110,6 +129,10 @@ const routes = [
           import(
             /* webpackChunkName: "settingAccount" */ "@/views/setting/Account.vue"
           ),
+        meta: {
+          auth: true,
+          ensureEmailIsVerified: true,
+        },
       },
       {
         path: "profile",
@@ -118,6 +141,10 @@ const routes = [
           import(
             /* webpackChunkName: "settingProfile" */ "@/views/setting/Profile.vue"
           ),
+        meta: {
+          auth: true,
+          ensureEmailIsVerified: true,
+        },
       },
     ],
   },
@@ -150,6 +177,15 @@ router.beforeEach((to, from, next) => {
         name: "Login",
       });
     }
+  }
+
+  if (meta.ensureEmailIsVerified) {
+    if (!store.state.auth.user.emailVerifiedAt) {
+      return next({
+        name: "EmailVerificationPending",
+      });
+    }
+    return next();
   }
 
   return next();
