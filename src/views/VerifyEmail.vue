@@ -49,6 +49,7 @@ export default {
   methods: {
     ...mapActions("auth", {
       verifyEmailAction: "verifyEmail",
+      refreshUser: "refreshUser",
     }),
 
     async verifyEmail() {
@@ -58,9 +59,7 @@ export default {
           email: this.form.email,
         });
         this.isTokenValid = true;
-        if (this.$refs.emailInput) {
-          this.$refs.emailInput.focus();
-        }
+        await this.refreshUser();
       } catch (e) {
         console.error(e);
         let message = "Reset token not valid";

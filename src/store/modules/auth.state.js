@@ -198,6 +198,11 @@ export default {
       }
     },
 
+    async refreshUser({ dispatch }, input) {
+      const user = await HttpService.authGet("/me", input);
+      dispatch("updateUser", user);
+    },
+
     async logout({ dispatch }) {
       await HttpService.authPost("/logout");
       dispatch("unsetTokens");
