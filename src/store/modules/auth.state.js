@@ -37,6 +37,7 @@ export default {
 
     unsetTokens({ commit }) {
       localStorage.clear();
+      window.location.reload();
       commit("unsetTokens");
     },
 

@@ -1140,6 +1140,14 @@ export default {
                   required: false,
                 },
               },
+              {
+                name: "emailVerifiedAt",
+                type: "date",
+                meta: {
+                  expose: false,
+                  required: false,
+                },
+              },
             ],
           },
         },
