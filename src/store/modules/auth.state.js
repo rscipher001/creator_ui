@@ -37,7 +37,6 @@ export default {
 
     unsetTokens({ commit }) {
       localStorage.clear();
-      window.location.reload();
       commit("unsetTokens");
     },
 
@@ -205,7 +204,11 @@ export default {
     },
 
     async logout({ dispatch }) {
-      await HttpService.authPost("/logout");
+      try {
+        await HttpService.authPost("/logout");
+      } catch (e) {
+        /***/
+      }
       dispatch("unsetTokens");
     },
   },

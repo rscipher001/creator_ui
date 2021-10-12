@@ -208,56 +208,6 @@
                 </b-field>
               </div>
             </div>
-
-            <div class="columns">
-              <div class="has-background-light m-1 column">
-                <h4 class="is-size-6">Name Column Details</h4>
-                <div class="columns">
-                  <div class="column">
-                    <b-field label="Min Length *">
-                      <b-input
-                        v-model="
-                          projectInput.auth.table.columns[0].meta.minLength
-                        "
-                      ></b-input>
-                    </b-field>
-                  </div>
-                  <div class="column">
-                    <b-field label="Max Length *">
-                      <b-input
-                        v-model="
-                          projectInput.auth.table.columns[0].meta.maxLength
-                        "
-                      ></b-input>
-                    </b-field>
-                  </div>
-                </div>
-              </div>
-
-              <div class="has-background-light m-1 column">
-                <h4 class="is-size-6">Email Column Details</h4>
-                <div class="columns">
-                  <div class="column">
-                    <b-field label="Min Length *">
-                      <b-input
-                        v-model="
-                          projectInput.auth.table.columns[1].meta.minLength
-                        "
-                      ></b-input>
-                    </b-field>
-                  </div>
-                  <div class="column">
-                    <b-field label="Max Length *">
-                      <b-input
-                        v-model="
-                          projectInput.auth.table.columns[1].meta.maxLength
-                        "
-                      ></b-input>
-                    </b-field>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </b-collapse>
@@ -1087,68 +1037,7 @@ export default {
             relations: [],
             name: "User",
             timestamps: true,
-            columns: [
-              {
-                name: "name",
-                type: "string",
-                meta: {
-                  displayName: "Name",
-                  required: true,
-                  minLength: 2,
-                  maxLength: 127,
-                },
-                input: {
-                  type: "input",
-                },
-              },
-              {
-                name: "email",
-                type: "string",
-                meta: {
-                  displayName: "Email",
-                  required: true,
-                  minLength: 6,
-                  maxLength: 127,
-                  email: true,
-                  unique: true,
-                },
-                input: {
-                  type: "input",
-                },
-              },
-              {
-                name: "password",
-                type: "string",
-                meta: {
-                  displayName: "Password",
-                  trim: true,
-                  secret: true,
-                  maxLength: 64,
-                  minLength: 8,
-                  dbLength: 255,
-                  required: true,
-                },
-                input: {
-                  type: "input",
-                },
-              },
-              {
-                name: "rememberMeToken",
-                type: "string",
-                meta: {
-                  expose: false,
-                  required: false,
-                },
-              },
-              {
-                name: "emailVerifiedAt",
-                type: "date",
-                meta: {
-                  expose: false,
-                  required: false,
-                },
-              },
-            ],
+            columns: [],
           },
         },
         tenantSettings: {

@@ -92,12 +92,13 @@ export default {
     async logout() {
       try {
         await this.logoutAction();
-        this.$router.push("/login");
-        this.$buefy.toast.open({
-          message: "Logout success",
-          type: "is-success",
-          position: "is-bottom-right",
-        });
+        window.location.reload();
+        // this.$router.push("/login");
+        // this.$buefy.toast.open({
+        //   message: "Logout success",
+        //   type: "is-success",
+        //   position: "is-bottom-right",
+        // });
       } catch (e) {
         this.$buefy.toast.open({
           message: "Logout failed",
