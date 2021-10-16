@@ -1,15 +1,21 @@
 <template>
   <section>
+    <b-loading is-full-page v-model="isLoading"></b-loading>
     <h1 class="is-size-5">Account Setting</h1>
     <hr class="my-2" />
-    <form method="POST" @submit.prevent="existingRequest">
+    <form method="POST" @submit.prevent="updateAccount">
       <div class="section" v-if="existingRequest">
         <p class="is-size-5 has-text-centered">
           Your request to change email to
           <span class="has-text-weight-bold">{{ existingRequest.email }}</span>
           is already pending,
-          <a class="has-text-weight-bold" href="#">Click here</a> to cancel that
-          request
+          <a
+            class="has-text-weight-bold"
+            @click.prevent="deleteAccount"
+            href="#"
+            >Click here</a
+          >
+          to cancel that request
         </p>
       </div>
       <b-field
@@ -60,8 +66,9 @@ export default {
 
   methods: {
     ...mapActions("auth", {
-      updateAccountAction: "updateAccount",
       getAccountAction: "getAccount",
+      updateAccountAction: "updateAccount",
+      deleteAccountAction: "deleteAccount",
     }),
 
     async getAccount() {
@@ -69,9 +76,26 @@ export default {
         const existingEmailUpdateRequest = await this.getAccountAction();
         this.existingRequest = existingEmailUpdateRequest;
       } catch (_) {
-        /**
-         * Ignore if this request fails, it is intentional
-         */
+        this.existingRequest = null;
+      }
+    },
+
+    async deleteAccount() {
+      try {
+        await this.deleteAccountAction();
+        this.$buefy.toast.open({
+          message: "Reset request cancelled successfully!",
+          type: "is-success",
+          position: "is-bottom-right",
+        });
+        this.getAccount();
+      } catch (_) {
+        console.error(_);
+        this.$buefy.toast.open({
+          message: "Unable to cancle reset request!",
+          type: "is-success",
+          position: "is-bottom-right",
+        });
       }
     },
 
@@ -85,6 +109,7 @@ export default {
           type: "is-success",
           position: "is-bottom-right",
         });
+        this.getAccount();
       } catch (e) {
         let message = "Unable to update account settings";
         if (e instanceof ValidationException) {
@@ -105,6 +130,14 @@ export default {
       loading: (state) => state.loading,
       user: (state) => state.user,
     }),
+
+    isLoading: function () {
+      return (
+        this.loading.getAccount ||
+        this.loading.updateAccount ||
+        this.loading.deleteAccount
+      );
+    },
   },
 };
 </script>
