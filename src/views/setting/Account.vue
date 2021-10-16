@@ -8,7 +8,7 @@
         <p class="is-size-5 has-text-centered">
           Your request to change email to
           <span class="has-text-weight-bold">{{ existingRequest.email }}</span>
-          is already pending,
+          is pending, check your email to confirm that request or
           <a
             class="has-text-weight-bold"
             @click.prevent="deleteAccount"
@@ -132,11 +132,7 @@ export default {
     }),
 
     isLoading: function () {
-      return (
-        this.loading.getAccount ||
-        this.loading.updateAccount ||
-        this.loading.deleteAccount
-      );
+      return this.loading.getAccount || this.loading.deleteAccount;
     },
   },
 };
