@@ -58,6 +58,12 @@ const routes = [
       import(/* webpackChunkName: "verifyEmail" */ "@/views/VerifyEmail.vue"),
   },
   {
+    path: "/emailUpdate",
+    name: "UpdateEmail",
+    component: () =>
+      import(/* webpackChunkName: "updateEmail" */ "@/views/UpdateEmail.vue"),
+  },
+  {
     path: "/email/verificationPending",
     name: "EmailVerificationPending",
     component: () =>
@@ -66,6 +72,7 @@ const routes = [
       ),
     meta: {
       auth: true,
+      emailUnverified: true,
     },
   },
   {
@@ -163,6 +170,10 @@ router.beforeEach((to, from, next) => {
   }
 
   const { meta } = to;
+
+  /**
+   * Redirect users to dashboard when logged in and tries to access login page
+   */
   if (meta.guest) {
     if (store.state.auth.token) {
       return next({
@@ -171,6 +182,9 @@ router.beforeEach((to, from, next) => {
     }
   }
 
+  /**
+   * Redirect users to login page when not logged in
+   */
   if (meta.auth) {
     if (!store.state.auth.token) {
       return next({
@@ -179,13 +193,26 @@ router.beforeEach((to, from, next) => {
     }
   }
 
+  /**
+   * Redirect users to dashboard when email verified but tries to access verification page
+   */
+  if (meta.emailUnverified) {
+    if (store.state.auth.user && store.state.auth.user.emailVerifiedAt) {
+      return next({
+        name: "Dashboard",
+      });
+    }
+  }
+
+  /**
+   * Redirect users to email verification page if not verified
+   */
   if (meta.ensureEmailIsVerified) {
     if (!store.state.auth.user.emailVerifiedAt) {
       return next({
         name: "EmailVerificationPending",
       });
     }
-    return next();
   }
 
   return next();

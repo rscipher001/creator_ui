@@ -12,11 +12,16 @@
         of your software and save time and money
       </p>
       <div class="mb-6 mt-3 buttons is-centered">
-        <b-button tag="router-link" to="/register" type="is-primary"
-          >Try now</b-button
-        >
-        <b-button tag="router-link" to="/login" type="is-secondary"
-          >Login</b-button
+        <template v-if="!user">
+          <b-button tag="router-link" to="/register" type="is-primary"
+            >Try now</b-button
+          >
+          <b-button tag="router-link" to="/login" type="is-secondary"
+            >Login</b-button
+          >
+        </template>
+        <b-button v-else tag="router-link" to="/dashboard" type="is-primary"
+          >Dashboard</b-button
         >
       </div>
       <div>
@@ -31,7 +36,18 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "Home",
+
+  computed: mapState("auth", {
+    user: (state) => state.user,
+    token: (state) => state.token,
+
+    currentRouteName() {
+      return this.$route.name;
+    },
+  }),
 };
 </script>

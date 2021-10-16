@@ -2,14 +2,21 @@
   <section>
     <h1 class="is-size-5">Account Setting</h1>
     <hr class="my-2" />
-    <form method="POST" @submit.prevent="updateAccount">
+    <form method="POST" @submit.prevent="existingRequest">
+      <div class="section" v-if="existingRequest">
+        <p class="is-size-5 has-text-centered">
+          Your request to change email to
+          <span class="has-text-weight-bold">{{ existingRequest.email }}</span>
+          is already pending,
+          <a class="has-text-weight-bold" href="#">Click here</a> to cancel that
+          request
+        </p>
+      </div>
       <b-field
+        v-else
         label="Email *"
         :type="errors.email ? 'is-danger' : ''"
-        :message="
-          errors.email ||
-          'Updating your email will mark your current email as unverfied'
-        "
+        :message="errors.email"
       >
         <b-input
           v-model="form.email"
@@ -38,11 +45,13 @@ export default {
   mounted() {
     if (this.$refs.accountSettingEmail) this.$refs.accountSettingEmail.focus();
     this.form.email = this.user.email;
+    this.getAccount();
   },
 
   data() {
     return {
       errors: {},
+      existingRequest: null,
       form: {
         email: "",
       },
@@ -52,7 +61,20 @@ export default {
   methods: {
     ...mapActions("auth", {
       updateAccountAction: "updateAccount",
+      getAccountAction: "getAccount",
     }),
+
+    async getAccount() {
+      try {
+        const existingEmailUpdateRequest = await this.getAccountAction();
+        this.existingRequest = existingEmailUpdateRequest;
+      } catch (_) {
+        /**
+         * Ignore if this request fails, it is intentional
+         */
+      }
+    },
+
     async updateAccount() {
       try {
         await this.updateAccountAction({

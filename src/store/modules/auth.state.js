@@ -9,7 +9,9 @@ export default {
       login: false,
       logout: false,
       register: false,
-      emailVerify: false,
+      getAccount: false,
+      verifyEmail: false,
+      updateEmail: false,
       updateProfile: false,
       updateAccount: false,
       forgotPasswordVerify: false,
@@ -136,6 +138,21 @@ export default {
       }
     },
 
+    async updateEmail({ commit }, input) {
+      commit("setLoading", { key: "updateEmail", value: true });
+      try {
+        const message = await HttpService.post("/email/update", input);
+        commit("setLoading", { key: "updateEmail", value: false });
+        return message;
+      } catch (e) {
+        commit("setLoading", { key: "updateEmail", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
     async forgotPasswordUpdate({ commit }, input) {
       commit("setLoading", { key: "forgotPasswordUpdate", value: true });
       try {
@@ -169,12 +186,41 @@ export default {
       }
     },
 
-    async updateAccount({ commit, dispatch }, input) {
+    /**
+     * Get update email request
+     */
+    async getAccount({ commit }) {
+      commit("setLoading", { key: "getAccount", value: true });
+      try {
+        const emailRequest = await HttpService.authGet("/profile/account");
+        commit("setLoading", { key: "getAccount", value: false });
+        return emailRequest;
+      } catch (e) {
+        commit("setLoading", { key: "getAccount", value: false });
+        throw e;
+      }
+    },
+
+    /**
+     * Delete update email request
+     */
+    async deleteAccount({ commit }) {
+      commit("setLoading", { key: "deleteAccount", value: true });
+      try {
+        await HttpService.authDelete("/profile/account");
+        commit("setLoading", { key: "deleteAccount", value: false });
+      } catch (e) {
+        commit("setLoading", { key: "deleteAccount", value: false });
+        throw e;
+      }
+    },
+
+    async updateAccount({ commit }, input) {
       commit("setLoading", { key: "updateAccount", value: true });
       try {
-        const user = await HttpService.authPost("/profile/account", input);
-        dispatch("updateUser", user);
+        const message = await HttpService.authPost("/profile/account", input);
         commit("setLoading", { key: "updateAccount", value: false });
+        return message;
       } catch (e) {
         commit("setLoading", { key: "updateAccount", value: false });
         if (e.response && e.response.status === 422) {

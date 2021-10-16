@@ -56,7 +56,7 @@
             Register
           </b-button>
         </div>
-        <b-navbar-dropdown v-else :label="user.email || user.name">
+        <b-navbar-dropdown v-else :label="user.name || user.email">
           <b-navbar-item
             tag="router-link"
             to="/setting"
@@ -93,12 +93,6 @@ export default {
       try {
         await this.logoutAction();
         window.location.reload();
-        // this.$router.push("/login");
-        // this.$buefy.toast.open({
-        //   message: "Logout success",
-        //   type: "is-success",
-        //   position: "is-bottom-right",
-        // });
       } catch (e) {
         this.$buefy.toast.open({
           message: "Logout failed",

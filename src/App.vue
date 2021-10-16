@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import NavBar from "@/components/NavBar.vue";
 import Footer from "@/components/Footer.vue";
 
@@ -18,13 +18,30 @@ export default {
     "nav-bar": NavBar,
     "app-footer": Footer,
   },
+
   mounted() {
     this.refreshUser();
   },
+
+  computed: mapState("auth", {
+    user: (state) => state.user,
+    token: (state) => state.token,
+
+    currentRouteName() {
+      return this.$route.name;
+    },
+  }),
+
   methods: {
     ...mapActions("auth", {
-      refreshUser: "refreshUser",
+      refreshUserAction: "refreshUser",
     }),
+
+    refreshUser() {
+      if (this.user) {
+        this.refreshUserAction();
+      }
+    },
   },
 };
 </script>
