@@ -55,14 +55,8 @@
 </template>
 
 <script>
-// import { mapState, mapActions } from "vuex";
-
 export default {
   computed: {
-    // ...mapState("auth", {
-    //   user: (state) => state.user,
-    //   token: (state) => state.token,
-    // }),
     currentRouteName() {
       return this.$route.name;
     },
