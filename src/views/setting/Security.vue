@@ -14,8 +14,8 @@
         <b-input
           v-model="form.oldPassword"
           ref="accountSettingOldPassword"
-          maxlength="127"
-          minlength="2"
+          maxlength="72"
+          minlength="8"
           type="password"
           password-reveal
           required
@@ -28,8 +28,8 @@
       >
         <b-input
           v-model="form.newPassword"
-          maxlength="127"
-          minlength="2"
+          maxlength="72"
+          minlength="8"
           type="password"
           password-reveal
           required
@@ -39,8 +39,8 @@
       <b-field label="Repeat Password *">
         <b-input
           v-model="form.newPasswordConfirmation"
-          maxlength="127"
-          minlength="2"
+          maxlength="72"
+          minlength="8"
           type="password"
           password-reveal
           required

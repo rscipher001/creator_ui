@@ -35,7 +35,7 @@
             <b-input
               v-model="form.password"
               type="password"
-              maxlength="64"
+              maxlength="72"
               password-reveal
               required
             ></b-input>

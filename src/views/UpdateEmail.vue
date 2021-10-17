@@ -14,7 +14,7 @@
           to="/login"
           type="is-primary"
         >
-          Back to Login?
+          Go to {{ user ? "Dashboard" : "Login" }}?
         </b-button>
       </div>
     </div>

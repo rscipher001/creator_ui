@@ -153,6 +153,18 @@ const routes = [
           ensureEmailIsVerified: true,
         },
       },
+      {
+        path: "/",
+        name: "SettingProfile",
+        component: () =>
+          import(
+            /* webpackChunkName: "settingProfile" */ "@/views/setting/Profile.vue"
+          ),
+        meta: {
+          auth: true,
+          ensureEmailIsVerified: true,
+        },
+      },
     ],
   },
 ];
