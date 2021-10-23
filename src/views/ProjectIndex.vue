@@ -27,13 +27,13 @@
             />
           </template>
           <b-dropdown-item
-            v-if="props.row.input.generate.api.generate"
+            v-if="props.row.input && props.row.input.generate.api.generate"
             @click="download(props.row.id, 'api')"
             aria-role="listitem"
             >Download API Code</b-dropdown-item
           >
           <b-dropdown-item
-            v-if="props.row.input.generate.spa.generate"
+            v-if="props.row.input && props.row.input.generate.spa.generate"
             @click="download(props.row.id, 'spa')"
             aria-role="listitem"
             >Download SPA Code</b-dropdown-item
