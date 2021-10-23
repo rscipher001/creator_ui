@@ -29,6 +29,7 @@
       </div>
       <div class="column">
         <b-image
+          v-if="user.avatar"
           :src="getAssetUrl(user.avatar.url) || 'https://picsum.photos/600/600'"
           alt="A random image"
           ratio="1by1"

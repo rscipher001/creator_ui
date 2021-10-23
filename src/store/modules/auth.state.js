@@ -256,7 +256,7 @@ export default {
       }
     },
 
-    async deleeAvatar({ commit, dispatch }, input) {
+    async deleteAvatar({ commit, dispatch }, input) {
       commit("setLoading", { key: "deleteAvatar", value: true });
       try {
         const user = await HttpService.authPost("/profile/avatar", input);
