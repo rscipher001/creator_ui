@@ -97,6 +97,76 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
+            <p class="card-header-title">Storage Drivers</p>
+            <a class="card-header-icon">
+              <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
+            </a>
+          </div>
+        </template>
+
+        <div class="card-content">
+          <div class="content">
+            <b-field>
+              <b-checkbox
+                native-value="local"
+                v-model="projectInput.storageDrivers"
+                >Local</b-checkbox
+              >
+            </b-field>
+            <b-field>
+              <b-checkbox
+                native-value="s3"
+                v-model="projectInput.storageDrivers"
+                >AWS S3</b-checkbox
+              >
+            </b-field>
+            <b-field>
+              <b-checkbox
+                native-value="gcs"
+                v-model="projectInput.storageDrivers"
+                >Google Cloud Storage</b-checkbox
+              >
+            </b-field>
+            <b-field
+              v-if="projectInput.storageDrivers.length"
+              label="Default Storage Driver"
+            >
+              <b-select v-model="projectInput.defaultStorageDriver" expanded>
+                <option
+                  v-if="projectInput.storageDrivers.includes('local')"
+                  value="local"
+                >
+                  Local
+                </option>
+                <option
+                  v-if="projectInput.storageDrivers.includes('s3')"
+                  value="s3"
+                >
+                  AWS S3
+                </option>
+                <option
+                  v-if="projectInput.storageDrivers.includes('gcs')"
+                  value="gcs"
+                >
+                  Google Cloud Storage
+                </option>
+              </b-select>
+            </b-field>
+          </div>
+        </div>
+      </b-collapse>
+
+      <b-collapse
+        class="card mt-5"
+        animation="slide"
+        aria-id="contentIdForA11y3"
+      >
+        <template #trigger="props">
+          <div
+            class="card-header"
+            role="button"
+            aria-controls="contentIdForA11y3"
+          >
             <p class="card-header-title">Auth</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
@@ -1000,8 +1070,11 @@ export default {
         database: "mysql",
         defaultMailer: "smtp",
         mailers: ["smtp"],
+        storageDrivers: ["local"],
+        defaultStorageDriver: "local",
         types: ["api"],
         camelCaseStrategy: true,
+
         tech: {
           backend: "adonis",
           frontend: "buefy",
