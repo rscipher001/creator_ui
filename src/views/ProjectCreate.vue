@@ -810,6 +810,22 @@
                     message="Change any to step value you want to use"
                   ></b-input>
                 </b-field>
+
+                <div v-if="column.type === 'file'" class="columns">
+                  <div class="column">
+                    <b-field label="Max Size (ex: 1mb, 512kb, etc)">
+                      <b-input v-model="column.meta.maxSize"></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column">
+                    <b-field
+                      label="Extensions separated by comma [jpg, gif, png, docs, etc]"
+                    >
+                      <b-input v-model="column.meta.extensions"></b-input>
+                    </b-field>
+                  </div>
+                </div>
+
                 <b-field
                   message="Default value will be set at database level"
                   label="Default Value"
@@ -1063,8 +1079,8 @@ export default {
   name: "ProjectCreate",
   data() {
     return {
-      types: ["string", "decimal", "integer", "date", "boolean"],
-      inputTypes: ["input", "select", "radio", "checkbox", "file"],
+      types: ["string", "decimal", "integer", "date", "boolean", "file"],
+      inputTypes: ["input", "select", "radio", "checkbox"], // String input types
       projectInput: {
         name: "",
         database: "mysql",
