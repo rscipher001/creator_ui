@@ -43,6 +43,18 @@ class HttpService {
     return data;
   }
 
+  async authMultipartPost(url, payload, queryParams) {
+    const token = localStorage.getItem("token");
+    const { data } = await this.client.post(url, payload, {
+      params: queryParams,
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  }
+
   async authPatch(url, payload, queryParams) {
     const token = localStorage.getItem("token");
     const { data } = await this.client.patch(url, payload, {

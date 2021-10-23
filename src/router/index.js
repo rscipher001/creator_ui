@@ -111,7 +111,6 @@ const routes = [
   },
   {
     path: "/setting",
-    name: "Setting",
     component: () =>
       import(/* webpackChunkName: "setting" */ "../views/Setting.vue"),
     meta: {
@@ -137,18 +136,6 @@ const routes = [
         component: () =>
           import(
             /* webpackChunkName: "settingAccount" */ "../views/setting/Account.vue"
-          ),
-        meta: {
-          auth: true,
-          ensureEmailIsVerified: true,
-        },
-      },
-      {
-        path: "profile",
-        name: "SettingProfile",
-        component: () =>
-          import(
-            /* webpackChunkName: "settingProfile" */ "../views/setting/Profile.vue"
           ),
         meta: {
           auth: true,

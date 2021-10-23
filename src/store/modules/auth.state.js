@@ -12,6 +12,7 @@ export default {
       getAccount: false,
       verifyEmail: false,
       updateEmail: false,
+      updateAvatar: false,
       updateProfile: false,
       updateAccount: false,
       forgotPasswordVerify: false,
@@ -24,6 +25,13 @@ export default {
   }),
 
   actions: {
+    bootstrap({ state, dispatch, commit }) {
+      for (const key in state.loading) {
+        commit("setLoading", { key: key, value: false });
+      }
+      dispatch("refreshUser");
+    },
+
     setUserToken({ commit }, { user, token }) {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
@@ -223,6 +231,39 @@ export default {
         return message;
       } catch (e) {
         commit("setLoading", { key: "updateAccount", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async updateAvatar({ commit, dispatch }, input) {
+      commit("setLoading", { key: "updateAvatar", value: true });
+      try {
+        const user = await HttpService.authMultipartPost(
+          "/profile/avatar",
+          input
+        );
+        dispatch("updateUser", user);
+        commit("setLoading", { key: "updateAvatar", value: false });
+      } catch (e) {
+        commit("setLoading", { key: "updateAvatar", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async deleeAvatar({ commit, dispatch }, input) {
+      commit("setLoading", { key: "deleteAvatar", value: true });
+      try {
+        const user = await HttpService.authPost("/profile/avatar", input);
+        dispatch("updateUser", user);
+        commit("setLoading", { key: "deleteAvatar", value: false });
+      } catch (e) {
+        commit("setLoading", { key: "deleteAvatar", value: false });
         if (e.response && e.response.status === 422) {
           throw new ValidationException(e.message, e.response.data.errors);
         }

@@ -1,13 +1,13 @@
 <template>
   <section class="mt-4">
-    <div class="container is-max-desktop">
+    <div class="container">
       <div class="columns">
         <aside class="box column is-3 has-background-white">
           <p class="menu-label">General</p>
           <ul class="menu-list">
             <b-button
               tag="router-link"
-              to="/setting/profile"
+              to="/setting/"
               :active="currentRouteName === 'SettingProfile'"
               :type="
                 currentRouteName === 'SettingProfile'
