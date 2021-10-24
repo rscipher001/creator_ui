@@ -602,6 +602,19 @@
               <b-checkbox v-model="table.singleton">Singleton</b-checkbox>
             </b-field>
 
+            <b-field label="Columns to show on Listing">
+              <b-taginput
+                v-model="table.indexColumns"
+                ellipsis
+                autocomplete
+                icon="label"
+                placeholder="Select columns"
+                aria-close-label="Remove this column"
+                :data="getColumnsForTable(table)"
+              >
+              </b-taginput>
+            </b-field>
+
             <b-field label="Parent *" v-if="webOrApi && table.singleton">
               <b-select expanded v-model="table.parent">
                 <option :value="null">No Parent(Global Singleton)</option>
@@ -1178,6 +1191,7 @@ export default {
         singleton: false,
         parent: null,
         routeParents: [],
+        indexColumns: [],
         operations: [
           "index",
           "store",
@@ -1262,6 +1276,10 @@ export default {
       return table.relations.filter(
         (relation) => relation.type === "belongsTo"
       );
+    },
+
+    getColumnsForTable(table) {
+      return table.columns.map((column) => column.name);
     },
   },
 
