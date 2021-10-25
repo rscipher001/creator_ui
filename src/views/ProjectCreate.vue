@@ -832,9 +832,14 @@
                   </div>
                   <div class="column">
                     <b-field
-                      label="Extensions separated by comma [jpg, gif, png, docs, etc]"
+                      label="Extensions filter comma [jpg, gif, png, docs, etc]"
                     >
-                      <b-input v-model="column.meta.extensions"></b-input>
+                      <b-taginput
+                        v-model="column.meta.extensions"
+                        placeholder="Extensions"
+                        aria-close-label="Remove this extension"
+                      >
+                      </b-taginput>
                     </b-field>
                   </div>
                 </div>
@@ -1184,7 +1189,7 @@ export default {
       this.projectInput.tables.push({
         name: `Table ${this.projectInput.tables.length + 1}`,
         timestamps: true,
-        generateRoute: false,
+        generateRoute: true,
         skipModel: false,
         skipController: false,
         skipMigration: false,
