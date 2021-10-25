@@ -33,46 +33,46 @@ class HttpService {
   }
 
   async authPost(url, payload, queryParams) {
-    const token = localStorage.getItem("token");
+    const authToken = localStorage.getItem("token");
+    const headers = {
+      authorization: `Bearer ${authToken}`,
+    };
+    if (payload && payload instanceof FormData) {
+      headers["Content-Type"] = "multipart/form-data";
+    }
     const { data } = await this.client.post(url, payload, {
       params: queryParams,
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-    return data;
-  }
-
-  async authMultipartPost(url, payload, queryParams) {
-    const token = localStorage.getItem("token");
-    const { data } = await this.client.post(url, payload, {
-      params: queryParams,
-      headers: {
-        authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
+      headers,
     });
     return data;
   }
 
   async authPatch(url, payload, queryParams) {
-    const token = localStorage.getItem("token");
+    const authToken = localStorage.getItem("token");
+    const headers = {
+      authorization: `Bearer ${authToken}`,
+    };
+    if (payload && payload instanceof FormData) {
+      headers["Content-Type"] = "multipart/form-data";
+    }
     const { data } = await this.client.patch(url, payload, {
       params: queryParams,
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
+      headers,
     });
     return data;
   }
 
   async authPut(url, payload, queryParams) {
-    const token = localStorage.getItem("token");
+    const authToken = localStorage.getItem("token");
+    const headers = {
+      authorization: `Bearer ${authToken}`,
+    };
+    if (payload && payload instanceof FormData) {
+      headers["Content-Type"] = "multipart/form-data";
+    }
     const { data } = await this.client.put(url, payload, {
       params: queryParams,
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
+      headers,
     });
     return data;
   }

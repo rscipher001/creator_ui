@@ -29,7 +29,9 @@ export default {
       for (const key in state.loading) {
         commit("setLoading", { key: key, value: false });
       }
-      dispatch("refreshUser");
+      if (state.user) {
+        dispatch("refreshUser");
+      }
     },
 
     setUserToken({ commit }, { user, token }) {
@@ -241,10 +243,7 @@ export default {
     async updateAvatar({ commit, dispatch }, input) {
       commit("setLoading", { key: "updateAvatar", value: true });
       try {
-        const user = await HttpService.authMultipartPost(
-          "/profile/avatar",
-          input
-        );
+        const user = await HttpService.authPost("/profile/avatar", input);
         dispatch("updateUser", user);
         commit("setLoading", { key: "updateAvatar", value: false });
       } catch (e) {
@@ -286,8 +285,12 @@ export default {
     },
 
     async refreshUser({ dispatch }, input) {
-      const user = await HttpService.authGet("/me", input);
-      dispatch("updateUser", user);
+      try {
+        const user = await HttpService.authGet("/me", input);
+        dispatch("updateUser", user);
+      } catch (e) {
+        dispatch("unsetTokens");
+      }
     },
 
     async logout({ dispatch }) {
