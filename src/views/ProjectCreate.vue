@@ -97,7 +97,7 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
-            <p class="card-header-title">Storage Drivers</p>
+            <p class="card-header-title">Storage (File Upload)</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
             </a>
@@ -109,49 +109,58 @@
             <b-field>
               <b-checkbox
                 native-value="local"
-                v-model="projectInput.storageDrivers"
-                >Local</b-checkbox
+                v-model="projectInput.storageEnabled"
+                >Storage Enabled</b-checkbox
               >
             </b-field>
-            <b-field>
-              <b-checkbox
-                native-value="s3"
-                v-model="projectInput.storageDrivers"
-                >AWS S3</b-checkbox
+            <template v-if="projectInput.storageEnabled">
+              <b-field label="Select Storage Drivers">
+                <b-checkbox
+                  native-value="local"
+                  v-model="projectInput.storageDrivers"
+                  >Local</b-checkbox
+                >
+              </b-field>
+              <b-field>
+                <b-checkbox
+                  native-value="s3"
+                  v-model="projectInput.storageDrivers"
+                  >AWS S3</b-checkbox
+                >
+              </b-field>
+              <b-field>
+                <b-checkbox
+                  native-value="gcs"
+                  v-model="projectInput.storageDrivers"
+                  >Google Cloud Storage</b-checkbox
+                >
+              </b-field>
+              <b-field
+                v-if="projectInput.storageDrivers.length"
+                label="Default Storage Driver"
               >
-            </b-field>
-            <b-field>
-              <b-checkbox
-                native-value="gcs"
-                v-model="projectInput.storageDrivers"
-                >Google Cloud Storage</b-checkbox
-              >
-            </b-field>
-            <b-field
-              v-if="projectInput.storageDrivers.length"
-              label="Default Storage Driver"
-            >
-              <b-select v-model="projectInput.defaultStorageDriver" expanded>
-                <option
-                  v-if="projectInput.storageDrivers.includes('local')"
-                  value="local"
-                >
-                  Local
-                </option>
-                <option
-                  v-if="projectInput.storageDrivers.includes('s3')"
-                  value="s3"
-                >
-                  AWS S3
-                </option>
-                <option
-                  v-if="projectInput.storageDrivers.includes('gcs')"
-                  value="gcs"
-                >
-                  Google Cloud Storage
-                </option>
-              </b-select>
-            </b-field>
+                <b-select v-model="projectInput.defaultStorageDriver" expanded>
+                  <option
+                    v-if="projectInput.storageDrivers.includes('local')"
+                    value="local"
+                  >
+                    Local
+                  </option>
+                  <option
+                    v-if="projectInput.storageDrivers.includes('s3')"
+                    value="s3"
+                  >
+                    AWS S3
+                  </option>
+                  <option
+                    v-if="projectInput.storageDrivers.includes('gcs')"
+                    value="gcs"
+                  >
+                    Google Cloud Storage
+                  </option>
+                </b-select>
+              </b-field>
+            </template>
           </div>
         </div>
       </b-collapse>
@@ -303,52 +312,68 @@
         <div class="card-content">
           <div class="content">
             <b-field>
-              <b-checkbox native-value="smtp" v-model="projectInput.mailers"
-                >SMTP</b-checkbox
+              <b-checkbox v-model="projectInput.mailEnabled"
+                >Enable Mailer</b-checkbox
               >
             </b-field>
-            <b-field>
-              <b-checkbox native-value="ses" v-model="projectInput.mailers"
-                >SES</b-checkbox
-              >
-            </b-field>
-            <b-field>
-              <b-checkbox native-value="mailgun" v-model="projectInput.mailers"
-                >Mailgun</b-checkbox
-              >
-            </b-field>
-            <b-field>
-              <b-checkbox
-                native-value="sparkpost"
-                v-model="projectInput.mailers"
-                >Sparkpost</b-checkbox
-              >
-            </b-field>
-            <b-field v-if="projectInput.mailers.length" label="Default Mailer">
-              <b-select v-model="projectInput.defaultMailer" expanded>
-                <option
-                  v-if="projectInput.mailers.includes('smtp')"
-                  value="smtp"
+
+            <template v-if="projectInput.mailEnabled">
+              <b-field label="Select Mail Drivers">
+                <b-checkbox native-value="smtp" v-model="projectInput.mailers"
+                  >SMTP</b-checkbox
                 >
-                  SMTP
-                </option>
-                <option v-if="projectInput.mailers.includes('ses')" value="ses">
-                  SES
-                </option>
-                <option
-                  v-if="projectInput.mailers.includes('mailgun')"
-                  value="mailgun"
+              </b-field>
+              <b-field>
+                <b-checkbox native-value="ses" v-model="projectInput.mailers"
+                  >SES</b-checkbox
                 >
-                  Mailgun
-                </option>
-                <option
-                  v-if="projectInput.mailers.includes('sparkpost')"
-                  value="sparkpost"
+              </b-field>
+              <b-field>
+                <b-checkbox
+                  native-value="mailgun"
+                  v-model="projectInput.mailers"
+                  >Mailgun</b-checkbox
                 >
-                  Sparkpost
-                </option>
-              </b-select>
-            </b-field>
+              </b-field>
+              <b-field>
+                <b-checkbox
+                  native-value="sparkpost"
+                  v-model="projectInput.mailers"
+                  >Sparkpost</b-checkbox
+                >
+              </b-field>
+              <b-field
+                v-if="projectInput.mailers.length"
+                label="Default Mailer"
+              >
+                <b-select v-model="projectInput.defaultMailer" expanded>
+                  <option
+                    v-if="projectInput.mailers.includes('smtp')"
+                    value="smtp"
+                  >
+                    SMTP
+                  </option>
+                  <option
+                    v-if="projectInput.mailers.includes('ses')"
+                    value="ses"
+                  >
+                    SES
+                  </option>
+                  <option
+                    v-if="projectInput.mailers.includes('mailgun')"
+                    value="mailgun"
+                  >
+                    Mailgun
+                  </option>
+                  <option
+                    v-if="projectInput.mailers.includes('sparkpost')"
+                    value="sparkpost"
+                  >
+                    Sparkpost
+                  </option>
+                </b-select>
+              </b-field>
+            </template>
           </div>
         </div>
       </b-collapse>
@@ -1108,8 +1133,10 @@ export default {
       projectInput: {
         name: "",
         database: "mysql",
+        mailEnabled: false,
         defaultMailer: "smtp",
         mailers: ["smtp"],
+        storageEnabled: false,
         storageDrivers: ["local"],
         defaultStorageDriver: "local",
         types: ["api"],
