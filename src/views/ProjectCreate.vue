@@ -1173,6 +1173,10 @@ export default {
           passwordReset: true,
           passwordChange: true,
           table: {
+            generateRoute: false,
+            generateController: false,
+            generateModel: false,
+            generateMigration: false,
             operations: [],
             relations: [],
             name: "User",
