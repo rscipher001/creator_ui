@@ -43,9 +43,13 @@
             </a>
           </b-upload>
         </b-field>
-        <b-button @click="deleteAvatar" type="is-ghost is-fullwidth"
-          >Delete Avatar</b-button
+        <b-button
+          v-if="user.avatar"
+          @click="deleteAvatar"
+          type="is-ghost is-fullwidth"
         >
+          Delete Avatar
+        </b-button>
       </div>
     </div>
   </section>
