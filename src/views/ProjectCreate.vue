@@ -302,6 +302,70 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
+            <p class="card-header-title">RBAC</p>
+            <a class="card-header-icon">
+              <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
+            </a>
+          </div>
+        </template>
+
+        <div class="card-content">
+          <div class="content">
+            <b-field>
+              <b-checkbox v-model="projectInput.rbac.enabled">
+                Enabled RBAC (Role &amp; permission system)
+              </b-checkbox>
+            </b-field>
+
+            <b-field v-if="projectInput.rbac.enabled">
+              <b-checkbox v-model="projectInput.rbac.multiple">
+                Can one user have multiple roles?
+              </b-checkbox>
+            </b-field>
+
+            <b-field v-if="projectInput.rbac.enabled">
+              <b-checkbox v-model="projectInput.rbac.canAdminCreateRoles">
+                Can admin create roles?
+              </b-checkbox>
+            </b-field>
+
+            <b-field v-if="projectInput.rbac.enabled">
+              <b-checkbox v-model="projectInput.rbac.canAdminCreatePermissions">
+                Can admin create permissions?
+              </b-checkbox>
+            </b-field>
+
+            <b-field
+              v-if="
+                projectInput.rbac.enabled &&
+                !projectInput.rbac.canAdminCreateRoles
+              "
+              label="Roles"
+            >
+              <b-taginput
+                v-model="projectInput.rbac.roles"
+                ellipsis
+                icon="label"
+                placeholder="Roles"
+                aria-close-label="Remove this role"
+              >
+              </b-taginput>
+            </b-field>
+          </div>
+        </div>
+      </b-collapse>
+
+      <b-collapse
+        class="card mt-5"
+        animation="slide"
+        aria-id="contentIdForA11y3"
+      >
+        <template #trigger="props">
+          <div
+            class="card-header"
+            role="button"
+            aria-controls="contentIdForA11y3"
+          >
             <p class="card-header-title">Mailer</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
@@ -613,7 +677,7 @@
               </b-checkbox>
             </b-field>
 
-            <b-field v-if="projectINput.generate.spa">
+            <b-field v-if="projectInput.generate.spa">
               <b-checkbox v-model="table.generateUI"> Generate UI </b-checkbox>
             </b-field>
 
@@ -633,17 +697,40 @@
               <b-checkbox v-model="table.singleton">Singleton</b-checkbox>
             </b-field>
 
-            <b-field label="Columns to show on Listing">
-              <b-taginput
-                v-model="table.indexColumns"
-                ellipsis
-                autocomplete
-                icon="label"
-                placeholder="Select columns"
-                aria-close-label="Remove this column"
-                :data="getColumnsForTable(table)"
-              >
-              </b-taginput>
+            <b-field v-if="webOrApi" label="Basic Operations">
+              <b-checkbox v-model="table.operationsMap.index">
+                Index <span class="has-text-grey">(List)</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operationsMap.store">
+                Store <span class="has-text-grey">(Save)</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operationsMap.update">
+                Update
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operationsMap.destroy">
+                Destroy <span class="has-text-grey">(Delete One)</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operationsMap.storeMany">
+                Store Many
+                <span class="has-text-grey">(Can be used for bulk upload)</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operationsMap.destroyMany">
+                Destroy Many
+                <span class="has-text-grey"
+                  >(Can be used or selecting and deleting multiple items at one
+                  time)</span
+                >
+              </b-checkbox>
             </b-field>
 
             <b-field label="Parent *" v-if="webOrApi && table.singleton">
@@ -658,6 +745,19 @@
                   {{ routeBelongsTo.withModel }}
                 </option>
               </b-select>
+            </b-field>
+
+            <b-field label="Columns to show on Listing">
+              <b-taginput
+                v-model="table.indexColumns"
+                ellipsis
+                autocomplete
+                icon="label"
+                placeholder="Select columns"
+                aria-close-label="Remove this column"
+                :data="getColumnsForTable(table)"
+              >
+              </b-taginput>
             </b-field>
 
             <div
@@ -676,6 +776,58 @@
                       {{ routeBelongsTo.withModel }}
                     </option>
                   </b-select>
+                </b-field>
+              </div>
+            </div>
+
+            <div class="level">
+              <div class="level-left is-size-4">Custom Operations</div>
+              <div class="level-right">
+                <b-button @click="addCustomOperation(table)" type="is-light">
+                  Add New Operation
+                </b-button>
+              </div>
+            </div>
+            <div
+              class="columns"
+              v-for="(
+                customOperation, customOperationIndex
+              ) in table.customOperations"
+              :key="'customOperationIndex' + customOperationIndex"
+            >
+              <div class="column">
+                <b-field label="Operation Method *">
+                  <b-select v-model="customOperation.method" expanded>
+                    <option>GET</option>
+                    <option>POST</option>
+                    <option>PUT</option>
+                    <option>PATCH</option>
+                    <option>DELETE</option>
+                  </b-select>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field
+                  label="Operation Name *"
+                  message="ex: resolveReport for report resouce"
+                >
+                  <b-input v-model="customOperation.name"></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Item id required">
+                  <b-checkbox v-model="customOperation.singleton"
+                    >Item id required?</b-checkbox
+                  >
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Remove">
+                  <b-button
+                    @click="removeCustomOperation(table, customOperationIndex)"
+                    class="is-danger is-light is-fullwidth"
+                    >Delete this operation?</b-button
+                  >
                 </b-field>
               </div>
             </div>
@@ -1130,6 +1282,11 @@ export default {
     return {
       types: ["string", "decimal", "integer", "date", "boolean", "file"],
       inputTypes: ["input", "select", "radio", "checkbox"], // String input types
+      customOperation: {
+        name: "",
+        method: "",
+        singular: "", // If item id is required for this operation
+      },
       projectInput: {
         name: "",
         database: "mysql",
@@ -1189,6 +1346,14 @@ export default {
           tenant: 0,
           table: null,
         },
+        rbac: {
+          enabled: false,
+          multiple: false,
+          canAdminCreateRoles: false,
+          canAdminCreatePermissions: false,
+          roles: ["admin"], // When admin can't create roles, they are hardcoded
+          permissionMatrix: [], // Which role has which permission on which resource
+        },
         tables: [],
       },
     };
@@ -1223,6 +1388,7 @@ export default {
     },
 
     addTable() {
+      console.log("Adding new table");
       this.projectInput.tables.push({
         name: `Table ${this.projectInput.tables.length + 1}`,
         timestamps: true,
@@ -1235,6 +1401,14 @@ export default {
         parent: null,
         routeParents: [],
         indexColumns: [],
+        operationsMap: {
+          index: true,
+          store: true,
+          update: true,
+          destroy: true,
+          storeMany: true,
+          destroyMany: true,
+        },
         operations: [
           "index",
           "store",
@@ -1243,6 +1417,7 @@ export default {
           "storeMany",
           "destroyMany",
         ],
+        customOperations: [], // custom operations are based on resource, eg: ticket can have resolve operation.
         columns: [],
         relations: [],
       });
@@ -1254,6 +1429,10 @@ export default {
 
     removeRelation(table, relationIndex) {
       table.relations.splice(relationIndex, 1);
+    },
+
+    removeCustomOperation(table, customOperationIndex) {
+      table.customOperations.splice(customOperationIndex, 1);
     },
 
     removeColumn(table, columnIndex) {
@@ -1286,6 +1465,14 @@ export default {
             options: [],
           },
         },
+      });
+    },
+
+    addCustomOperation(table) {
+      table.customOperations.push({
+        name: "",
+        method: "GET",
+        singular: false,
       });
     },
 
