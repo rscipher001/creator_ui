@@ -698,33 +698,33 @@
             </b-field>
 
             <b-field v-if="webOrApi" label="Basic Operations">
-              <b-checkbox v-model="table.operationsMap.index">
+              <b-checkbox v-model="table.operations.index">
                 Index <span class="has-text-grey">(List)</span>
               </b-checkbox>
             </b-field>
             <b-field v-if="webOrApi">
-              <b-checkbox v-model="table.operationsMap.store">
+              <b-checkbox v-model="table.operations.store">
                 Store <span class="has-text-grey">(Save)</span>
               </b-checkbox>
             </b-field>
             <b-field v-if="webOrApi">
-              <b-checkbox v-model="table.operationsMap.update">
+              <b-checkbox v-model="table.operations.update">
                 Update
               </b-checkbox>
             </b-field>
             <b-field v-if="webOrApi">
-              <b-checkbox v-model="table.operationsMap.destroy">
+              <b-checkbox v-model="table.operations.destroy">
                 Destroy <span class="has-text-grey">(Delete One)</span>
               </b-checkbox>
             </b-field>
             <b-field v-if="webOrApi">
-              <b-checkbox v-model="table.operationsMap.storeMany">
+              <b-checkbox v-model="table.operations.storeMany">
                 Store Many
                 <span class="has-text-grey">(Can be used for bulk upload)</span>
               </b-checkbox>
             </b-field>
             <b-field v-if="webOrApi">
-              <b-checkbox v-model="table.operationsMap.destroyMany">
+              <b-checkbox v-model="table.operations.destroyMany">
                 Destroy Many
                 <span class="has-text-grey"
                   >(Can be used or selecting and deleting multiple items at one
@@ -1334,7 +1334,6 @@ export default {
             generateController: false,
             generateModel: false,
             generateMigration: false,
-            operations: [],
             relations: [],
             name: "User",
             timestamps: true,
@@ -1401,7 +1400,7 @@ export default {
         parent: null,
         routeParents: [],
         indexColumns: [],
-        operationsMap: {
+        operations: {
           index: true,
           store: true,
           update: true,
@@ -1409,14 +1408,6 @@ export default {
           storeMany: true,
           destroyMany: true,
         },
-        operations: [
-          "index",
-          "store",
-          "update",
-          "destroy",
-          "storeMany",
-          "destroyMany",
-        ],
         customOperations: [], // custom operations are based on resource, eg: ticket can have resolve operation.
         columns: [],
         relations: [],
