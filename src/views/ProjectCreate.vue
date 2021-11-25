@@ -816,7 +816,7 @@
               </div>
               <div class="column">
                 <b-field label="Item id required">
-                  <b-checkbox v-model="customOperation.singleton"
+                  <b-checkbox v-model="customOperation.singular"
                     >Item id required?</b-checkbox
                   >
                 </b-field>
@@ -1282,11 +1282,6 @@ export default {
     return {
       types: ["string", "decimal", "integer", "date", "boolean", "file"],
       inputTypes: ["input", "select", "radio", "checkbox"], // String input types
-      customOperation: {
-        name: "",
-        method: "",
-        singular: "", // If item id is required for this operation
-      },
       projectInput: {
         name: "",
         database: "mysql",
