@@ -9,6 +9,14 @@
       </div>
     </div>
 
+    <b-notification
+      type="is-info"
+      aria-close-label="Close notification"
+      role="alert"
+    >
+      User <strong>singular pascal case</strong> to avoid build failure
+    </b-notification>
+
     <form method="POST" @submit.prevent="store">
       <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3">
         <template #trigger="props">
@@ -335,13 +343,7 @@
               </b-checkbox>
             </b-field>
 
-            <b-field
-              v-if="
-                projectInput.rbac.enabled &&
-                !projectInput.rbac.canAdminCreateRoles
-              "
-              label="Roles"
-            >
+            <b-field v-if="projectInput.rbac.enabled" label="Roles">
               <b-taginput
                 v-model="projectInput.rbac.roles"
                 ellipsis
@@ -351,6 +353,86 @@
               >
               </b-taginput>
             </b-field>
+
+            <b-field v-if="projectInput.rbac.enabled" label="Permissions">
+              <b-taginput
+                v-model="projectInput.rbac.permissions"
+                ellipsis
+                icon="label"
+                placeholder="Permissions"
+                aria-close-label="Remove this permission"
+              >
+              </b-taginput>
+            </b-field>
+
+            <b-button
+              @click="generatePermissionsAndMatrix"
+              v-if="projectInput.rbac.enabled"
+              type="is-light"
+            >
+              Generate All Permissions
+            </b-button>
+
+            <template
+              v-if="
+                Array.isArray(projectInput.rbac.permissions) &&
+                projectInput.rbac.permissions.length
+              "
+            >
+              <h4 class="mt-5">Role &amp; Permission Matrix</h4>
+              <table bordered>
+                <thead>
+                  <tr>
+                    <th>Permission</th>
+                    <th v-for="role in projectInput.rbac.roles" :key="role">
+                      {{ role }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="permission in projectInput.rbac.permissions"
+                    :key="permission"
+                  >
+                    <td>{{ permission }}</td>
+                    <td
+                      v-for="(role, roleIndex) in projectInput.rbac.roles"
+                      :key="role"
+                    >
+                      <b-button
+                        type="is-ghost"
+                        @click="
+                          togglePermission(
+                            projectInput.rbac.matrix[roleIndex],
+                            permission
+                          )
+                        "
+                      >
+                        <b-icon
+                          :icon="
+                            hasPermission(
+                              projectInput.rbac.matrix[roleIndex],
+                              permission
+                            )
+                              ? 'checkbox-marked'
+                              : 'close-box'
+                          "
+                          :type="
+                            hasPermission(
+                              projectInput.rbac.matrix[roleIndex],
+                              permission
+                            )
+                              ? 'is-success'
+                              : 'is-danger'
+                          "
+                          size="is-medium"
+                        ></b-icon>
+                      </b-button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </template>
           </div>
         </div>
       </b-collapse>
@@ -1354,8 +1436,9 @@ export default {
           multiple: false,
           canAdminCreateRoles: false,
           canAdminCreatePermissions: false,
-          roles: ["admin"], // When admin can't create roles, they are hardcoded
-          permissionMatrix: [], // Which role has which permission on which resource
+          roles: ["Admin"], // When admin can't create roles, they are hardcoded
+          permissions: [], // List of all permissions
+          matrix: [[]],
         },
         tables: [],
       },
@@ -1369,7 +1452,15 @@ export default {
 
     async store() {
       try {
-        await this.storeAction(this.projectInput);
+        // Pre process input
+        // Deep copy input
+        const input = JSON.parse(JSON.stringify(this.projectInput));
+        const matrix = {};
+        input.rbac.matrix = input.rbac.matrix.map((permissions, index) => {
+          matrix[input.rbac.roles[index]] = permissions;
+        });
+        input.rbac.matrix = matrix;
+        await this.storeAction(input);
         this.$router.push("/project");
         this.$buefy.toast.open({
           message: "project created",
@@ -1391,9 +1482,8 @@ export default {
     },
 
     addTable() {
-      console.log("Adding new table");
       this.projectInput.tables.push({
-        name: `Table ${this.projectInput.tables.length + 1}`,
+        name: "NewTable",
         timestamps: true,
         generateRoute: true,
         generateModel: true,
@@ -1505,6 +1595,56 @@ export default {
 
     getColumnsForTable(table) {
       return table.columns.map((column) => column.name);
+    },
+
+    togglePermission(role, permission) {
+      if (role.includes(permission)) {
+        role.splice(role.indexOf(permission), 1);
+      } else {
+        role.push(permission);
+      }
+    },
+
+    hasPermission(role, permission) {
+      return role.includes(permission);
+    },
+
+    generatePermissionsAndMatrix() {
+      const permissions = [];
+      this.projectInput.tables.forEach((table) => {
+        const operations = table.operations;
+        if (operations.index) {
+          permissions.push(`${table.name}:index`);
+        }
+        if (operations.store) {
+          permissions.push(`${table.name}:store`);
+        }
+        if (operations.update) {
+          permissions.push(`${table.name}:update`);
+        }
+        if (operations.destroy) {
+          permissions.push(`${table.name}:destroy`);
+        }
+        if (operations.storeMany) {
+          permissions.push(`${table.name}:storeMany`);
+        }
+        if (operations.destroyMany) {
+          permissions.push(`${table.name}:destroyMany`);
+        }
+        if (
+          Array.isArray(table.customOperations) &&
+          table.customOperations.length
+        ) {
+          table.customOperations.map((customOperation) => {
+            permissions.push(`${table.name}:${customOperation.name}`);
+          });
+        }
+      });
+      this.projectInput.rbac.permissions = permissions;
+      this.projectInput.rbac.matrix.pop();
+      this.projectInput.rbac.roles.forEach(() =>
+        this.projectInput.rbac.matrix.push([])
+      );
     },
   },
 
