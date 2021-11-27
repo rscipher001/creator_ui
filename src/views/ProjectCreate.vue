@@ -3,7 +3,7 @@
     <div class="level">
       <div class="level-left is-size-3">Create Project</div>
       <div class="level-right">
-        <b-button tag="router-link" to="/dashboard" type="is-white">
+        <b-button tag="router-link" to="/dashboard" type="is-light">
           Back
         </b-button>
       </div>
@@ -124,21 +124,21 @@
             <template v-if="projectInput.storageEnabled">
               <b-field label="Select Storage Drivers">
                 <b-checkbox
-                  native-value="local"
+                  native-value="Local"
                   v-model="projectInput.storageDrivers"
                   >Local</b-checkbox
                 >
               </b-field>
               <b-field>
                 <b-checkbox
-                  native-value="s3"
+                  native-value="S3"
                   v-model="projectInput.storageDrivers"
                   >AWS S3</b-checkbox
                 >
               </b-field>
               <b-field>
                 <b-checkbox
-                  native-value="gcs"
+                  native-value="GCS"
                   v-model="projectInput.storageDrivers"
                   >Google Cloud Storage</b-checkbox
                 >
@@ -149,20 +149,20 @@
               >
                 <b-select v-model="projectInput.defaultStorageDriver" expanded>
                   <option
-                    v-if="projectInput.storageDrivers.includes('local')"
-                    value="local"
+                    v-if="projectInput.storageDrivers.includes('Local')"
+                    value="Local"
                   >
                     Local
                   </option>
                   <option
-                    v-if="projectInput.storageDrivers.includes('s3')"
-                    value="s3"
+                    v-if="projectInput.storageDrivers.includes('S3')"
+                    value="S3"
                   >
                     AWS S3
                   </option>
                   <option
-                    v-if="projectInput.storageDrivers.includes('gcs')"
-                    value="gcs"
+                    v-if="projectInput.storageDrivers.includes('GCS')"
+                    value="GCS"
                   >
                     Google Cloud Storage
                   </option>
@@ -248,10 +248,10 @@
               <div class="column">
                 <b-field label="Relation Type *">
                   <b-select v-model="relation.type" expanded required>
-                    <option value="hasOne">Has One</option>
-                    <option value="hasMany">Has Many</option>
-                    <option value="manyToMany">Many to many</option>
-                    <option value="belongsTo">Belongs To</option>
+                    <option value="HasOne">Has One</option>
+                    <option value="HasMany">Has Many</option>
+                    <option value="ManyToMany">Many To Many</option>
+                    <option value="BelongsTo">Belongs To</option>
                   </b-select>
                 </b-field>
               </div>
@@ -326,7 +326,7 @@
             </b-field>
 
             <b-field v-if="projectInput.rbac.enabled">
-              <b-checkbox v-model="projectInput.rbac.multiple">
+              <b-checkbox v-model="projectInput.rbac.multipleRoles">
                 Can one user have multiple roles?
               </b-checkbox>
             </b-field>
@@ -465,25 +465,25 @@
 
             <template v-if="projectInput.mailEnabled">
               <b-field label="Select Mail Drivers">
-                <b-checkbox native-value="smtp" v-model="projectInput.mailers"
+                <b-checkbox native-value="SMTP" v-model="projectInput.mailers"
                   >SMTP</b-checkbox
                 >
               </b-field>
               <b-field>
-                <b-checkbox native-value="ses" v-model="projectInput.mailers"
+                <b-checkbox native-value="SES" v-model="projectInput.mailers"
                   >SES</b-checkbox
                 >
               </b-field>
               <b-field>
                 <b-checkbox
-                  native-value="mailgun"
+                  native-value="Mailgun"
                   v-model="projectInput.mailers"
                   >Mailgun</b-checkbox
                 >
               </b-field>
               <b-field>
                 <b-checkbox
-                  native-value="sparkpost"
+                  native-value="SparkPost"
                   v-model="projectInput.mailers"
                   >Sparkpost</b-checkbox
                 >
@@ -494,26 +494,26 @@
               >
                 <b-select v-model="projectInput.defaultMailer" expanded>
                   <option
-                    v-if="projectInput.mailers.includes('smtp')"
-                    value="smtp"
+                    v-if="projectInput.mailers.includes('SMTP')"
+                    value="SMTP"
                   >
                     SMTP
                   </option>
                   <option
-                    v-if="projectInput.mailers.includes('ses')"
-                    value="ses"
+                    v-if="projectInput.mailers.includes('SES')"
+                    value="SES"
                   >
                     SES
                   </option>
                   <option
-                    v-if="projectInput.mailers.includes('mailgun')"
-                    value="mailgun"
+                    v-if="projectInput.mailers.includes('Mailgun')"
+                    value="Mailgun"
                   >
                     Mailgun
                   </option>
                   <option
-                    v-if="projectInput.mailers.includes('sparkpost')"
-                    value="sparkpost"
+                    v-if="projectInput.mailers.includes('SparkPost')"
+                    value="SparkPost"
                   >
                     Sparkpost
                   </option>
@@ -930,10 +930,10 @@
               <div class="column">
                 <b-field label="Relation Type *">
                   <b-select v-model="relation.type" expanded>
-                    <option value="hasOne">Has One</option>
-                    <option value="hasMany">Has Many</option>
-                    <option value="manyToMany">Many to many</option>
-                    <option value="belongsTo">Belongs To</option>
+                    <option value="HasOne">Has One</option>
+                    <option value="HasMany">Has Many</option>
+                    <option value="ManyToMany">Many to many</option>
+                    <option value="BelongsTo">Belongs To</option>
                   </b-select>
                 </b-field>
               </div>
@@ -1022,7 +1022,7 @@
                         required
                       >
                         <option
-                          v-for="(type, typeIndex) in types"
+                          v-for="(type, typeIndex) in enums.apiInputType"
                           :key="'typeIndex' + typeIndex"
                         >
                           {{ type }}
@@ -1042,7 +1042,7 @@
                   </div>
                 </div>
 
-                <div v-if="column.type === 'string'" class="columns">
+                <div v-if="column.type === 'String'" class="columns">
                   <div class="column">
                     <b-field label="Min Length">
                       <b-input v-model="column.meta.minLength"></b-input>
@@ -1054,7 +1054,7 @@
                     </b-field>
                   </div>
                 </div>
-                <div v-if="column.type === 'string'" class="columns">
+                <div v-if="column.type === 'String'" class="columns">
                   <div class="column">
                     <b-field
                       label="DB Length"
@@ -1066,7 +1066,7 @@
                 </div>
 
                 <div
-                  v-if="['decimal', 'integer'].includes(column.type)"
+                  v-if="['Decimal', 'Integer'].includes(column.type)"
                   class="columns"
                 >
                   <div class="column">
@@ -1081,7 +1081,7 @@
                   </div>
                 </div>
 
-                <b-field v-if="column.type === 'decimal'" label="Step">
+                <b-field v-if="column.type === 'Decimal'" label="Step">
                   <b-input
                     v-model="column.input.decimal.step"
                     step="any"
@@ -1089,7 +1089,7 @@
                   ></b-input>
                 </b-field>
 
-                <div v-if="column.type === 'file'" class="columns">
+                <div v-if="column.type === 'File'" class="columns">
                   <div class="column">
                     <b-field label="Max Size (ex: 1mb, 512kb, etc)">
                       <b-input v-model="column.meta.maxSize"></b-input>
@@ -1114,28 +1114,28 @@
                   label="Default Value"
                 >
                   <b-input
-                    v-if="column.type === 'string'"
+                    v-if="column.type === 'String'"
                     v-model="column.meta.defaultTo"
                   ></b-input>
                   <b-input
-                    v-if="column.type === 'integer'"
+                    v-if="column.type === 'Integer'"
                     v-model="column.meta.defaultTo"
                     type="number"
                   >
                   </b-input>
                   <b-input
-                    v-if="column.type === 'decimal'"
+                    v-if="column.type === 'Decimal'"
                     v-model="column.meta.defaultTo"
                     type="number"
                   >
                   </b-input>
                   <b-switch
-                    v-if="column.type === 'boolean'"
+                    v-if="column.type === 'Boolean'"
                     v-model="column.meta.defaultTo"
                     >{{ column.meta.defaultTo }}
                   </b-switch>
                   <b-datepicker
-                    v-if="column.type === 'date'"
+                    v-if="column.type === 'Date'"
                     v-model="column.meta.defaultTo"
                     >{{ column.meta.defaultTo }}</b-datepicker
                   >
@@ -1146,10 +1146,10 @@
                   </b-checkbox>
                 </b-field>
 
-                <b-field v-if="column.type === 'string'">
+                <b-field v-if="column.type === 'String'">
                   <b-checkbox v-model="column.meta.trim">Trim</b-checkbox>
                 </b-field>
-                <b-field v-if="column.type === 'string'">
+                <b-field v-if="column.type === 'String'">
                   <b-checkbox v-model="column.meta.multiline"
                     >Multiline</b-checkbox
                   >
@@ -1213,7 +1213,7 @@
 
                     <div
                       class="columns"
-                      v-if="column.input.select.type === 'string'"
+                      v-if="column.input.select.type === 'String'"
                     >
                       <div class="column">
                         <b-field label="Add Options">
@@ -1282,7 +1282,7 @@
 
                     <div
                       class="columns"
-                      v-if="column.input.radio.type === 'string'"
+                      v-if="column.input.radio.type === 'String'"
                     >
                       <div class="column">
                         <b-field label="Add Options">
@@ -1337,7 +1337,7 @@
 
                 <h2>Validation</h2>
                 <b-field
-                  v-if="column.type === 'string'"
+                  v-if="column.type === 'String'"
                   message="Check if field type is email"
                 >
                   <b-checkbox v-model="column.meta.email">Email</b-checkbox>
@@ -1357,28 +1357,73 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import ValidationException from "@/exceptions/ValidationException";
+import {
+  DATABASE,
+  MAILER,
+  PROJECT_TYPE,
+  STORAGE,
+  BACKEND,
+  FRONTEND,
+  RELATION_TYPE,
+  REQUEST_METHOD,
+  API_INPUT_TYPE,
+  UI_INPUT_TYPE,
+} from "../constants/";
 
 export default {
   name: "ProjectCreate",
   data() {
     return {
-      types: ["string", "decimal", "integer", "date", "boolean", "file"],
-      inputTypes: ["input", "select", "radio", "checkbox"], // String input types
+      enums: {
+        database: [DATABASE.MYSQL, DATABASE.POSTGRESQL],
+        mailer: [MAILER.SMTP, MAILER.SES, MAILER.MAILGUN, MAILER.SPARK_POST],
+        projectType: [PROJECT_TYPE.API, PROJECT_TYPE.SSR],
+        storage: [STORAGE.LOCAL, STORAGE.S3, STORAGE.GCS],
+        backend: [BACKEND.ADONIS],
+        frontend: [FRONTEND.BUEFY],
+        relationType: [
+          RELATION_TYPE.HAS_ONE,
+          RELATION_TYPE.HAS_MANY,
+          RELATION_TYPE.BELONGS_TO,
+          RELATION_TYPE.MANY_TO_MANY,
+        ],
+        requestMethod: [
+          REQUEST_METHOD.GET,
+          REQUEST_METHOD.POST,
+          REQUEST_METHOD.PUT,
+          REQUEST_METHOD.PATCH,
+          REQUEST_METHOD.DELETE,
+        ],
+        apiInputType: [
+          API_INPUT_TYPE.STRING,
+          API_INPUT_TYPE.DECIMAL,
+          API_INPUT_TYPE.INTEGER,
+          API_INPUT_TYPE.DATE,
+          API_INPUT_TYPE.BOOLEAN,
+          API_INPUT_TYPE.FILE,
+        ],
+      },
+      inputTypes: [
+        UI_INPUT_TYPE.INPUT,
+        UI_INPUT_TYPE.SELECT,
+        UI_INPUT_TYPE.RADIO,
+        UI_INPUT_TYPE.CHECKBOX,
+      ], // String input types
       projectInput: {
         name: "",
-        database: "mysql",
+        database: DATABASE.MYSQL,
         mailEnabled: false,
-        defaultMailer: "smtp",
-        mailers: ["smtp"],
+        defaultMailer: MAILER.SMTP,
+        mailers: [MAILER.SMTP],
         storageEnabled: false,
-        storageDrivers: ["local"],
-        defaultStorageDriver: "local",
-        types: ["api"],
+        storageDrivers: [STORAGE.Local],
+        defaultStorageDriver: STORAGE.Local,
+        types: [PROJECT_TYPE.API],
         camelCaseStrategy: true,
 
         tech: {
-          backend: "adonis",
-          frontend: "buefy",
+          backend: BACKEND.ADONIS,
+          frontend: FRONTEND.BUEFY,
         },
         generate: {
           api: {
@@ -1433,7 +1478,7 @@ export default {
         },
         rbac: {
           enabled: false,
-          multiple: false,
+          multipleRoles: false,
           canAdminCreateRoles: false,
           canAdminCreatePermissions: false,
           roles: ["Admin"], // When admin can't create roles, they are hardcoded
@@ -1455,9 +1500,12 @@ export default {
         // Pre process input
         // Deep copy input
         const input = JSON.parse(JSON.stringify(this.projectInput));
-        const matrix = {};
+        const matrix = [];
         input.rbac.matrix = input.rbac.matrix.map((permissions, index) => {
-          matrix[input.rbac.roles[index]] = permissions;
+          matrix.push({
+            role: input.rbac.roles[index],
+            permissions,
+          });
         });
         input.rbac.matrix = matrix;
         await this.storeAction(input);
@@ -1571,7 +1619,6 @@ export default {
 
     addRelation(table) {
       table.relations.push({
-        type: "oneToOne",
         withModel: null,
         name: "",
         required: true, // Only applicable to belongsTo
@@ -1584,12 +1631,12 @@ export default {
     getBelongsToList(table) {
       return table.relations.filter(
         (relation) =>
-          relation.type === "belongsTo" && !relation.withModel.startsWith("$")
+          relation.type === "BelongsTo" && !relation.withModel?.startsWith("$")
       );
     },
     getBelongsToListFull(table) {
       return table.relations.filter(
-        (relation) => relation.type === "belongsTo"
+        (relation) => relation.type === "BelongsTo"
       );
     },
 
@@ -1650,7 +1697,7 @@ export default {
 
   computed: {
     filteredTypes() {
-      return ["api", "ssr"];
+      return [PROJECT_TYPE.API, PROJECT_TYPE.SSR];
     },
     ...mapState("auth", {
       user: (state) => state.user,
