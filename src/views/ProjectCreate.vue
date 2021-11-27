@@ -1416,8 +1416,8 @@ export default {
         defaultMailer: MAILER.SMTP,
         mailers: [MAILER.SMTP],
         storageEnabled: false,
-        storageDrivers: [STORAGE.Local],
-        defaultStorageDriver: STORAGE.Local,
+        storageDrivers: [STORAGE.LOCAL],
+        defaultStorageDriver: STORAGE.LOCAL,
         types: [PROJECT_TYPE.API],
         camelCaseStrategy: true,
 
@@ -1580,7 +1580,7 @@ export default {
           trim: false,
         },
         input: {
-          type: "input",
+          type: "Input",
           decimal: {
             step: "any",
           },
