@@ -290,7 +290,7 @@
                       removeRelation(projectInput.auth.table, relationIndex)
                     "
                     class="is-danger is-light is-fullwidth"
-                    >Delete this relation</b-button
+                    >Delete relation</b-button
                   >
                 </b-field>
               </div>
@@ -325,113 +325,152 @@
               </b-checkbox>
             </b-field>
 
-            <b-field v-if="projectInput.rbac.enabled">
-              <b-checkbox v-model="projectInput.rbac.multipleRoles">
-                Can one user have multiple roles?
-              </b-checkbox>
-            </b-field>
+            <template v-if="projectInput.rbac.enabled">
+              <b-field>
+                <b-checkbox v-model="projectInput.rbac.multipleRoles">
+                  Can one user have multiple roles?
+                </b-checkbox>
+              </b-field>
 
-            <b-field v-if="projectInput.rbac.enabled">
-              <b-checkbox v-model="projectInput.rbac.canAdminCreateRoles">
-                Can admin create roles?
-              </b-checkbox>
-            </b-field>
+              <b-field>
+                <b-checkbox v-model="projectInput.rbac.canAdminCreateRoles">
+                  Can admin create roles?
+                </b-checkbox>
+              </b-field>
 
-            <b-field v-if="projectInput.rbac.enabled">
-              <b-checkbox v-model="projectInput.rbac.canAdminCreatePermissions">
-                Can admin create permissions?
-              </b-checkbox>
-            </b-field>
+              <div class="level">
+                <div class="level-left is-size-4">Roles</div>
+                <div class="level-right">
+                  <b-button @click="addRole" type="is-light">Add Role</b-button>
+                </div>
+              </div>
 
-            <b-field v-if="projectInput.rbac.enabled" label="Roles">
-              <b-taginput
-                v-model="projectInput.rbac.roles"
-                ellipsis
-                icon="label"
-                placeholder="Roles"
-                aria-close-label="Remove this role"
+              <div
+                class="columns"
+                v-for="(role, roleIndex) in projectInput.rbac.roles"
+                :key="'roleIndex' + roleIndex"
               >
-              </b-taginput>
-            </b-field>
-
-            <b-field v-if="projectInput.rbac.enabled" label="Permissions">
-              <b-taginput
-                v-model="projectInput.rbac.permissions"
-                ellipsis
-                icon="label"
-                placeholder="Permissions"
-                aria-close-label="Remove this permission"
-              >
-              </b-taginput>
-            </b-field>
-
-            <b-button
-              @click="generatePermissionsAndMatrix"
-              v-if="projectInput.rbac.enabled"
-              type="is-light"
-            >
-              Generate All Permissions
-            </b-button>
-
-            <template
-              v-if="
-                Array.isArray(projectInput.rbac.permissions) &&
-                projectInput.rbac.permissions.length
-              "
-            >
-              <h4 class="mt-5">Role &amp; Permission Matrix</h4>
-              <table bordered>
-                <thead>
-                  <tr>
-                    <th>Permission</th>
-                    <th v-for="role in projectInput.rbac.roles" :key="role">
-                      {{ role }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="permission in projectInput.rbac.permissions"
-                    :key="permission"
+                <div class="column">
+                  <b-field label="Name" message="Name fo the role">
+                    <b-input v-model="role.name"></b-input>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field
+                    label="Description"
+                    message="Description of the role"
                   >
-                    <td>{{ permission }}</td>
-                    <td
-                      v-for="(role, roleIndex) in projectInput.rbac.roles"
-                      :key="role"
+                    <b-input v-model="role.description"></b-input>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field label="Remove">
+                    <b-button
+                      @click="removeRole(roleIndex)"
+                      class="is-danger is-light is-fullwidth"
+                      >Delete Role</b-button
                     >
-                      <b-button
-                        type="is-ghost"
-                        @click="
-                          togglePermission(
-                            projectInput.rbac.matrix[roleIndex],
-                            permission
-                          )
-                        "
+                  </b-field>
+                </div>
+              </div>
+
+              <b-field label="Permissions">
+                <b-taginput
+                  v-model="projectInput.rbac.permissions"
+                  ellipsis
+                  field="name"
+                  icon="label"
+                  placeholder="Permissions"
+                  aria-close-label="Remove this permission"
+                >
+                </b-taginput>
+              </b-field>
+
+              <b-button
+                @click="generatePermissionsAndMatrix"
+                v-if="projectInput.rbac.enabled"
+                type="is-light"
+              >
+                Generate All Permissions
+              </b-button>
+
+              <template
+                v-if="
+                  Array.isArray(projectInput.rbac.permissions) &&
+                  projectInput.rbac.permissions.length
+                "
+              >
+                <h4 class="mt-5">Role &amp; Permission Matrix</h4>
+                <table class="is-bordered is-hoverable">
+                  <thead>
+                    <tr>
+                      <th>Permission</th>
+                      <th
+                        v-for="(role, roleIndex) in projectInput.rbac.roles"
+                        :key="'role_' + roleIndex"
                       >
-                        <b-icon
-                          :icon="
-                            hasPermission(
+                        <b-tooltip
+                          label="Click to grant all permisson to this role"
+                        >
+                          <b-button
+                            type="is-ghost"
+                            @click="grantAllPermissionToRole(role)"
+                          >
+                            <b-icon
+                              icon="checkbox-marked"
+                              type="is-success"
+                              size="is-medium"
+                            ></b-icon>
+                          </b-button>
+                        </b-tooltip>
+                        {{ role.name }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="permission in projectInput.rbac.permissions"
+                      :key="permission.name"
+                    >
+                      <td>{{ permission.name }}</td>
+                      <td
+                        v-for="(role, roleIndex) in projectInput.rbac.roles"
+                        :key="'role_' + roleIndex"
+                      >
+                        <b-button
+                          type="is-ghost"
+                          @click="
+                            togglePermission(
                               projectInput.rbac.matrix[roleIndex],
                               permission
                             )
-                              ? 'checkbox-marked'
-                              : 'close-box'
                           "
-                          :type="
-                            hasPermission(
-                              projectInput.rbac.matrix[roleIndex],
-                              permission
-                            )
-                              ? 'is-success'
-                              : 'is-danger'
-                          "
-                          size="is-medium"
-                        ></b-icon>
-                      </b-button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                        >
+                          <b-icon
+                            :icon="
+                              hasPermission(
+                                projectInput.rbac.matrix[roleIndex],
+                                permission
+                              )
+                                ? 'checkbox-marked'
+                                : 'close-box'
+                            "
+                            :type="
+                              hasPermission(
+                                projectInput.rbac.matrix[roleIndex],
+                                permission
+                              )
+                                ? 'is-success'
+                                : 'is-danger'
+                            "
+                            size="is-medium"
+                          ></b-icon>
+                        </b-button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </template>
             </template>
           </div>
         </div>
@@ -785,8 +824,25 @@
               </b-checkbox>
             </b-field>
             <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.create">
+                Create
+                <span class="has-text-grey">Show Input Page For Create</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
               <b-checkbox v-model="table.operations.store">
                 Store <span class="has-text-grey">(Save)</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.show">
+                Show
+                <span class="has-text-grey">View full detail</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.edit">
+                Edit <span class="has-text-grey">Show page for edit</span>
               </b-checkbox>
             </b-field>
             <b-field v-if="webOrApi">
@@ -908,7 +964,7 @@
                   <b-button
                     @click="removeCustomOperation(table, customOperationIndex)"
                     class="is-danger is-light is-fullwidth"
-                    >Delete this operation?</b-button
+                    >Delete operation?</b-button
                   >
                 </b-field>
               </div>
@@ -976,7 +1032,7 @@
                   <b-button
                     @click="removeRelation(table, relationIndex)"
                     class="is-danger is-light is-fullwidth"
-                    >Delete this relation</b-button
+                    >Delete relation</b-button
                   >
                 </b-field>
               </div>
@@ -1459,7 +1515,10 @@ export default {
             relations: [],
             operations: {
               index: true,
+              create: true,
               store: true,
+              show: true,
+              edit: true,
               update: true,
               destroy: true,
               storeMany: true,
@@ -1480,8 +1539,12 @@ export default {
           enabled: false,
           multipleRoles: false,
           canAdminCreateRoles: false,
-          canAdminCreatePermissions: false,
-          roles: ["Admin"], // When admin can't create roles, they are hardcoded
+          roles: [
+            {
+              name: "Admin",
+              description: "User with full access to everything",
+            },
+          ], // When admin can't create roles, they are hardcoded
           permissions: [], // List of all permissions
           matrix: [[]],
         },
@@ -1544,7 +1607,10 @@ export default {
         indexColumns: [],
         operations: {
           index: true,
+          create: true,
           store: true,
+          show: true,
+          edit: true,
           update: true,
           destroy: true,
           storeMany: true,
@@ -1558,6 +1624,10 @@ export default {
 
     removeTable(index) {
       this.projectInput.tables.splice(index, 1);
+    },
+
+    removeRole(index) {
+      this.projectInput.rbac.roles.splice(index, 1);
     },
 
     removeRelation(table, relationIndex) {
@@ -1656,34 +1726,117 @@ export default {
       return role.includes(permission);
     },
 
+    addRole() {
+      this.projectInput.rbac.roles.push({
+        name: "",
+        description: "",
+      });
+    },
+
+    grantAllPermissionToRole(role) {
+      role.permissions = this.projectInput.rbac.permissions;
+    },
+
     generatePermissionsAndMatrix() {
       const permissions = [];
+      const operations = [
+        "index",
+        "create",
+        "store",
+        "show",
+        "edit",
+        "update",
+        "destroy",
+        "storeMany",
+        "destroyMany",
+      ];
+      const roleModelPermissions = [];
+      const permissionModelPermissions = [];
+      const authModelPermissions = [];
+
+      operations.map((operation) => {
+        roleModelPermissions.push({
+          name: `Role:${operation}`,
+          description: "",
+        });
+        permissionModelPermissions.push({
+          name: `Permission:${operation}`,
+          description: "",
+        });
+        authModelPermissions.push({
+          name: `${this.projectInput.auth.table.name}:${operation}`,
+          description: "",
+        });
+      });
+      permissions.push(
+        ...roleModelPermissions,
+        ...permissionModelPermissions,
+        ...authModelPermissions
+      );
       this.projectInput.tables.forEach((table) => {
         const operations = table.operations;
         if (operations.index) {
-          permissions.push(`${table.name}:index`);
+          permissions.push({
+            name: `${table.name}:index`,
+            description: "",
+          });
+        }
+        if (operations.create) {
+          permissions.push({
+            name: `${table.name}:create`,
+            description: "",
+          });
         }
         if (operations.store) {
-          permissions.push(`${table.name}:store`);
+          permissions.push({
+            name: `${table.name}:store`,
+            description: "",
+          });
+        }
+        if (operations.show) {
+          permissions.push({
+            name: `${table.name}:show`,
+            description: "",
+          });
+        }
+        if (operations.edit) {
+          permissions.push({
+            name: `${table.name}:edit`,
+            description: "",
+          });
         }
         if (operations.update) {
-          permissions.push(`${table.name}:update`);
+          permissions.push({
+            name: `${table.name}:update`,
+            description: "",
+          });
         }
         if (operations.destroy) {
-          permissions.push(`${table.name}:destroy`);
+          permissions.push({
+            name: `${table.name}:destroy`,
+            description: "",
+          });
         }
         if (operations.storeMany) {
-          permissions.push(`${table.name}:storeMany`);
+          permissions.push({
+            name: `${table.name}:storeMany`,
+            description: "",
+          });
         }
         if (operations.destroyMany) {
-          permissions.push(`${table.name}:destroyMany`);
+          permissions.push({
+            name: `${table.name}:destroyMany`,
+            description: "",
+          });
         }
         if (
           Array.isArray(table.customOperations) &&
           table.customOperations.length
         ) {
           table.customOperations.map((customOperation) => {
-            permissions.push(`${table.name}:${customOperation.name}`);
+            permissions.push({
+              name: `${table.name}:${customOperation.name}`,
+            });
           });
         }
       });
