@@ -406,7 +406,7 @@
                     <tr>
                       <th>Permission</th>
                       <th
-                        v-for="(role, roleIndex) in projectInput.rbac.roles"
+                        v-for="(role, roleIndex) in projectInput.rbac.matrix"
                         :key="'role_' + roleIndex"
                       >
                         <b-tooltip
@@ -423,7 +423,7 @@
                             ></b-icon>
                           </b-button>
                         </b-tooltip>
-                        {{ role.name }}
+                        {{ role.role }}
                       </th>
                     </tr>
                   </thead>
@@ -434,7 +434,7 @@
                     >
                       <td>{{ permission.name }}</td>
                       <td
-                        v-for="(role, roleIndex) in projectInput.rbac.roles"
+                        v-for="(role, roleIndex) in projectInput.rbac.matrix"
                         :key="'role_' + roleIndex"
                       >
                         <b-button
@@ -1546,7 +1546,12 @@ export default {
             },
           ], // When admin can't create roles, they are hardcoded
           permissions: [], // List of all permissions
-          matrix: [[]],
+          matrix: [
+            {
+              role: "Admin",
+              permissions: [],
+            },
+          ],
         },
         tables: [],
       },
@@ -1714,16 +1719,22 @@ export default {
       return table.columns.map((column) => column.name);
     },
 
+    /**
+     * Toggle a permission in matrix
+     */
     togglePermission(role, permission) {
-      if (role.includes(permission)) {
-        role.splice(role.indexOf(permission), 1);
+      if (role.permissions.includes(permission.name) > 1) {
+        role.permissions.splice(role.permissions.indexOf(permission.name), 1);
       } else {
-        role.push(permission);
+        role.permissions.push(permission.name);
       }
     },
 
+    /**
+     * Checks if a permission exits in matrix for a role name
+     */
     hasPermission(role, permission) {
-      return role.includes(permission);
+      return role.permissions.includes(permission.name);
     },
 
     addRole() {
@@ -1734,7 +1745,13 @@ export default {
     },
 
     grantAllPermissionToRole(role) {
-      role.permissions = this.projectInput.rbac.permissions;
+      while (role.permissions.length > 0) {
+        role.permissions.pop();
+      }
+      this.projectInput.rbac.permissions.map((permission) => {
+        if (!role.permissions.includes(permission.name))
+          role.permissions.push(permission.name);
+      });
     },
 
     generatePermissionsAndMatrix() {
@@ -1842,8 +1859,11 @@ export default {
       });
       this.projectInput.rbac.permissions = permissions;
       this.projectInput.rbac.matrix.pop();
-      this.projectInput.rbac.roles.forEach(() =>
-        this.projectInput.rbac.matrix.push([])
+      this.projectInput.rbac.roles.forEach((role) =>
+        this.projectInput.rbac.matrix.push({
+          role: role.name,
+          permissions: [],
+        })
       );
     },
   },
