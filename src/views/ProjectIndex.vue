@@ -38,6 +38,9 @@
             aria-role="listitem"
             >Download SPA Code</b-dropdown-item
           >
+          <b-dropdown-item @click="edit(props.row.id)" aria-role="edititem"
+            >Edit</b-dropdown-item
+          >
           <b-dropdown-item @click="destroy(props.row.id)" aria-role="listitem"
             >Delete</b-dropdown-item
           >

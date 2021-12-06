@@ -364,6 +364,14 @@
                   </b-field>
                 </div>
                 <div class="column">
+                  <b-field
+                    label="Description"
+                    message="Description of the role"
+                  >
+                    <b-switch v-model="role.default">Default</b-switch>
+                  </b-field>
+                </div>
+                <div class="column">
                   <b-field label="Remove">
                     <b-button
                       @click="removeRole(roleIndex)"
@@ -1428,8 +1436,25 @@ import {
 
 export default {
   name: "ProjectCreate",
+
+  created() {
+    if (this.$route.params.id) {
+      const id = parseInt(this.$route.params.id, 10);
+      this.editMode.enabled = true;
+      this.editMode.id = id;
+      const project = this.items.find((t) => t.id === id);
+
+      // Prefill all the fields
+      this.projectInput = JSON.parse(project.rawInput);
+    }
+  },
+
   data() {
     return {
+      editMode: {
+        enabled: false,
+        id: null,
+      },
       enums: {
         database: [DATABASE.MYSQL, DATABASE.POSTGRESQL],
         mailer: [MAILER.SMTP, MAILER.SES, MAILER.MAILGUN, MAILER.SPARK_POST],
@@ -1543,6 +1568,7 @@ export default {
             {
               name: "Admin",
               description: "User with full access to everything",
+              default: false,
             },
           ], // When admin can't create roles, they are hardcoded
           permissions: [], // List of all permissions
@@ -1568,14 +1594,6 @@ export default {
         // Pre process input
         // Deep copy input
         const input = JSON.parse(JSON.stringify(this.projectInput));
-        const matrix = [];
-        input.rbac.matrix = input.rbac.matrix.map((permissions, index) => {
-          matrix.push({
-            role: input.rbac.roles[index],
-            permissions,
-          });
-        });
-        input.rbac.matrix = matrix;
         await this.storeAction(input);
         this.$router.push("/project");
         this.$buefy.toast.open({
@@ -1723,7 +1741,7 @@ export default {
      * Toggle a permission in matrix
      */
     togglePermission(role, permission) {
-      if (role.permissions.includes(permission.name) > 1) {
+      if (role.permissions.includes(permission.name)) {
         role.permissions.splice(role.permissions.indexOf(permission.name), 1);
       } else {
         role.permissions.push(permission.name);
@@ -1858,7 +1876,10 @@ export default {
         }
       });
       this.projectInput.rbac.permissions = permissions;
-      this.projectInput.rbac.matrix.pop();
+      // Empty matrix array
+      while (this.projectInput.rbac.matrix.length) {
+        this.projectInput.rbac.matrix.pop();
+      }
       this.projectInput.rbac.roles.forEach((role) =>
         this.projectInput.rbac.matrix.push({
           role: role.name,
@@ -1876,7 +1897,8 @@ export default {
       user: (state) => state.user,
     }),
     ...mapState("project", {
-      countries: (state) => state.items,
+      items: (state) => state.items,
+      meta: (state) => state.meta,
       loading: (state) => state.loading,
     }),
     isLoading() {
