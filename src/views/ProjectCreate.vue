@@ -1226,6 +1226,14 @@
                 >
                   <b-checkbox v-model="column.meta.secret">Secret</b-checkbox>
                 </b-field>
+                <b-field
+                  v-if="!column.meta.secret"
+                  message="Allow searching this column from list page"
+                >
+                  <b-checkbox v-model="column.meta.filterable">
+                    Filterable
+                  </b-checkbox>
+                </b-field>
                 <b-field message="Create database index for faster searching">
                   <b-checkbox v-model="column.meta.index">Index</b-checkbox>
                 </b-field>
@@ -1670,6 +1678,7 @@ export default {
         meta: {
           required: false,
           expose: true,
+          filterable: false,
           trim: false,
         },
         input: {
