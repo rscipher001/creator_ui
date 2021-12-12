@@ -3,7 +3,7 @@
     <div class="level">
       <div class="level-left is-size-3">Create Project</div>
       <div class="level-right">
-        <b-button tag="router-link" to="/dashboard" type="is-light">
+        <b-button tag="router-link" to="/dashboard" type="is-white">
           Back
         </b-button>
       </div>
