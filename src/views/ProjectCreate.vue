@@ -1541,9 +1541,9 @@ export default {
           passwordReset: true,
           passwordChange: true,
           table: {
-            generateRoute: false,
-            generateController: false,
-            generateModel: false,
+            generateRoute: true,
+            generateController: true,
+            generateModel: true,
             generateMigration: false,
             relations: [],
             operations: {
@@ -1557,6 +1557,7 @@ export default {
               storeMany: true,
               destroyMany: true,
             },
+            indexColumns: ["Name", "Email"],
             customOperations: [],
             name: "User",
             timestamps: true,
