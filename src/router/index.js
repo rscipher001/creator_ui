@@ -110,6 +110,18 @@ const routes = [
     },
   },
   {
+    path: "/project/:id/edit",
+    name: "ProjectCreate",
+    component: () =>
+      import(
+        /* webpackChunkName: "projectCreate" */ "../views/ProjectCreate.vue"
+      ),
+    meta: {
+      auth: true,
+      ensureEmailIsVerified: true,
+    },
+  },
+  {
     path: "/setting",
     component: () =>
       import(/* webpackChunkName: "setting" */ "../views/Setting.vue"),

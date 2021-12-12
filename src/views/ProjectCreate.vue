@@ -9,6 +9,14 @@
       </div>
     </div>
 
+    <b-notification
+      type="is-info"
+      aria-close-label="Close notification"
+      role="alert"
+    >
+      User <strong>singular pascal case</strong> to avoid build failure
+    </b-notification>
+
     <form method="POST" @submit.prevent="store">
       <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3">
         <template #trigger="props">
@@ -116,21 +124,21 @@
             <template v-if="projectInput.storageEnabled">
               <b-field label="Select Storage Drivers">
                 <b-checkbox
-                  native-value="local"
+                  native-value="Local"
                   v-model="projectInput.storageDrivers"
                   >Local</b-checkbox
                 >
               </b-field>
               <b-field>
                 <b-checkbox
-                  native-value="s3"
+                  native-value="S3"
                   v-model="projectInput.storageDrivers"
                   >AWS S3</b-checkbox
                 >
               </b-field>
               <b-field>
                 <b-checkbox
-                  native-value="gcs"
+                  native-value="GCS"
                   v-model="projectInput.storageDrivers"
                   >Google Cloud Storage</b-checkbox
                 >
@@ -141,20 +149,20 @@
               >
                 <b-select v-model="projectInput.defaultStorageDriver" expanded>
                   <option
-                    v-if="projectInput.storageDrivers.includes('local')"
-                    value="local"
+                    v-if="projectInput.storageDrivers.includes('Local')"
+                    value="Local"
                   >
                     Local
                   </option>
                   <option
-                    v-if="projectInput.storageDrivers.includes('s3')"
-                    value="s3"
+                    v-if="projectInput.storageDrivers.includes('S3')"
+                    value="S3"
                   >
                     AWS S3
                   </option>
                   <option
-                    v-if="projectInput.storageDrivers.includes('gcs')"
-                    value="gcs"
+                    v-if="projectInput.storageDrivers.includes('GCS')"
+                    value="GCS"
                   >
                     Google Cloud Storage
                   </option>
@@ -240,10 +248,10 @@
               <div class="column">
                 <b-field label="Relation Type *">
                   <b-select v-model="relation.type" expanded required>
-                    <option value="hasOne">Has One</option>
-                    <option value="hasMany">Has Many</option>
-                    <option value="manyToMany">Many to many</option>
-                    <option value="belongsTo">Belongs To</option>
+                    <option value="HasOne">Has One</option>
+                    <option value="HasMany">Has Many</option>
+                    <option value="ManyToMany">Many To Many</option>
+                    <option value="BelongsTo">Belongs To</option>
                   </b-select>
                 </b-field>
               </div>
@@ -282,11 +290,190 @@
                       removeRelation(projectInput.auth.table, relationIndex)
                     "
                     class="is-danger is-light is-fullwidth"
-                    >Delete this relation</b-button
+                    >Delete relation</b-button
                   >
                 </b-field>
               </div>
             </div>
+          </div>
+        </div>
+      </b-collapse>
+
+      <b-collapse
+        class="card mt-5"
+        animation="slide"
+        aria-id="contentIdForA11y3"
+      >
+        <template #trigger="props">
+          <div
+            class="card-header"
+            role="button"
+            aria-controls="contentIdForA11y3"
+          >
+            <p class="card-header-title">RBAC</p>
+            <a class="card-header-icon">
+              <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
+            </a>
+          </div>
+        </template>
+
+        <div class="card-content">
+          <div class="content">
+            <b-field>
+              <b-checkbox v-model="projectInput.rbac.enabled">
+                Enabled RBAC (Role &amp; permission system)
+              </b-checkbox>
+            </b-field>
+
+            <template v-if="projectInput.rbac.enabled">
+              <b-field>
+                <b-checkbox v-model="projectInput.rbac.multipleRoles">
+                  Can one user have multiple roles?
+                </b-checkbox>
+              </b-field>
+
+              <div class="level">
+                <div class="level-left is-size-4">Roles</div>
+                <div class="level-right">
+                  <b-button @click="addRole" type="is-light">Add Role</b-button>
+                </div>
+              </div>
+
+              <div
+                class="columns"
+                v-for="(role, roleIndex) in projectInput.rbac.roles"
+                :key="'roleIndex' + roleIndex"
+              >
+                <div class="column">
+                  <b-field label="Name" message="Name fo the role">
+                    <b-input v-model="role.name"></b-input>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field
+                    label="Description"
+                    message="Description of the role"
+                  >
+                    <b-input v-model="role.description"></b-input>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field
+                    label="Description"
+                    message="Description of the role"
+                  >
+                    <b-switch v-model="role.default">Default</b-switch>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field label="Remove">
+                    <b-button
+                      @click="removeRole(roleIndex)"
+                      class="is-danger is-light is-fullwidth"
+                      >Delete Role</b-button
+                    >
+                  </b-field>
+                </div>
+              </div>
+
+              <b-field label="Permissions">
+                <b-taginput
+                  v-model="projectInput.rbac.permissions"
+                  ellipsis
+                  field="name"
+                  icon="label"
+                  placeholder="Permissions"
+                  aria-close-label="Remove this permission"
+                >
+                </b-taginput>
+              </b-field>
+
+              <b-button
+                @click="generatePermissionsAndMatrix"
+                v-if="projectInput.rbac.enabled"
+                type="is-light"
+              >
+                Generate All Permissions
+              </b-button>
+
+              <template
+                v-if="
+                  Array.isArray(projectInput.rbac.permissions) &&
+                  projectInput.rbac.permissions.length
+                "
+              >
+                <h4 class="mt-5">Role &amp; Permission Matrix</h4>
+                <table class="is-bordered is-hoverable">
+                  <thead>
+                    <tr>
+                      <th>Permission</th>
+                      <th
+                        v-for="(role, roleIndex) in projectInput.rbac.matrix"
+                        :key="'role_' + roleIndex"
+                      >
+                        <b-tooltip
+                          label="Click to grant all permisson to this role"
+                        >
+                          <b-button
+                            type="is-ghost"
+                            @click="grantAllPermissionToRole(role)"
+                          >
+                            <b-icon
+                              icon="checkbox-marked"
+                              type="is-success"
+                              size="is-medium"
+                            ></b-icon>
+                          </b-button>
+                        </b-tooltip>
+                        {{ role.role }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="permission in projectInput.rbac.permissions"
+                      :key="permission.name"
+                    >
+                      <td>{{ permission.name }}</td>
+                      <td
+                        v-for="(role, roleIndex) in projectInput.rbac.matrix"
+                        :key="'role_' + roleIndex"
+                      >
+                        <b-button
+                          type="is-ghost"
+                          @click="
+                            togglePermission(
+                              projectInput.rbac.matrix[roleIndex],
+                              permission
+                            )
+                          "
+                        >
+                          <b-icon
+                            :icon="
+                              hasPermission(
+                                projectInput.rbac.matrix[roleIndex],
+                                permission
+                              )
+                                ? 'checkbox-marked'
+                                : 'close-box'
+                            "
+                            :type="
+                              hasPermission(
+                                projectInput.rbac.matrix[roleIndex],
+                                permission
+                              )
+                                ? 'is-success'
+                                : 'is-danger'
+                            "
+                            size="is-medium"
+                          ></b-icon>
+                        </b-button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </template>
+            </template>
           </div>
         </div>
       </b-collapse>
@@ -319,25 +506,25 @@
 
             <template v-if="projectInput.mailEnabled">
               <b-field label="Select Mail Drivers">
-                <b-checkbox native-value="smtp" v-model="projectInput.mailers"
+                <b-checkbox native-value="SMTP" v-model="projectInput.mailers"
                   >SMTP</b-checkbox
                 >
               </b-field>
               <b-field>
-                <b-checkbox native-value="ses" v-model="projectInput.mailers"
+                <b-checkbox native-value="SES" v-model="projectInput.mailers"
                   >SES</b-checkbox
                 >
               </b-field>
               <b-field>
                 <b-checkbox
-                  native-value="mailgun"
+                  native-value="Mailgun"
                   v-model="projectInput.mailers"
                   >Mailgun</b-checkbox
                 >
               </b-field>
               <b-field>
                 <b-checkbox
-                  native-value="sparkpost"
+                  native-value="SparkPost"
                   v-model="projectInput.mailers"
                   >Sparkpost</b-checkbox
                 >
@@ -348,26 +535,26 @@
               >
                 <b-select v-model="projectInput.defaultMailer" expanded>
                   <option
-                    v-if="projectInput.mailers.includes('smtp')"
-                    value="smtp"
+                    v-if="projectInput.mailers.includes('SMTP')"
+                    value="SMTP"
                   >
                     SMTP
                   </option>
                   <option
-                    v-if="projectInput.mailers.includes('ses')"
-                    value="ses"
+                    v-if="projectInput.mailers.includes('SES')"
+                    value="SES"
                   >
                     SES
                   </option>
                   <option
-                    v-if="projectInput.mailers.includes('mailgun')"
-                    value="mailgun"
+                    v-if="projectInput.mailers.includes('Mailgun')"
+                    value="Mailgun"
                   >
                     Mailgun
                   </option>
                   <option
-                    v-if="projectInput.mailers.includes('sparkpost')"
-                    value="sparkpost"
+                    v-if="projectInput.mailers.includes('SparkPost')"
+                    value="SparkPost"
                   >
                     Sparkpost
                   </option>
@@ -613,7 +800,7 @@
               </b-checkbox>
             </b-field>
 
-            <b-field v-if="projectINput.generate.spa">
+            <b-field v-if="projectInput.generate.spa">
               <b-checkbox v-model="table.generateUI"> Generate UI </b-checkbox>
             </b-field>
 
@@ -633,17 +820,57 @@
               <b-checkbox v-model="table.singleton">Singleton</b-checkbox>
             </b-field>
 
-            <b-field label="Columns to show on Listing">
-              <b-taginput
-                v-model="table.indexColumns"
-                ellipsis
-                autocomplete
-                icon="label"
-                placeholder="Select columns"
-                aria-close-label="Remove this column"
-                :data="getColumnsForTable(table)"
-              >
-              </b-taginput>
+            <b-field v-if="webOrApi" label="Basic Operations">
+              <b-checkbox v-model="table.operations.index">
+                Index <span class="has-text-grey">(List)</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.create">
+                Create
+                <span class="has-text-grey">Show Input Page For Create</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.store">
+                Store <span class="has-text-grey">(Save)</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.show">
+                Show
+                <span class="has-text-grey">View full detail</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.edit">
+                Edit <span class="has-text-grey">Show page for edit</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.update">
+                Update
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.destroy">
+                Destroy <span class="has-text-grey">(Delete One)</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.storeMany">
+                Store Many
+                <span class="has-text-grey">(Can be used for bulk upload)</span>
+              </b-checkbox>
+            </b-field>
+            <b-field v-if="webOrApi">
+              <b-checkbox v-model="table.operations.destroyMany">
+                Destroy Many
+                <span class="has-text-grey"
+                  >(Can be used or selecting and deleting multiple items at one
+                  time)</span
+                >
+              </b-checkbox>
             </b-field>
 
             <b-field label="Parent *" v-if="webOrApi && table.singleton">
@@ -658,6 +885,19 @@
                   {{ routeBelongsTo.withModel }}
                 </option>
               </b-select>
+            </b-field>
+
+            <b-field label="Columns to show on Listing">
+              <b-taginput
+                v-model="table.indexColumns"
+                ellipsis
+                autocomplete
+                icon="label"
+                placeholder="Select columns"
+                aria-close-label="Remove this column"
+                :data="getColumnsForTable(table)"
+              >
+              </b-taginput>
             </b-field>
 
             <div
@@ -681,6 +921,58 @@
             </div>
 
             <div class="level">
+              <div class="level-left is-size-4">Custom Operations</div>
+              <div class="level-right">
+                <b-button @click="addCustomOperation(table)" type="is-light">
+                  Add New Operation
+                </b-button>
+              </div>
+            </div>
+            <div
+              class="columns"
+              v-for="(
+                customOperation, customOperationIndex
+              ) in table.customOperations"
+              :key="'customOperationIndex' + customOperationIndex"
+            >
+              <div class="column">
+                <b-field label="Operation Method *">
+                  <b-select v-model="customOperation.method" expanded>
+                    <option>GET</option>
+                    <option>POST</option>
+                    <option>PUT</option>
+                    <option>PATCH</option>
+                    <option>DELETE</option>
+                  </b-select>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field
+                  label="Operation Name *"
+                  message="ex: resolveReport for report resouce"
+                >
+                  <b-input v-model="customOperation.name"></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Item id required">
+                  <b-checkbox v-model="customOperation.singular"
+                    >Item id required?</b-checkbox
+                  >
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Remove">
+                  <b-button
+                    @click="removeCustomOperation(table, customOperationIndex)"
+                    class="is-danger is-light is-fullwidth"
+                    >Delete operation?</b-button
+                  >
+                </b-field>
+              </div>
+            </div>
+
+            <div class="level">
               <div class="level-left is-size-4">Relations</div>
               <div class="level-right">
                 <b-button @click="addRelation(table)" type="is-light">
@@ -696,10 +988,10 @@
               <div class="column">
                 <b-field label="Relation Type *">
                   <b-select v-model="relation.type" expanded>
-                    <option value="hasOne">Has One</option>
-                    <option value="hasMany">Has Many</option>
-                    <option value="manyToMany">Many to many</option>
-                    <option value="belongsTo">Belongs To</option>
+                    <option value="HasOne">Has One</option>
+                    <option value="HasMany">Has Many</option>
+                    <option value="ManyToMany">Many to many</option>
+                    <option value="BelongsTo">Belongs To</option>
                   </b-select>
                 </b-field>
               </div>
@@ -742,7 +1034,7 @@
                   <b-button
                     @click="removeRelation(table, relationIndex)"
                     class="is-danger is-light is-fullwidth"
-                    >Delete this relation</b-button
+                    >Delete relation</b-button
                   >
                 </b-field>
               </div>
@@ -788,7 +1080,7 @@
                         required
                       >
                         <option
-                          v-for="(type, typeIndex) in types"
+                          v-for="(type, typeIndex) in enums.apiInputType"
                           :key="'typeIndex' + typeIndex"
                         >
                           {{ type }}
@@ -808,7 +1100,7 @@
                   </div>
                 </div>
 
-                <div v-if="column.type === 'string'" class="columns">
+                <div v-if="column.type === 'String'" class="columns">
                   <div class="column">
                     <b-field label="Min Length">
                       <b-input v-model="column.meta.minLength"></b-input>
@@ -820,7 +1112,7 @@
                     </b-field>
                   </div>
                 </div>
-                <div v-if="column.type === 'string'" class="columns">
+                <div v-if="column.type === 'String'" class="columns">
                   <div class="column">
                     <b-field
                       label="DB Length"
@@ -832,7 +1124,7 @@
                 </div>
 
                 <div
-                  v-if="['decimal', 'integer'].includes(column.type)"
+                  v-if="['Decimal', 'Integer'].includes(column.type)"
                   class="columns"
                 >
                   <div class="column">
@@ -847,7 +1139,7 @@
                   </div>
                 </div>
 
-                <b-field v-if="column.type === 'decimal'" label="Step">
+                <b-field v-if="column.type === 'Decimal'" label="Step">
                   <b-input
                     v-model="column.input.decimal.step"
                     step="any"
@@ -855,7 +1147,7 @@
                   ></b-input>
                 </b-field>
 
-                <div v-if="column.type === 'file'" class="columns">
+                <div v-if="column.type === 'File'" class="columns">
                   <div class="column">
                     <b-field label="Max Size (ex: 1mb, 512kb, etc)">
                       <b-input v-model="column.meta.maxSize"></b-input>
@@ -880,28 +1172,28 @@
                   label="Default Value"
                 >
                   <b-input
-                    v-if="column.type === 'string'"
+                    v-if="column.type === 'String'"
                     v-model="column.meta.defaultTo"
                   ></b-input>
                   <b-input
-                    v-if="column.type === 'integer'"
+                    v-if="column.type === 'Integer'"
                     v-model="column.meta.defaultTo"
                     type="number"
                   >
                   </b-input>
                   <b-input
-                    v-if="column.type === 'decimal'"
+                    v-if="column.type === 'Decimal'"
                     v-model="column.meta.defaultTo"
                     type="number"
                   >
                   </b-input>
                   <b-switch
-                    v-if="column.type === 'boolean'"
+                    v-if="column.type === 'Boolean'"
                     v-model="column.meta.defaultTo"
                     >{{ column.meta.defaultTo }}
                   </b-switch>
                   <b-datepicker
-                    v-if="column.type === 'date'"
+                    v-if="column.type === 'Date'"
                     v-model="column.meta.defaultTo"
                     >{{ column.meta.defaultTo }}</b-datepicker
                   >
@@ -912,10 +1204,10 @@
                   </b-checkbox>
                 </b-field>
 
-                <b-field v-if="column.type === 'string'">
+                <b-field v-if="column.type === 'String'">
                   <b-checkbox v-model="column.meta.trim">Trim</b-checkbox>
                 </b-field>
-                <b-field v-if="column.type === 'string'">
+                <b-field v-if="column.type === 'String'">
                   <b-checkbox v-model="column.meta.multiline"
                     >Multiline</b-checkbox
                   >
@@ -927,6 +1219,14 @@
                   message="These fields won't return in response, ex: password"
                 >
                   <b-checkbox v-model="column.meta.secret">Secret</b-checkbox>
+                </b-field>
+                <b-field
+                  v-if="!column.meta.secret"
+                  message="Allow searching this column from list page"
+                >
+                  <b-checkbox v-model="column.meta.filterable">
+                    Filterable
+                  </b-checkbox>
                 </b-field>
                 <b-field message="Create database index for faster searching">
                   <b-checkbox v-model="column.meta.index">Index</b-checkbox>
@@ -979,7 +1279,7 @@
 
                     <div
                       class="columns"
-                      v-if="column.input.select.type === 'string'"
+                      v-if="column.input.select.type === 'String'"
                     >
                       <div class="column">
                         <b-field label="Add Options">
@@ -1048,7 +1348,7 @@
 
                     <div
                       class="columns"
-                      v-if="column.input.radio.type === 'string'"
+                      v-if="column.input.radio.type === 'String'"
                     >
                       <div class="column">
                         <b-field label="Add Options">
@@ -1103,7 +1403,7 @@
 
                 <h2>Validation</h2>
                 <b-field
-                  v-if="column.type === 'string'"
+                  v-if="column.type === 'String'"
                   message="Check if field type is email"
                 >
                   <b-checkbox v-model="column.meta.email">Email</b-checkbox>
@@ -1123,28 +1423,90 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import ValidationException from "@/exceptions/ValidationException";
+import {
+  DATABASE,
+  MAILER,
+  PROJECT_TYPE,
+  STORAGE,
+  BACKEND,
+  FRONTEND,
+  RELATION_TYPE,
+  REQUEST_METHOD,
+  API_INPUT_TYPE,
+  UI_INPUT_TYPE,
+} from "../constants/";
 
 export default {
   name: "ProjectCreate",
+
+  created() {
+    if (this.$route.params.id) {
+      const id = parseInt(this.$route.params.id, 10);
+      this.editMode.enabled = true;
+      this.editMode.id = id;
+      const project = this.items.find((t) => t.id === id);
+
+      // Prefill all the fields
+      this.projectInput = JSON.parse(project.rawInput);
+    }
+  },
+
   data() {
     return {
-      types: ["string", "decimal", "integer", "date", "boolean", "file"],
-      inputTypes: ["input", "select", "radio", "checkbox"], // String input types
+      editMode: {
+        enabled: false,
+        id: null,
+      },
+      enums: {
+        database: [DATABASE.MYSQL, DATABASE.POSTGRESQL],
+        mailer: [MAILER.SMTP, MAILER.SES, MAILER.MAILGUN, MAILER.SPARK_POST],
+        projectType: [PROJECT_TYPE.API, PROJECT_TYPE.SSR],
+        storage: [STORAGE.LOCAL, STORAGE.S3, STORAGE.GCS],
+        backend: [BACKEND.ADONIS],
+        frontend: [FRONTEND.BUEFY],
+        relationType: [
+          RELATION_TYPE.HAS_ONE,
+          RELATION_TYPE.HAS_MANY,
+          RELATION_TYPE.BELONGS_TO,
+          RELATION_TYPE.MANY_TO_MANY,
+        ],
+        requestMethod: [
+          REQUEST_METHOD.GET,
+          REQUEST_METHOD.POST,
+          REQUEST_METHOD.PUT,
+          REQUEST_METHOD.PATCH,
+          REQUEST_METHOD.DELETE,
+        ],
+        apiInputType: [
+          API_INPUT_TYPE.STRING,
+          API_INPUT_TYPE.DECIMAL,
+          API_INPUT_TYPE.INTEGER,
+          API_INPUT_TYPE.DATE,
+          API_INPUT_TYPE.BOOLEAN,
+          API_INPUT_TYPE.FILE,
+        ],
+      },
+      inputTypes: [
+        UI_INPUT_TYPE.INPUT,
+        UI_INPUT_TYPE.SELECT,
+        UI_INPUT_TYPE.RADIO,
+        UI_INPUT_TYPE.CHECKBOX,
+      ], // String input types
       projectInput: {
         name: "",
-        database: "mysql",
+        database: DATABASE.MYSQL,
         mailEnabled: false,
-        defaultMailer: "smtp",
-        mailers: ["smtp"],
+        defaultMailer: MAILER.SMTP,
+        mailers: [MAILER.SMTP],
         storageEnabled: false,
-        storageDrivers: ["local"],
-        defaultStorageDriver: "local",
-        types: ["api"],
+        storageDrivers: [STORAGE.LOCAL],
+        defaultStorageDriver: STORAGE.LOCAL,
+        types: [PROJECT_TYPE.API],
         camelCaseStrategy: true,
 
         tech: {
-          backend: "adonis",
-          frontend: "buefy",
+          backend: BACKEND.ADONIS,
+          frontend: FRONTEND.BUEFY,
         },
         generate: {
           api: {
@@ -1173,12 +1535,25 @@ export default {
           passwordReset: true,
           passwordChange: true,
           table: {
-            generateRoute: false,
-            generateController: false,
-            generateModel: false,
-            generateMigration: false,
-            operations: [],
+            generateRoute: true,
+            generateController: true,
+            generateModel: true,
+            generateMigration: false, // Doesn't matter, it will be generated either way
+            generateUI: true,
             relations: [],
+            operations: {
+              index: true,
+              create: true,
+              store: true,
+              show: true,
+              edit: true,
+              update: true,
+              destroy: true,
+              storeMany: true,
+              destroyMany: true,
+            },
+            indexColumns: ["Name", "Email"],
+            customOperations: [],
             name: "User",
             timestamps: true,
             columns: [],
@@ -1188,6 +1563,24 @@ export default {
           user: 1,
           tenant: 0,
           table: null,
+        },
+        rbac: {
+          enabled: false,
+          multipleRoles: false,
+          roles: [
+            {
+              name: "Admin",
+              description: "User with full access to everything",
+              default: false,
+            },
+          ], // When admin can't create roles, they are hardcoded
+          permissions: [], // List of all permissions
+          matrix: [
+            {
+              role: "Admin",
+              permissions: [],
+            },
+          ],
         },
         tables: [],
       },
@@ -1201,7 +1594,10 @@ export default {
 
     async store() {
       try {
-        await this.storeAction(this.projectInput);
+        // Pre process input
+        // Deep copy input
+        const input = JSON.parse(JSON.stringify(this.projectInput));
+        await this.storeAction(input);
         this.$router.push("/project");
         this.$buefy.toast.open({
           message: "project created",
@@ -1224,7 +1620,7 @@ export default {
 
     addTable() {
       this.projectInput.tables.push({
-        name: `Table ${this.projectInput.tables.length + 1}`,
+        name: "NewTable",
         timestamps: true,
         generateRoute: true,
         generateModel: true,
@@ -1235,14 +1631,18 @@ export default {
         parent: null,
         routeParents: [],
         indexColumns: [],
-        operations: [
-          "index",
-          "store",
-          "update",
-          "destroy",
-          "storeMany",
-          "destroyMany",
-        ],
+        operations: {
+          index: true,
+          create: true,
+          store: true,
+          show: true,
+          edit: true,
+          update: true,
+          destroy: true,
+          storeMany: true,
+          destroyMany: true,
+        },
+        customOperations: [], // custom operations are based on resource, eg: ticket can have resolve operation.
         columns: [],
         relations: [],
       });
@@ -1252,8 +1652,16 @@ export default {
       this.projectInput.tables.splice(index, 1);
     },
 
+    removeRole(index) {
+      this.projectInput.rbac.roles.splice(index, 1);
+    },
+
     removeRelation(table, relationIndex) {
       table.relations.splice(relationIndex, 1);
+    },
+
+    removeCustomOperation(table, customOperationIndex) {
+      table.customOperations.splice(customOperationIndex, 1);
     },
 
     removeColumn(table, columnIndex) {
@@ -1265,10 +1673,11 @@ export default {
         meta: {
           required: false,
           expose: true,
+          filterable: false,
           trim: false,
         },
         input: {
-          type: "input",
+          type: "Input",
           decimal: {
             step: "any",
           },
@@ -1289,6 +1698,14 @@ export default {
       });
     },
 
+    addCustomOperation(table) {
+      table.customOperations.push({
+        name: "",
+        method: "GET",
+        singular: false,
+      });
+    },
+
     addSelectOption(column) {
       column.input.select.options.push({ value: "", label: "" });
     },
@@ -1299,7 +1716,6 @@ export default {
 
     addRelation(table) {
       table.relations.push({
-        type: "oneToOne",
         withModel: null,
         name: "",
         required: true, // Only applicable to belongsTo
@@ -1312,29 +1728,181 @@ export default {
     getBelongsToList(table) {
       return table.relations.filter(
         (relation) =>
-          relation.type === "belongsTo" && !relation.withModel.startsWith("$")
+          relation.type === "BelongsTo" && !relation.withModel?.startsWith("$")
       );
     },
     getBelongsToListFull(table) {
       return table.relations.filter(
-        (relation) => relation.type === "belongsTo"
+        (relation) => relation.type === "BelongsTo"
       );
     },
 
     getColumnsForTable(table) {
       return table.columns.map((column) => column.name);
     },
+
+    /**
+     * Toggle a permission in matrix
+     */
+    togglePermission(role, permission) {
+      if (role.permissions.includes(permission.name)) {
+        role.permissions.splice(role.permissions.indexOf(permission.name), 1);
+      } else {
+        role.permissions.push(permission.name);
+      }
+    },
+
+    /**
+     * Checks if a permission exits in matrix for a role name
+     */
+    hasPermission(role, permission) {
+      return role.permissions.includes(permission.name);
+    },
+
+    addRole() {
+      this.projectInput.rbac.roles.push({
+        name: "",
+        description: "",
+      });
+    },
+
+    grantAllPermissionToRole(role) {
+      while (role.permissions.length > 0) {
+        role.permissions.pop();
+      }
+      this.projectInput.rbac.permissions.map((permission) => {
+        if (!role.permissions.includes(permission.name))
+          role.permissions.push(permission.name);
+      });
+    },
+
+    generatePermissionsAndMatrix() {
+      const permissions = [];
+      const operations = [
+        "index",
+        "create",
+        "store",
+        "show",
+        "edit",
+        "update",
+        "destroy",
+        "storeMany",
+        "destroyMany",
+      ];
+      const roleModelPermissions = [];
+      const permissionModelPermissions = [];
+      const authModelPermissions = [];
+
+      operations.map((operation) => {
+        roleModelPermissions.push({
+          name: `Role:${operation}`,
+          description: "",
+        });
+        permissionModelPermissions.push({
+          name: `Permission:${operation}`,
+          description: "",
+        });
+        authModelPermissions.push({
+          name: `${this.projectInput.auth.table.name}:${operation}`,
+          description: "",
+        });
+      });
+      permissions.push(
+        ...roleModelPermissions,
+        ...permissionModelPermissions,
+        ...authModelPermissions
+      );
+      this.projectInput.tables.forEach((table) => {
+        const operations = table.operations;
+        if (operations.index) {
+          permissions.push({
+            name: `${table.name}:index`,
+            description: "",
+          });
+        }
+        if (operations.create) {
+          permissions.push({
+            name: `${table.name}:create`,
+            description: "",
+          });
+        }
+        if (operations.store) {
+          permissions.push({
+            name: `${table.name}:store`,
+            description: "",
+          });
+        }
+        if (operations.show) {
+          permissions.push({
+            name: `${table.name}:show`,
+            description: "",
+          });
+        }
+        if (operations.edit) {
+          permissions.push({
+            name: `${table.name}:edit`,
+            description: "",
+          });
+        }
+        if (operations.update) {
+          permissions.push({
+            name: `${table.name}:update`,
+            description: "",
+          });
+        }
+        if (operations.destroy) {
+          permissions.push({
+            name: `${table.name}:destroy`,
+            description: "",
+          });
+        }
+        if (operations.storeMany) {
+          permissions.push({
+            name: `${table.name}:storeMany`,
+            description: "",
+          });
+        }
+        if (operations.destroyMany) {
+          permissions.push({
+            name: `${table.name}:destroyMany`,
+            description: "",
+          });
+        }
+        if (
+          Array.isArray(table.customOperations) &&
+          table.customOperations.length
+        ) {
+          table.customOperations.map((customOperation) => {
+            permissions.push({
+              name: `${table.name}:${customOperation.name}`,
+            });
+          });
+        }
+      });
+      this.projectInput.rbac.permissions = permissions;
+      // Empty matrix array
+      while (this.projectInput.rbac.matrix.length) {
+        this.projectInput.rbac.matrix.pop();
+      }
+      this.projectInput.rbac.roles.forEach((role) =>
+        this.projectInput.rbac.matrix.push({
+          role: role.name,
+          permissions: [],
+        })
+      );
+    },
   },
 
   computed: {
     filteredTypes() {
-      return ["api", "ssr"];
+      return [PROJECT_TYPE.API, PROJECT_TYPE.SSR];
     },
     ...mapState("auth", {
       user: (state) => state.user,
     }),
     ...mapState("project", {
-      countries: (state) => state.items,
+      items: (state) => state.items,
+      meta: (state) => state.meta,
       loading: (state) => state.loading,
     }),
     isLoading() {
