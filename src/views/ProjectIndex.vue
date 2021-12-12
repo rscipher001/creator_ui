@@ -106,8 +106,8 @@ export default {
 
     index() {
       this.indexAction({
-        size: 1000,
-        page: this.current,
+        pageSize: 10,
+        pageNo: this.current,
       });
     },
 

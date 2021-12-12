@@ -332,12 +332,6 @@
                 </b-checkbox>
               </b-field>
 
-              <b-field>
-                <b-checkbox v-model="projectInput.rbac.canAdminCreateRoles">
-                  Can admin create roles?
-                </b-checkbox>
-              </b-field>
-
               <div class="level">
                 <div class="level-left is-size-4">Roles</div>
                 <div class="level-right">
@@ -1544,7 +1538,8 @@ export default {
             generateRoute: true,
             generateController: true,
             generateModel: true,
-            generateMigration: false,
+            generateMigration: false, // Doesn't matter, it will be generated either way
+            generateUI: true,
             relations: [],
             operations: {
               index: true,
@@ -1572,7 +1567,6 @@ export default {
         rbac: {
           enabled: false,
           multipleRoles: false,
-          canAdminCreateRoles: false,
           roles: [
             {
               name: "Admin",
