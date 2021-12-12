@@ -900,6 +900,14 @@
               </b-taginput>
             </b-field>
 
+            <b-field>
+              <b-select expanded v-model="table.defaultColumn">
+                <option v-for="(c, index) in table.columns" :key="index">
+                  {{ c.name }}
+                </option>
+              </b-select>
+            </b-field>
+
             <div
               class="columns"
               v-if="table.generateRoute && getBelongsToList(table).length"
