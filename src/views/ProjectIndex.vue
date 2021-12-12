@@ -171,7 +171,7 @@ export default {
     }),
     _index: debounce(function () {
       this.index();
-    }, 2000),
+    }, 500),
 
     index() {
       this.indexAction({
