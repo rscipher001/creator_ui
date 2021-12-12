@@ -7,11 +7,43 @@
           <div class="level">
             <div class="level-left is-size-3">{{ meta.total }} Projects</div>
             <div class="level-right">
-              <b-button tag="router-link" to="/project/create" type="is-white"
+              <b-button tag="router-link" to="/project/create" type="is-primary"
                 >New</b-button
               >
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section py-4">
+      <div class="columns box py-0">
+        <div class="column">
+          <b-field label="Page Size">
+            <b-select
+              v-model="currentPageSize"
+              placeholder="Select page size"
+              expanded
+            >
+              <option
+                v-for="(option, index) in [10, 25, 50, 100, 200, 500]"
+                :value="option"
+                :key="index"
+              >
+                {{ option }}
+              </option>
+            </b-select>
+          </b-field>
+        </div>
+        <div class="column">
+          <b-field label="Name">
+            <b-input v-model="filter.name" maxlength="127"></b-input>
+          </b-field>
+        </div>
+        <div class="column">
+          <b-field label="Status">
+            <b-input v-model="filter.status" maxlength="127"></b-input>
+          </b-field>
         </div>
       </div>
     </div>
@@ -89,7 +121,7 @@
         <div class="column px-0">
           <b-pagination
             class="mt-5"
-            v-model="current"
+            v-model="currentPageNo"
             :total="meta.total"
             :per-page="meta.perPage"
             order="is-centered"
@@ -106,6 +138,7 @@
 </template>
 
 <script>
+import debounce from "lodash/debounce";
 import { mapActions, mapState } from "vuex";
 
 export default {
@@ -113,7 +146,12 @@ export default {
 
   data() {
     return {
-      current: 1,
+      currentPageNo: 1,
+      currentPageSize: 10,
+      filter: {
+        name: "",
+        status: "",
+      },
       editMode: {
         projectId: null,
       },
@@ -131,11 +169,14 @@ export default {
       destroyAction: "destroy",
       generateSignedUrl: "generateSignedUrl",
     }),
+    _index: debounce(function () {
+      this.index();
+    }, 2000),
 
     index() {
       this.indexAction({
-        pageSize: 10,
-        pageNo: this.current,
+        pageSize: this.currentPageSize,
+        pageNo: this.currentPageNo,
       });
     },
 
@@ -187,8 +228,18 @@ export default {
   },
 
   watch: {
-    async current() {
-      return this.index();
+    async currentPageNo() {
+      return this._index();
+    },
+    async currentPageSize() {
+      return this._index();
+    },
+
+    "filter.name": function () {
+      this._index();
+    },
+    "filter.email": function () {
+      this._index();
     },
   },
 
