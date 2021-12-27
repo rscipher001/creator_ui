@@ -1197,6 +1197,14 @@
                     Filterable
                   </b-checkbox>
                 </b-field>
+                <b-field
+                  v-if="!column.meta.secret"
+                  message="Sort data by this column"
+                >
+                  <b-checkbox v-model="column.meta.sortable">
+                    Sortable
+                  </b-checkbox>
+                </b-field>
                 <b-field message="Create database index for faster searching">
                   <b-checkbox v-model="column.meta.index">Index</b-checkbox>
                 </b-field>
@@ -1722,6 +1730,7 @@ export default {
           required: false,
           expose: true,
           filterable: false,
+          sortable: false,
           trim: false,
         },
         input: {
