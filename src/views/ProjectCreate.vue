@@ -278,9 +278,16 @@
                   <b-input v-model="relation.name"></b-input>
                 </b-field>
               </div>
-              <div class="column">
+              <div v-if="relation.type !== 'ManyToMany'" class="column">
                 <b-field label="Required">
                   <b-checkbox v-model="relation.required">Required</b-checkbox>
+                </b-field>
+              </div>
+              <div v-if="relation.type === 'ManyToMany'" class="column">
+                <b-field label="Show On Create Page">
+                  <b-checkbox v-model="relation.showInputOnCreatePage">
+                    Show On Create Page
+                  </b-checkbox>
                 </b-field>
               </div>
               <div class="column">
@@ -1032,9 +1039,16 @@
                   <b-input v-model="relation.name"></b-input>
                 </b-field>
               </div>
-              <div class="column">
+              <div v-if="relation.type !== 'ManyToMany'" class="column">
                 <b-field label="Required">
                   <b-checkbox v-model="relation.required">Required</b-checkbox>
+                </b-field>
+              </div>
+              <div v-if="relation.type === 'ManyToMany'" class="column">
+                <b-field label="Show On Create Page">
+                  <b-checkbox v-model="relation.showInputOnCreatePage">
+                    Show On Create Page
+                  </b-checkbox>
                 </b-field>
               </div>
               <div class="column">
@@ -1421,9 +1435,12 @@
           </div>
         </div>
       </b-collapse>
-      <b-button native-type="submit" type="is-primary is-fullwidth mt-4">
-        Generate
-      </b-button>
+      <div class="buttons mt-4">
+        <b-button native-type="submit" type="is-primary">Generate</b-button>
+        <b-button @click="storeAsDraft" type="is-secondary">
+          Save as Draft
+        </b-button>
+      </div>
     </form>
   </section>
 </template>
@@ -1598,12 +1615,14 @@ export default {
   methods: {
     ...mapActions("project", {
       storeAction: "store",
+      storeAsDraftAction: "storeAsDraft",
     }),
 
     async store() {
       try {
         // Pre process input
-        // Deep copy input
+        // Deep copy input because it may be snakeCase before sending to server
+        // We don't want to modify original data
         const input = JSON.parse(JSON.stringify(this.projectInput));
         await this.storeAction(input);
         this.$router.push("/project");
@@ -1614,6 +1633,32 @@ export default {
         });
       } catch (e) {
         let message = "Unable to create project";
+        if (e instanceof ValidationException) {
+          this.errors = e.errors;
+          message = "Validation failed";
+        }
+        this.$buefy.toast.open({
+          message,
+          type: "is-danger",
+          position: "is-bottom-right",
+        });
+      }
+    },
+
+    async storeAsDraft() {
+      try {
+        // Deep copy input because it may be snakeCase before sending to server
+        // We don't want to modify original data
+        const input = JSON.parse(JSON.stringify(this.projectInput));
+        await this.storeAsDraftAction(input);
+        this.$router.push("/project");
+        this.$buefy.toast.open({
+          message: "Project saved as draft",
+          position: "is-bottom-right",
+          type: "is-success",
+        });
+      } catch (e) {
+        let message = "Unable to save project";
         if (e instanceof ValidationException) {
           this.errors = e.errors;
           message = "Validation failed";
@@ -1727,6 +1772,7 @@ export default {
         withModel: null,
         name: "",
         required: true, // Only applicable to belongsTo
+        showInputOnCreatePage: false, // Applicable to many to many
       });
     },
 

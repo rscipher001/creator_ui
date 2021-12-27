@@ -11,6 +11,7 @@ export default {
       store: false,
       update: false,
       destroy: false,
+      storeAsDraft: false,
       storeMultiple: false,
     },
     meta: {},
@@ -52,6 +53,21 @@ export default {
         commit("add", item);
       } catch (e) {
         commit("setLoading", { key: "store", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async storeAsDraft({ commit }, input) {
+      commit("setLoading", { key: "storeAsDraft", value: true });
+      try {
+        const item = await HttpService.authPost(`/${resource}/draft`, input);
+        commit("setLoading", { key: "storeAsDraft", value: false });
+        commit("add", item);
+      } catch (e) {
+        commit("setLoading", { key: "storeAsDraft", value: false });
         if (e.response && e.response.status === 422) {
           throw new ValidationException(e.message, e.response.data.errors);
         }

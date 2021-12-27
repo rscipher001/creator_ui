@@ -52,6 +52,9 @@
       <div class="columns box">
         <div class="column">
           <b-table v-if="items.length" :data="items" bordered>
+            <b-table-column field="id" label="ID" v-slot="props" sortable>
+              {{ props.row.id }}
+            </b-table-column>
             <b-table-column field="name" label="Name" v-slot="props">
               {{ props.row.name }}
             </b-table-column>
@@ -184,6 +187,10 @@ export default {
       this.$router.push(`/project/${projectId}/edit`);
     },
 
+    // sortBy(a, b) {
+    //   // console.log({ a, b });
+    // },
+
     destroy(id) {
       this.$buefy.dialog.confirm({
         title: "Deleting Project",
@@ -229,7 +236,7 @@ export default {
 
   watch: {
     async currentPageNo() {
-      return this._index();
+      return this.index();
     },
     async currentPageSize() {
       return this._index();
