@@ -342,8 +342,8 @@
                 </div>
                 <div class="column">
                   <b-field
-                    label="Description"
-                    message="Description of the role"
+                    label="Default"
+                    message="Automatically assign this role to user"
                   >
                     <b-switch v-model="role.default">Default</b-switch>
                   </b-field>
@@ -1582,10 +1582,45 @@ export default {
       storeAsDraftAction: "storeAsDraft",
     }),
 
+    async prechecks() {
+      if (this.form.auth.passwordReset && !this.form.mailEnabled) {
+        throw new Error("Disable password reset option or enable mailing");
+      }
+      if (this.form.tenantSettings.tenant && !this.form.tenantSettings.table) {
+        throw new Error(
+          "Tenant table should be selected when tenant option is enabled"
+        );
+      }
+      if (this.form.rbac.enabled) {
+        let defaultRoleCount = 0;
+        for (let i = 0; i < this.form.rbac.roles.length; i++) {
+          const role = this.form.rbac.roles[i];
+          console.log({ role });
+          if (role.default) {
+            defaultRoleCount++;
+          }
+        }
+        if (defaultRoleCount === 0) {
+          throw new Error("Select a default role");
+        }
+        if (defaultRoleCount > 1) {
+          throw new Error("You can't have more than 1 default role");
+        }
+        for (let i = 0; i < this.form.rbac.matrix.length; i++) {
+          const role = this.form.rbac.matrix[i];
+          if (!role.permissions.length) {
+            throw new Error(`${role.role} have no permissions`);
+          }
+        }
+      }
+
+      return true;
+    },
+
     async store() {
       try {
+        await this.prechecks();
         this.errors = {};
-        // Pre process input
         // Deep copy input because it may be snakeCase before sending to server
         // We don't want to modify original data
         const input = JSON.parse(JSON.stringify(this.form));
@@ -1601,10 +1636,10 @@ export default {
         if (e instanceof ValidationException) {
           this.errors = e.errors;
           message = "Validation failed";
-        } else {
-          if (e.response.data && e.response.data.error) {
-            message = e.response.data.error;
-          }
+        } else if (e.response && e.response.data && e.response.data.error) {
+          message = e.response.data.error;
+        } else if (e.message) {
+          message = e.message;
         }
         this.$buefy.toast.open({
           message,
@@ -1632,11 +1667,12 @@ export default {
         if (e instanceof ValidationException) {
           this.errors = e.errors;
           message = "Validation failed";
-        } else {
-          if (e.response.data && e.response.data.error) {
-            message = e.response.data.error;
-          }
+        } else if (e.response.data && e.response.data.error) {
+          message = e.response.data.error;
+        } else if (e.message) {
+          message = e.message;
         }
+
         this.$buefy.toast.open({
           message,
           type: "is-danger",
