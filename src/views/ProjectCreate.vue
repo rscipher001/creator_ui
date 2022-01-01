@@ -221,6 +221,9 @@
                 </b-button>
               </div>
             </div>
+            <b-message type="is-info">
+              For Auth and Tenant relations login user will be used
+            </b-message>
             <div
               class="columns"
               v-for="(relation, relationIndex) in form.auth.table.relations"
@@ -241,6 +244,18 @@
                   <b-select v-model="relation.withModel" expanded required>
                     <option value="$auth">
                       {{ form.auth.table.name }} (Auth)
+                    </option>
+                    <option value="$nonAuth">
+                      {{ form.auth.table.name }}
+                    </option>
+                    <option v-if="form.tenantSettings.tenant" value="$tenant">
+                      {{ form.tenantSettings.table }} (Tenant)
+                    </option>
+                    <option
+                      v-if="form.tenantSettings.tenant"
+                      value="$nonTenant"
+                    >
+                      {{ form.tenantSettings.table }}
                     </option>
                     <option v-for="(t, ti) in form.tables" :key="'ti' + ti">
                       {{ t.name }}
