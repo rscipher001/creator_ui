@@ -251,12 +251,6 @@
                     <option v-if="form.tenantSettings.tenant" value="$tenant">
                       {{ form.tenantSettings.table }} (Tenant)
                     </option>
-                    <option
-                      v-if="form.tenantSettings.tenant"
-                      value="$nonTenant"
-                    >
-                      {{ form.tenantSettings.table }}
-                    </option>
                     <option v-for="(t, ti) in form.tables" :key="'ti' + ti">
                       {{ t.name }}
                     </option>
