@@ -978,7 +978,10 @@
                     <option value="$auth">
                       {{ form.auth.table.name }} (Auth)
                     </option>
-                    <option v-if="form.tenantSettings.table" value="$tenant">
+                    <option value="$nonAuth">
+                      {{ form.auth.table.name }}
+                    </option>
+                    <option v-if="form.tenantSettings.tenant" value="$tenant">
                       {{ form.tenantSettings.table }} (Tenant)
                     </option>
                     <option v-for="(t, ti) in form.tables" :key="'ti' + ti">
