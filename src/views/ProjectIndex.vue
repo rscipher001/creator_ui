@@ -7,9 +7,13 @@
           <div class="level">
             <div class="level-left is-size-3">{{ meta.total }} Projects</div>
             <div class="level-right">
-              <b-button tag="router-link" to="/project/create" type="is-primary"
-                >New</b-button
+              <b-button
+                tag="router-link"
+                to="/project/create"
+                type="is-primary"
               >
+                New
+              </b-button>
             </div>
           </div>
         </div>
@@ -42,7 +46,16 @@
         </div>
         <div class="column">
           <b-field label="Status">
-            <b-input v-model="filter.status" maxlength="127"></b-input>
+            <b-select v-model="filter.status" expanded>
+              <option value="">All</option>
+              <option
+                v-for="(s, si) in ['draft', 'queued', 'done']"
+                :value="s"
+                :key="si"
+              >
+                {{ capitalize(s) }}
+              </option>
+            </b-select>
           </b-field>
         </div>
       </div>
@@ -51,12 +64,23 @@
     <div class="section py-4">
       <div class="columns box">
         <div class="column">
-          <b-table v-if="items.length" :data="items" bordered>
+          <b-table
+            v-if="items.length"
+            :data="items"
+            :default-sort="['id', 'desc']"
+            @sort="sort"
+            backend-sorting
+            hoverable
+            bordered
+          >
+            <b-table-column field="id" label="ID" v-slot="props" sortable>
+              {{ props.row.id }}
+            </b-table-column>
             <b-table-column field="name" label="Name" v-slot="props">
               {{ props.row.name }}
             </b-table-column>
-            <b-table-column field="email" label="Status" v-slot="props">
-              {{ props.row.status }}
+            <b-table-column field="status" label="Status" v-slot="props">
+              {{ capitalize(props.row.status) }}
             </b-table-column>
             <b-table-column label="Action" v-slot="props">
               <b-dropdown aria-role="list">
@@ -69,8 +93,16 @@
                   />
                 </template>
                 <b-dropdown-item
+                  @click="show(props.row.id)"
+                  aria-role="showitem"
+                >
+                  Show
+                </b-dropdown-item>
+                <b-dropdown-item
                   v-if="
-                    props.row.input && props.row.input.generate.api.generate
+                    props.row.input &&
+                    props.row.input.generate.api.generate &&
+                    props.row.status === 'done'
                   "
                   @click="download(props.row.id, 'api')"
                   aria-role="listitem"
@@ -78,18 +110,22 @@
                 >
                 <b-dropdown-item
                   v-if="
-                    props.row.input && props.row.input.generate.spa.generate
+                    props.row.input &&
+                    props.row.input.generate.spa.generate &&
+                    props.row.status === 'done'
                   "
                   @click="download(props.row.id, 'spa')"
                   aria-role="listitem"
                   >Download SPA Code</b-dropdown-item
                 >
                 <b-dropdown-item
+                  v-if="props.row.status === 'draft'"
                   @click="edit(props.row.id)"
                   aria-role="edititem"
                   >Edit</b-dropdown-item
                 >
                 <b-dropdown-item
+                  v-if="props.row.status === 'draft'"
                   @click="destroy(props.row.id)"
                   aria-role="listitem"
                   >Delete</b-dropdown-item
@@ -116,7 +152,7 @@
       </div>
     </div>
 
-    <div class="section py-4">
+    <div v-if="meta.total > 1" class="section py-4">
       <div class="columns">
         <div class="column px-0">
           <b-pagination
@@ -139,6 +175,7 @@
 
 <script>
 import debounce from "lodash/debounce";
+import capitalize from "lodash/capitalize";
 import { mapActions, mapState } from "vuex";
 
 export default {
@@ -148,6 +185,8 @@ export default {
     return {
       currentPageNo: 1,
       currentPageSize: 10,
+      sortBy: "id",
+      sortType: "desc",
       filter: {
         name: "",
         status: "",
@@ -169,19 +208,37 @@ export default {
       destroyAction: "destroy",
       generateSignedUrl: "generateSignedUrl",
     }),
+
+    capitalize,
+
     _index: debounce(function () {
       this.index();
     }, 500),
 
     index() {
-      this.indexAction({
+      const queryParams = {
         pageSize: this.currentPageSize,
         pageNo: this.currentPageNo,
-      });
+        sortBy: this.sortBy,
+        sortType: this.sortType,
+      };
+      if (this.filter.name) queryParams.name = this.filter.name;
+      if (this.filter.status) queryParams.status = this.filter.status;
+      this.indexAction(queryParams);
     },
 
     edit(projectId) {
       this.$router.push(`/project/${projectId}/edit`);
+    },
+
+    show(projectId) {
+      this.$router.push(`/project/${projectId}`);
+    },
+
+    sort(sortBy, sortType) {
+      this.sortBy = sortBy;
+      this.sortType = sortType;
+      this.index();
     },
 
     destroy(id) {
@@ -229,7 +286,7 @@ export default {
 
   watch: {
     async currentPageNo() {
-      return this._index();
+      return this.index();
     },
     async currentPageSize() {
       return this._index();
@@ -238,7 +295,7 @@ export default {
     "filter.name": function () {
       this._index();
     },
-    "filter.email": function () {
+    "filter.status": function () {
       this._index();
     },
   },

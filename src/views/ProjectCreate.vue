@@ -36,8 +36,12 @@
           <div class="content">
             <div class="columns">
               <div class="column">
-                <b-field label="Name *">
-                  <b-input v-model="projectInput.name" required></b-input>
+                <b-field
+                  label="Name *"
+                  :type="errors.name ? 'is-danger' : ''"
+                  :message="errors.name"
+                >
+                  <b-input v-model="form.name" required></b-input>
                 </b-field>
               </div>
               <div class="column">
@@ -46,7 +50,7 @@
                   message="It can be API or SSR or both"
                 >
                   <b-taginput
-                    v-model="projectInput.types"
+                    v-model="form.types"
                     :data="filteredTypes"
                     autocomplete
                     placeholder="Select Project Type"
@@ -60,33 +64,28 @@
               label="Camelcase / Snakcase Convention *"
               message="Database table and columnName is based on this, Code is always camelCase"
             >
-              <b-checkbox v-model="projectInput.camelCaseStrategy">
-                {{
-                  projectInput.camelCaseStrategy ? "camelCase" : "snake_case"
-                }}
+              <b-checkbox v-model="form.camelCaseStrategy">
+                {{ form.camelCaseStrategy ? "camelCase" : "snake_case" }}
               </b-checkbox>
             </b-field>
 
             <b-field>
-              <b-checkbox v-model="projectInput.generate.api.generate">
+              <b-checkbox v-model="form.generate.api.generate">
                 Generate API
               </b-checkbox>
             </b-field>
             <b-field>
-              <b-checkbox v-model="projectInput.generate.spa.generate">
+              <b-checkbox v-model="form.generate.spa.generate">
                 Generate SPA
               </b-checkbox>
             </b-field>
             <b-field>
-              <b-checkbox
-                disabled
-                v-model="projectInput.generate.website.generate"
-              >
+              <b-checkbox disabled v-model="form.generate.website.generate">
                 Generate Traditional Website (Not available yet)
               </b-checkbox>
             </b-field>
             <b-field>
-              <b-checkbox disabled v-model="projectInput.generate.app.generate">
+              <b-checkbox disabled v-model="form.generate.app.generate">
                 Generate App (Not available yet)
               </b-checkbox>
             </b-field>
@@ -115,53 +114,42 @@
         <div class="card-content">
           <div class="content">
             <b-field>
-              <b-checkbox
-                native-value="local"
-                v-model="projectInput.storageEnabled"
+              <b-checkbox native-value="local" v-model="form.storageEnabled"
                 >Storage Enabled</b-checkbox
               >
             </b-field>
-            <template v-if="projectInput.storageEnabled">
+            <template v-if="form.storageEnabled">
               <b-field label="Select Storage Drivers">
-                <b-checkbox
-                  native-value="Local"
-                  v-model="projectInput.storageDrivers"
+                <b-checkbox native-value="Local" v-model="form.storageDrivers"
                   >Local</b-checkbox
                 >
               </b-field>
               <b-field>
-                <b-checkbox
-                  native-value="S3"
-                  v-model="projectInput.storageDrivers"
+                <b-checkbox native-value="S3" v-model="form.storageDrivers"
                   >AWS S3</b-checkbox
                 >
               </b-field>
               <b-field>
-                <b-checkbox
-                  native-value="GCS"
-                  v-model="projectInput.storageDrivers"
+                <b-checkbox native-value="GCS" v-model="form.storageDrivers"
                   >Google Cloud Storage</b-checkbox
                 >
               </b-field>
               <b-field
-                v-if="projectInput.storageDrivers.length"
+                v-if="form.storageDrivers.length"
                 label="Default Storage Driver"
               >
-                <b-select v-model="projectInput.defaultStorageDriver" expanded>
+                <b-select v-model="form.defaultStorageDriver" expanded>
                   <option
-                    v-if="projectInput.storageDrivers.includes('Local')"
+                    v-if="form.storageDrivers.includes('Local')"
                     value="Local"
                   >
                     Local
                   </option>
-                  <option
-                    v-if="projectInput.storageDrivers.includes('S3')"
-                    value="S3"
-                  >
+                  <option v-if="form.storageDrivers.includes('S3')" value="S3">
                     AWS S3
                   </option>
                   <option
-                    v-if="projectInput.storageDrivers.includes('GCS')"
+                    v-if="form.storageDrivers.includes('GCS')"
                     value="GCS"
                   >
                     Google Cloud Storage
@@ -198,32 +186,29 @@
               label="Auth Table *"
               message="Use PascalCase, it will be internally converted according to conventions"
             >
-              <b-input
-                v-model="projectInput.auth.table.name"
-                required
-              ></b-input>
+              <b-input v-model="form.auth.table.name" required></b-input>
             </b-field>
 
             <b-field>
-              <b-checkbox v-model="projectInput.auth.register">
+              <b-checkbox v-model="form.auth.register">
                 Generate Register Page
               </b-checkbox>
             </b-field>
 
             <b-field v-if="webOrApi">
-              <b-checkbox v-model="projectInput.auth.table.timestamps">
+              <b-checkbox v-model="form.auth.table.timestamps">
                 Generate Timestamps
               </b-checkbox>
             </b-field>
 
             <b-field>
-              <b-checkbox v-model="projectInput.auth.passwordReset">
+              <b-checkbox v-model="form.auth.passwordReset">
                 Generate Password Reset
               </b-checkbox>
             </b-field>
 
             <b-field>
-              <b-checkbox v-model="projectInput.auth.passwordChange">
+              <b-checkbox v-model="form.auth.passwordChange">
                 Generate Password Change
               </b-checkbox>
             </b-field>
@@ -231,18 +216,17 @@
             <div class="level">
               <div class="level-left is-size-4">Relations</div>
               <div class="level-right">
-                <b-button
-                  @click="addRelation(projectInput.auth.table)"
-                  type="is-light"
-                >
+                <b-button @click="addRelation(form.auth.table)" type="is-light">
                   Add New Relation
                 </b-button>
               </div>
             </div>
+            <b-message type="is-info">
+              For Auth and Tenant relations login user will be used
+            </b-message>
             <div
               class="columns"
-              v-for="(relation, relationIndex) in projectInput.auth.table
-                .relations"
+              v-for="(relation, relationIndex) in form.auth.table.relations"
               :key="'relationIndex' + relationIndex"
             >
               <div class="column">
@@ -259,12 +243,15 @@
                 <b-field label="Table *">
                   <b-select v-model="relation.withModel" expanded required>
                     <option value="$auth">
-                      {{ projectInput.auth.table.name }} (Auth)
+                      {{ form.auth.table.name }} (Auth)
                     </option>
-                    <option
-                      v-for="(t, ti) in projectInput.tables"
-                      :key="'ti' + ti"
-                    >
+                    <option value="$nonAuth">
+                      {{ form.auth.table.name }}
+                    </option>
+                    <option v-if="form.tenantSettings.tenant" value="$tenant">
+                      {{ form.tenantSettings.table }} (Tenant)
+                    </option>
+                    <option v-for="(t, ti) in form.tables" :key="'ti' + ti">
                       {{ t.name }}
                     </option>
                   </b-select>
@@ -278,17 +265,22 @@
                   <b-input v-model="relation.name"></b-input>
                 </b-field>
               </div>
-              <div class="column">
+              <div v-if="relation.type !== 'ManyToMany'" class="column">
                 <b-field label="Required">
                   <b-checkbox v-model="relation.required">Required</b-checkbox>
+                </b-field>
+              </div>
+              <div v-if="relation.type === 'ManyToMany'" class="column">
+                <b-field label="Show On Create Page">
+                  <b-checkbox v-model="relation.showInputOnCreatePage">
+                    Show On Create Page
+                  </b-checkbox>
                 </b-field>
               </div>
               <div class="column">
                 <b-field label="Remove">
                   <b-button
-                    @click="
-                      removeRelation(projectInput.auth.table, relationIndex)
-                    "
+                    @click="removeRelation(form.auth.table, relationIndex)"
                     class="is-danger is-light is-fullwidth"
                     >Delete relation</b-button
                   >
@@ -320,14 +312,14 @@
         <div class="card-content">
           <div class="content">
             <b-field>
-              <b-checkbox v-model="projectInput.rbac.enabled">
+              <b-checkbox v-model="form.rbac.enabled">
                 Enabled RBAC (Role &amp; permission system)
               </b-checkbox>
             </b-field>
 
-            <template v-if="projectInput.rbac.enabled">
+            <template v-if="form.rbac.enabled">
               <b-field>
-                <b-checkbox v-model="projectInput.rbac.multipleRoles">
+                <b-checkbox v-model="form.rbac.multipleRoles">
                   Can one user have multiple roles?
                 </b-checkbox>
               </b-field>
@@ -341,7 +333,7 @@
 
               <div
                 class="columns"
-                v-for="(role, roleIndex) in projectInput.rbac.roles"
+                v-for="(role, roleIndex) in form.rbac.roles"
                 :key="'roleIndex' + roleIndex"
               >
                 <div class="column">
@@ -359,8 +351,8 @@
                 </div>
                 <div class="column">
                   <b-field
-                    label="Description"
-                    message="Description of the role"
+                    label="Default"
+                    message="Automatically assign this role to user"
                   >
                     <b-switch v-model="role.default">Default</b-switch>
                   </b-field>
@@ -378,7 +370,7 @@
 
               <b-field label="Permissions">
                 <b-taginput
-                  v-model="projectInput.rbac.permissions"
+                  v-model="form.rbac.permissions"
                   ellipsis
                   field="name"
                   icon="label"
@@ -390,7 +382,7 @@
 
               <b-button
                 @click="generatePermissionsAndMatrix"
-                v-if="projectInput.rbac.enabled"
+                v-if="form.rbac.enabled"
                 type="is-light"
               >
                 Generate All Permissions
@@ -398,8 +390,8 @@
 
               <template
                 v-if="
-                  Array.isArray(projectInput.rbac.permissions) &&
-                  projectInput.rbac.permissions.length
+                  Array.isArray(form.rbac.permissions) &&
+                  form.rbac.permissions.length
                 "
               >
                 <h4 class="mt-5">Role &amp; Permission Matrix</h4>
@@ -408,7 +400,7 @@
                     <tr>
                       <th>Permission</th>
                       <th
-                        v-for="(role, roleIndex) in projectInput.rbac.matrix"
+                        v-for="(role, roleIndex) in form.rbac.matrix"
                         :key="'role_' + roleIndex"
                       >
                         <b-tooltip
@@ -431,19 +423,19 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="permission in projectInput.rbac.permissions"
+                      v-for="permission in form.rbac.permissions"
                       :key="permission.name"
                     >
                       <td>{{ permission.name }}</td>
                       <td
-                        v-for="(role, roleIndex) in projectInput.rbac.matrix"
+                        v-for="(role, roleIndex) in form.rbac.matrix"
                         :key="'role_' + roleIndex"
                       >
                         <b-button
                           type="is-ghost"
                           @click="
                             togglePermission(
-                              projectInput.rbac.matrix[roleIndex],
+                              form.rbac.matrix[roleIndex],
                               permission
                             )
                           "
@@ -451,7 +443,7 @@
                           <b-icon
                             :icon="
                               hasPermission(
-                                projectInput.rbac.matrix[roleIndex],
+                                form.rbac.matrix[roleIndex],
                                 permission
                               )
                                 ? 'checkbox-marked'
@@ -459,7 +451,7 @@
                             "
                             :type="
                               hasPermission(
-                                projectInput.rbac.matrix[roleIndex],
+                                form.rbac.matrix[roleIndex],
                                 permission
                               )
                                 ? 'is-success'
@@ -499,61 +491,46 @@
         <div class="card-content">
           <div class="content">
             <b-field>
-              <b-checkbox v-model="projectInput.mailEnabled"
-                >Enable Mailer</b-checkbox
-              >
+              <b-checkbox v-model="form.mailEnabled">Enable Mailer</b-checkbox>
             </b-field>
 
-            <template v-if="projectInput.mailEnabled">
+            <template v-if="form.mailEnabled">
               <b-field label="Select Mail Drivers">
-                <b-checkbox native-value="SMTP" v-model="projectInput.mailers"
+                <b-checkbox native-value="SMTP" v-model="form.mailers"
                   >SMTP</b-checkbox
                 >
               </b-field>
               <b-field>
-                <b-checkbox native-value="SES" v-model="projectInput.mailers"
+                <b-checkbox native-value="SES" v-model="form.mailers"
                   >SES</b-checkbox
                 >
               </b-field>
               <b-field>
-                <b-checkbox
-                  native-value="Mailgun"
-                  v-model="projectInput.mailers"
+                <b-checkbox native-value="Mailgun" v-model="form.mailers"
                   >Mailgun</b-checkbox
                 >
               </b-field>
               <b-field>
-                <b-checkbox
-                  native-value="SparkPost"
-                  v-model="projectInput.mailers"
+                <b-checkbox native-value="SparkPost" v-model="form.mailers"
                   >Sparkpost</b-checkbox
                 >
               </b-field>
-              <b-field
-                v-if="projectInput.mailers.length"
-                label="Default Mailer"
-              >
-                <b-select v-model="projectInput.defaultMailer" expanded>
-                  <option
-                    v-if="projectInput.mailers.includes('SMTP')"
-                    value="SMTP"
-                  >
+              <b-field v-if="form.mailers.length" label="Default Mailer">
+                <b-select v-model="form.defaultMailer" expanded>
+                  <option v-if="form.mailers.includes('SMTP')" value="SMTP">
                     SMTP
                   </option>
-                  <option
-                    v-if="projectInput.mailers.includes('SES')"
-                    value="SES"
-                  >
+                  <option v-if="form.mailers.includes('SES')" value="SES">
                     SES
                   </option>
                   <option
-                    v-if="projectInput.mailers.includes('Mailgun')"
+                    v-if="form.mailers.includes('Mailgun')"
                     value="Mailgun"
                   >
                     Mailgun
                   </option>
                   <option
-                    v-if="projectInput.mailers.includes('SparkPost')"
+                    v-if="form.mailers.includes('SparkPost')"
                     value="SparkPost"
                   >
                     Sparkpost
@@ -588,10 +565,7 @@
             <div class="columns">
               <div class="column">
                 <b-field label="Tenant/Company *">
-                  <b-select
-                    v-model="projectInput.tenantSettings.tenant"
-                    expanded
-                  >
+                  <b-select v-model="form.tenantSettings.tenant" expanded>
                     <option :value="0">No Tenant</option>
                     <option :value="1">One Tenant</option>
                     <option value="n">Many Tenant</option>
@@ -601,8 +575,8 @@
               <div class="column">
                 <b-field label="User *">
                   <b-select
-                    :disabled="!projectInput.tenantSettings.tenant"
-                    v-model="projectInput.tenantSettings.user"
+                    :disabled="!form.tenantSettings.tenant"
+                    v-model="form.tenantSettings.user"
                     expanded
                   >
                     <option :value="1">One User</option>
@@ -612,22 +586,17 @@
               </div>
             </div>
             <div
-              v-if="
-                projectInput.tenantSettings.tenant && projectInput.tables.length
-              "
+              v-if="form.tenantSettings.tenant && form.tables.length"
               class="columns"
             >
               <div class="column">
                 <b-field label="Tenant Table">
                   <b-select
-                    v-model="projectInput.tenantSettings.table"
+                    v-model="form.tenantSettings.table"
                     expanded
                     required
                   >
-                    <option
-                      v-for="(t, ti) in projectInput.tables"
-                      :key="'ti' + ti"
-                    >
+                    <option v-for="(t, ti) in form.tables" :key="'ti' + ti">
                       {{ t.name }}
                     </option>
                   </b-select>
@@ -661,7 +630,7 @@
           <div class="content">
             <b-field label="Database *">
               <b-select
-                v-model="projectInput.database"
+                v-model="form.database"
                 placeholder="Select Database"
                 expanded
                 required
@@ -671,12 +640,12 @@
               </b-select>
             </b-field>
             <b-field label="Generate CRUD">
-              <b-checkbox v-model="projectInput.generate.api.crud">
+              <b-checkbox v-model="form.generate.api.crud">
                 Generate CRUD APIs
               </b-checkbox>
             </b-field>
             <b-field label="Generate Tests">
-              <b-checkbox v-model="projectInput.generate.api.test">
+              <b-checkbox v-model="form.generate.api.test">
                 Generate Tests (Auth & CRUD)
               </b-checkbox>
             </b-field>
@@ -706,7 +675,7 @@
         <div class="card-content">
           <div class="content">
             <b-field label="Generate CRUD UI">
-              <b-checkbox v-model="projectInput.generate.spa.crud">
+              <b-checkbox v-model="form.generate.spa.crud">
                 Generate CRUD
               </b-checkbox>
             </b-field>
@@ -744,7 +713,7 @@
           <div class="content">
             <div class="buttons">
               <b-button
-                v-for="(table, tableIndex) in projectInput.tables"
+                v-for="(table, tableIndex) in form.tables"
                 :key="'tableIndex' + tableIndex"
                 :label="table.name"
                 @click="removeTable(tableIndex)"
@@ -760,7 +729,7 @@
         class="card mt-5"
         animation="slide"
         aria-id="contentIdForA11y3"
-        v-for="(table, tableIndex) in projectInput.tables"
+        v-for="(table, tableIndex) in form.tables"
         :key="'tableIndex' + tableIndex"
       >
         <template #trigger="props">
@@ -800,7 +769,7 @@
               </b-checkbox>
             </b-field>
 
-            <b-field v-if="projectInput.generate.spa">
+            <b-field v-if="form.generate.spa">
               <b-checkbox v-model="table.generateUI"> Generate UI </b-checkbox>
             </b-field>
 
@@ -898,6 +867,14 @@
                 :data="getColumnsForTable(table)"
               >
               </b-taginput>
+            </b-field>
+
+            <b-field>
+              <b-select expanded v-model="table.defaultColumn">
+                <option v-for="(c, index) in table.columns" :key="index">
+                  {{ c.name }}
+                </option>
+              </b-select>
             </b-field>
 
             <div
@@ -999,18 +976,15 @@
                 <b-field label="Table *">
                   <b-select v-model="relation.withModel" expanded>
                     <option value="$auth">
-                      {{ projectInput.auth.table.name }} (Auth)
+                      {{ form.auth.table.name }} (Auth)
                     </option>
-                    <option
-                      v-if="projectInput.tenantSettings.table"
-                      value="$tenant"
-                    >
-                      {{ projectInput.tenantSettings.table }} (Tenant)
+                    <option value="$nonAuth">
+                      {{ form.auth.table.name }}
                     </option>
-                    <option
-                      v-for="(t, ti) in projectInput.tables"
-                      :key="'ti' + ti"
-                    >
+                    <option v-if="form.tenantSettings.tenant" value="$tenant">
+                      {{ form.tenantSettings.table }} (Tenant)
+                    </option>
+                    <option v-for="(t, ti) in form.tables" :key="'ti' + ti">
                       {{ t.name }}
                     </option>
                   </b-select>
@@ -1024,9 +998,16 @@
                   <b-input v-model="relation.name"></b-input>
                 </b-field>
               </div>
-              <div class="column">
+              <div v-if="relation.type !== 'ManyToMany'" class="column">
                 <b-field label="Required">
                   <b-checkbox v-model="relation.required">Required</b-checkbox>
+                </b-field>
+              </div>
+              <div v-if="relation.type === 'ManyToMany'" class="column">
+                <b-field label="Show On Create Page">
+                  <b-checkbox v-model="relation.showInputOnCreatePage">
+                    Show On Create Page
+                  </b-checkbox>
                 </b-field>
               </div>
               <div class="column">
@@ -1228,6 +1209,14 @@
                     Filterable
                   </b-checkbox>
                 </b-field>
+                <b-field
+                  v-if="!column.meta.secret"
+                  message="Sort data by this column"
+                >
+                  <b-checkbox v-model="column.meta.sortable">
+                    Sortable
+                  </b-checkbox>
+                </b-field>
                 <b-field message="Create database index for faster searching">
                   <b-checkbox v-model="column.meta.index">Index</b-checkbox>
                 </b-field>
@@ -1413,9 +1402,19 @@
           </div>
         </div>
       </b-collapse>
-      <b-button native-type="submit" type="is-primary is-fullwidth mt-4">
-        Generate
-      </b-button>
+      <div class="buttons mt-4">
+        <b-button native-type="submit" type="is-primary">Generate</b-button>
+        <b-button
+          v-if="!editMode.enabled"
+          @click="storeAsDraft"
+          type="is-secondary"
+        >
+          Save as Draft
+        </b-button>
+        <b-button v-else @click="updateDraft" type="is-secondary">
+          Update Draft
+        </b-button>
+      </div>
     </form>
   </section>
 </template>
@@ -1447,7 +1446,7 @@ export default {
       const project = this.items.find((t) => t.id === id);
 
       // Prefill all the fields
-      this.projectInput = JSON.parse(project.rawInput);
+      this.form = JSON.parse(project.rawInput);
     }
   },
 
@@ -1492,7 +1491,8 @@ export default {
         UI_INPUT_TYPE.RADIO,
         UI_INPUT_TYPE.CHECKBOX,
       ], // String input types
-      projectInput: {
+      errors: {},
+      form: {
         name: "",
         database: DATABASE.MYSQL,
         mailEnabled: false,
@@ -1590,13 +1590,52 @@ export default {
   methods: {
     ...mapActions("project", {
       storeAction: "store",
+      updateDraftAction: "updateDraft",
+      storeAsDraftAction: "storeAsDraft",
     }),
+
+    async prechecks() {
+      if (this.form.auth.passwordReset && !this.form.mailEnabled) {
+        throw new Error("Disable password reset option or enable mailing");
+      }
+      if (this.form.tenantSettings.tenant && !this.form.tenantSettings.table) {
+        throw new Error(
+          "Tenant table should be selected when tenant option is enabled"
+        );
+      }
+      if (this.form.rbac.enabled) {
+        let defaultRoleCount = 0;
+        for (let i = 0; i < this.form.rbac.roles.length; i++) {
+          const role = this.form.rbac.roles[i];
+          console.log({ role });
+          if (role.default) {
+            defaultRoleCount++;
+          }
+        }
+        if (defaultRoleCount === 0) {
+          throw new Error("Select a default role");
+        }
+        if (defaultRoleCount > 1) {
+          throw new Error("You can't have more than 1 default role");
+        }
+        for (let i = 0; i < this.form.rbac.matrix.length; i++) {
+          const role = this.form.rbac.matrix[i];
+          if (!role.permissions.length) {
+            throw new Error(`${role.role} have no permissions`);
+          }
+        }
+      }
+
+      return true;
+    },
 
     async store() {
       try {
-        // Pre process input
-        // Deep copy input
-        const input = JSON.parse(JSON.stringify(this.projectInput));
+        await this.prechecks();
+        this.errors = {};
+        // Deep copy input because it may be snakeCase before sending to server
+        // We don't want to modify original data
+        const input = JSON.parse(JSON.stringify(this.form));
         await this.storeAction(input);
         this.$router.push("/project");
         this.$buefy.toast.open({
@@ -1606,6 +1645,71 @@ export default {
         });
       } catch (e) {
         let message = "Unable to create project";
+        if (e instanceof ValidationException) {
+          this.errors = e.errors;
+          message = "Validation failed";
+        } else if (e.response && e.response.data && e.response.data.error) {
+          message = e.response.data.error;
+        } else if (e.message) {
+          message = e.message;
+        }
+        this.$buefy.toast.open({
+          message,
+          type: "is-danger",
+          position: "is-bottom-right",
+        });
+      }
+    },
+
+    async storeAsDraft() {
+      this.errors = {};
+      try {
+        // Deep copy input because it may be snakeCase before sending to server
+        // We don't want to modify original data
+        const input = JSON.parse(JSON.stringify(this.form));
+        await this.storeAsDraftAction(input);
+        this.$router.push("/project");
+        this.$buefy.toast.open({
+          message: "Project saved as draft",
+          position: "is-bottom-right",
+          type: "is-success",
+        });
+      } catch (e) {
+        let message = "Unable to save project";
+        if (e instanceof ValidationException) {
+          this.errors = e.errors;
+          message = "Validation failed";
+        } else if (e.response.data && e.response.data.error) {
+          message = e.response.data.error;
+        } else if (e.message) {
+          message = e.message;
+        }
+
+        this.$buefy.toast.open({
+          message,
+          type: "is-danger",
+          position: "is-bottom-right",
+        });
+      }
+    },
+
+    async updateDraft() {
+      try {
+        // Deep copy input because it may be snakeCase before sending to server
+        // We don't want to modify original data
+        const input = JSON.parse(JSON.stringify(this.form));
+        await this.updateDraftAction({
+          id: this.editMode.id,
+          input,
+        });
+        this.$router.push("/project");
+        this.$buefy.toast.open({
+          message: "Project draft updated",
+          position: "is-bottom-right",
+          type: "is-success",
+        });
+      } catch (e) {
+        let message = "Unable to save project";
         if (e instanceof ValidationException) {
           this.errors = e.errors;
           message = "Validation failed";
@@ -1619,7 +1723,7 @@ export default {
     },
 
     addTable() {
-      this.projectInput.tables.push({
+      this.form.tables.push({
         name: "NewTable",
         timestamps: true,
         generateRoute: true,
@@ -1649,11 +1753,11 @@ export default {
     },
 
     removeTable(index) {
-      this.projectInput.tables.splice(index, 1);
+      this.form.tables.splice(index, 1);
     },
 
     removeRole(index) {
-      this.projectInput.rbac.roles.splice(index, 1);
+      this.form.rbac.roles.splice(index, 1);
     },
 
     removeRelation(table, relationIndex) {
@@ -1674,6 +1778,7 @@ export default {
           required: false,
           expose: true,
           filterable: false,
+          sortable: false,
           trim: false,
         },
         input: {
@@ -1719,6 +1824,7 @@ export default {
         withModel: null,
         name: "",
         required: true, // Only applicable to belongsTo
+        showInputOnCreatePage: false, // Applicable to many to many
       });
     },
 
@@ -1760,7 +1866,7 @@ export default {
     },
 
     addRole() {
-      this.projectInput.rbac.roles.push({
+      this.form.rbac.roles.push({
         name: "",
         description: "",
       });
@@ -1770,7 +1876,7 @@ export default {
       while (role.permissions.length > 0) {
         role.permissions.pop();
       }
-      this.projectInput.rbac.permissions.map((permission) => {
+      this.form.rbac.permissions.map((permission) => {
         if (!role.permissions.includes(permission.name))
           role.permissions.push(permission.name);
       });
@@ -1803,7 +1909,7 @@ export default {
           description: "",
         });
         authModelPermissions.push({
-          name: `${this.projectInput.auth.table.name}:${operation}`,
+          name: `${this.form.auth.table.name}:${operation}`,
           description: "",
         });
       });
@@ -1812,7 +1918,7 @@ export default {
         ...permissionModelPermissions,
         ...authModelPermissions
       );
-      this.projectInput.tables.forEach((table) => {
+      this.form.tables.forEach((table) => {
         const operations = table.operations;
         if (operations.index) {
           permissions.push({
@@ -1879,13 +1985,13 @@ export default {
           });
         }
       });
-      this.projectInput.rbac.permissions = permissions;
+      this.form.rbac.permissions = permissions;
       // Empty matrix array
-      while (this.projectInput.rbac.matrix.length) {
-        this.projectInput.rbac.matrix.pop();
+      while (this.form.rbac.matrix.length) {
+        this.form.rbac.matrix.pop();
       }
-      this.projectInput.rbac.roles.forEach((role) =>
-        this.projectInput.rbac.matrix.push({
+      this.form.rbac.roles.forEach((role) =>
+        this.form.rbac.matrix.push({
           role: role.name,
           permissions: [],
         })
@@ -1906,18 +2012,21 @@ export default {
       loading: (state) => state.loading,
     }),
     isLoading() {
-      return this.loading.store || this.loading.update;
+      return (
+        this.loading.store ||
+        this.loading.update ||
+        this.loading.saveAsDraft ||
+        this.loading.updateDraft
+      );
     },
     webOrApi: function () {
       return (
-        this.projectInput.generate.api.generate ||
-        this.projectInput.generate.website.generate
+        this.form.generate.api.generate || this.form.generate.website.generate
       );
     },
     webOrSpa: function () {
       return (
-        this.projectInput.generate.spa.generate ||
-        this.projectInput.generate.website.generate
+        this.form.generate.spa.generate || this.form.generate.website.generate
       );
     },
   },

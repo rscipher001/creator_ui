@@ -11,6 +11,9 @@ export default {
       store: false,
       update: false,
       destroy: false,
+      storeAsDraft: false,
+      updateDraft: false,
+      generateDraft: false,
       storeMultiple: false,
     },
     meta: {},
@@ -59,6 +62,57 @@ export default {
       }
     },
 
+    async storeAsDraft({ commit }, input) {
+      commit("setLoading", { key: "storeAsDraft", value: true });
+      try {
+        const item = await HttpService.authPost(`/draft/${resource}`, input);
+        commit("setLoading", { key: "storeAsDraft", value: false });
+        commit("add", item);
+      } catch (e) {
+        commit("setLoading", { key: "storeAsDraft", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async updateDraft({ commit }, { id, input }) {
+      commit("setLoading", { key: "updateDraft", value: true });
+      try {
+        const item = await HttpService.authPut(
+          `/draft/${resource}/${id}`,
+          input
+        );
+        commit("replace", { id, item });
+        commit("setLoading", { key: "updateDraft", value: false });
+      } catch (e) {
+        commit("setLoading", { key: "updateDraft", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
+    async generateDraft({ commit }, { id, input }) {
+      commit("setLoading", { key: "generateDraft", value: true });
+      try {
+        const item = await HttpService.authPost(
+          `/draft/${resource}/${id}/generate`,
+          input
+        );
+        commit("replace", { id, item });
+        commit("setLoading", { key: "generateDraft", value: false });
+      } catch (e) {
+        commit("setLoading", { key: "generateDraft", value: false });
+        if (e.response && e.response.status === 422) {
+          throw new ValidationException(e.message, e.response.data.errors);
+        }
+        throw e;
+      }
+    },
+
     async storeMultiple({ commit }, input) {
       commit("setLoading", { key: "storeMultiple", value: true });
       try {
@@ -95,14 +149,8 @@ export default {
     async destroy({ commit }, id) {
       commit("setLoading", { key: "destroy", value: true });
       try {
-        const [deleteResult] = await HttpService.authDelete(
-          `/${resource}/${id}`
-        );
-        if (deleteResult) {
-          commit("remove", id);
-        } else {
-          throw new Error("Unable to delete");
-        }
+        await HttpService.authDelete(`/${resource}/${id}`);
+        commit("remove", id);
         commit("setLoading", { key: "destroy", value: false });
       } catch (e) {
         commit("setLoading", { key: "destroy", value: false });
