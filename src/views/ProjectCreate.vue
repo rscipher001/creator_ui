@@ -869,7 +869,7 @@
               </b-taginput>
             </b-field>
 
-            <b-field>
+            <b-field label="Default Column">
               <b-select expanded v-model="table.defaultColumn">
                 <option v-for="(c, index) in table.columns" :key="index">
                   {{ c.name }}
