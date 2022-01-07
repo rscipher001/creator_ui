@@ -890,7 +890,7 @@
                       ) in getBelongsToList(table)"
                       :key="routeBelongsToIndex"
                     >
-                      {{ routeBelongsTo.withModel }}
+                      {{ routeBelongsTo.name || routeBelongsTo.withModel }}
                     </option>
                   </b-select>
                 </b-field>
