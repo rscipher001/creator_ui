@@ -869,7 +869,7 @@
               </b-taginput>
             </b-field>
 
-            <b-field>
+            <b-field label="Default Column">
               <b-select expanded v-model="table.defaultColumn">
                 <option v-for="(c, index) in table.columns" :key="index">
                   {{ c.name }}
@@ -890,7 +890,7 @@
                       ) in getBelongsToList(table)"
                       :key="routeBelongsToIndex"
                     >
-                      {{ routeBelongsTo.withModel }}
+                      {{ routeBelongsTo.name || routeBelongsTo.withModel }}
                     </option>
                   </b-select>
                 </b-field>
@@ -1482,7 +1482,7 @@ export default {
           API_INPUT_TYPE.INTEGER,
           API_INPUT_TYPE.DATE,
           API_INPUT_TYPE.BOOLEAN,
-          API_INPUT_TYPE.FILE,
+          // API_INPUT_TYPE.FILE,
         ],
       },
       inputTypes: [
@@ -1996,6 +1996,22 @@ export default {
           permissions: [],
         })
       );
+    },
+  },
+
+  watch: {
+    "form.storageEnabled": function (value) {
+      if (value) {
+        if (!this.enums.apiInputType.includes(API_INPUT_TYPE.FILE))
+          this.enums.apiInputType.push(API_INPUT_TYPE.FILE);
+      } else {
+        if (this.enums.apiInputType.includes(API_INPUT_TYPE.FILE)) {
+          this.enums.apiInputType.splice(
+            this.enums.apiInputType.splice.indexOf(API_INPUT_TYPE.FILE),
+            1
+          );
+        }
+      }
     },
   },
 
