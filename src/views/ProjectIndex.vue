@@ -100,14 +100,25 @@
                 </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
+                    props.row.input.generate.spa.generate &&
+                    props.row.input.generate.api.generate &&
+                    props.row.status === 'done'
+                  "
+                  @click="hosting(props.row.id)"
+                >
+                  Start Hosting
+                </b-dropdown-item>
+                <b-dropdown-item
+                  v-if="
                     props.row.input &&
                     props.row.input.generate.api.generate &&
                     props.row.status === 'done'
                   "
                   @click="download(props.row.id, 'api')"
                   aria-role="listitem"
-                  >Download API Code</b-dropdown-item
                 >
+                  API Code
+                </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
                     props.row.input &&
@@ -206,6 +217,8 @@ export default {
       indexAction: "index",
       storeAction: "store",
       destroyAction: "destroy",
+      stopHosting: "stopHosting",
+      startHosting: "startHosting",
       generateSignedUrl: "generateSignedUrl",
     }),
 
