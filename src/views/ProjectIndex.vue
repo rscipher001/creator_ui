@@ -104,9 +104,13 @@
                     props.row.input.generate.api.generate &&
                     props.row.status === 'done'
                   "
-                  @click="hosting(props.row.id)"
+                  @click="
+                    props.row.isHosted
+                      ? stopHosting(props.row.id)
+                      : startHosting(props.row.id)
+                  "
                 >
-                  Start Hosting
+                  {{ props.row.isHosted ? "Stop" : "Start" }} Hosting
                 </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
@@ -117,7 +121,7 @@
                   @click="download(props.row.id, 'api')"
                   aria-role="listitem"
                 >
-                  API Code
+                  Download API Code
                 </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
