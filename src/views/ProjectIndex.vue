@@ -100,14 +100,34 @@
                 </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
+                    props.row.input.generate.spa.generate &&
+                    props.row.input.generate.api.generate &&
+                    props.row.status === 'done'
+                  "
+                  @click="
+                    props.row.isHosted
+                      ? stopHosting(props.row.id)
+                      : startHosting(props.row.id)
+                  "
+                >
+                  {{ props.row.isHosted ? "Stop" : "Start" }} Hosting
+                </b-dropdown-item>
+                <b-dropdown-item
+                  v-if="props.row.isHosted"
+                  @click="visit(props.row.url)"
+                >
+                  Visit Page
+                </b-dropdown-item>
+                <b-dropdown-item
+                  v-if="
                     props.row.input &&
                     props.row.input.generate.api.generate &&
                     props.row.status === 'done'
                   "
                   @click="download(props.row.id, 'api')"
-                  aria-role="listitem"
-                  >Download API Code</b-dropdown-item
                 >
+                  Download API Code
+                </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
                     props.row.input &&
@@ -206,6 +226,8 @@ export default {
       indexAction: "index",
       storeAction: "store",
       destroyAction: "destroy",
+      stopHostingAction: "stopHosting",
+      startHostingAction: "startHosting",
       generateSignedUrl: "generateSignedUrl",
     }),
 
@@ -269,6 +291,10 @@ export default {
       });
     },
 
+    visit(url) {
+      return window.open(url);
+    },
+
     async download(id, type) {
       try {
         const url = await this.generateSignedUrl({ id, type });
@@ -277,6 +303,42 @@ export default {
         console.error(e);
         this.$buefy.toast.open({
           message: "Unable to start download",
+          type: "is-danger",
+          position: "is-bottom-right",
+        });
+      }
+    },
+
+    async startHosting(id) {
+      try {
+        await this.startHostingAction({ id });
+        this.$buefy.toast.open({
+          message: "Started hosting process",
+          type: "is-success",
+          position: "is-bottom-right",
+        });
+      } catch (e) {
+        console.error(e);
+        this.$buefy.toast.open({
+          message: "Unable to start hosting",
+          type: "is-danger",
+          position: "is-bottom-right",
+        });
+      }
+    },
+
+    async stopHosting(id) {
+      try {
+        await this.stopHostingAction({ id });
+        this.$buefy.toast.open({
+          message: "Hosting stopped",
+          type: "is-success",
+          position: "is-bottom-right",
+        });
+      } catch (e) {
+        console.error(e);
+        this.$buefy.toast.open({
+          message: "Unable to stop hosting",
           type: "is-danger",
           position: "is-bottom-right",
         });
