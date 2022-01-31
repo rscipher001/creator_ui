@@ -6,11 +6,7 @@
       </b-navbar-item>
     </template>
     <template #start>
-      <b-navbar-item
-        tag="router-link"
-        :active="currentRouteName === 'Home'"
-        :to="{ path: '/' }"
-      >
+      <b-navbar-item tag="router-link" :to="{ path: '/' }">
         Home
       </b-navbar-item>
       <b-navbar-item
@@ -20,20 +16,13 @@
       >
         Dashboard
       </b-navbar-item>
-      <b-navbar-dropdown label="Pages">
-        <b-navbar-item
-          tag="router-link"
-          :active="currentRouteName === 'ProjectIndex'"
-          :to="{ path: '/project' }"
-          >Project List</b-navbar-item
-        >
-        <b-navbar-item
-          tag="router-link"
-          :active="currentRouteName === 'ProjectCreate'"
-          :to="{ path: '/project/create' }"
-          >Project Create</b-navbar-item
-        >
-      </b-navbar-dropdown>
+      <b-navbar-item
+        tag="router-link"
+        :active="currentRouteName === 'ProjectCreate'"
+        :to="{ path: '/project/create' }"
+      >
+        New Project
+      </b-navbar-item>
     </template>
 
     <template #end>

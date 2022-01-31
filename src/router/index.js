@@ -79,7 +79,9 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: () =>
-      import(/* webpackChunkName: "dashboard" */ "../views/Dashboard.vue"),
+      import(
+        /* webpackChunkName: "projectIndex" */ "../views/ProjectIndex.vue"
+      ),
     meta: {
       auth: true,
       ensureEmailIsVerified: true,
