@@ -18,6 +18,8 @@ jobs:
         run: |
           npm ci
           npm run build
+        env:
+          VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
       - name: Copy build
         run: |
           eval $(ssh-agent -s)

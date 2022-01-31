@@ -28,6 +28,7 @@ export default {
         commit("setLoading", { key: key, value: false });
       }
     },
+
     async index({ commit }, filter) {
       commit("setLoading", { key: "index", value: true });
       try {
@@ -160,6 +161,14 @@ export default {
 
     async generateSignedUrl(_, { id, type }) {
       return HttpService.authGet(`/${resource}/${id}/generate/${type}`);
+    },
+
+    async startHosting(_, { id }) {
+      return HttpService.authPost(`/${resource}/${id}/hosting`);
+    },
+
+    async stopHosting(_, { id }) {
+      return HttpService.authDelete(`/${resource}/${id}/hosting`);
     },
   },
 
