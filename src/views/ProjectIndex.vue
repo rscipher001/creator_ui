@@ -98,6 +98,9 @@
                 >
                   Show
                 </b-dropdown-item>
+                <b-dropdown-item @click="pay(props.row.id)" aria-role="pay">
+                  Pay
+                </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
                     props.row.input.generate.spa.generate &&
@@ -255,6 +258,10 @@ export default {
 
     show(projectId) {
       this.$router.push(`/project/${projectId}`);
+    },
+
+    pay(projectId) {
+      this.$router.push(`/project/${projectId}/pay/stripe`);
     },
 
     sort(sortBy, sortType) {
