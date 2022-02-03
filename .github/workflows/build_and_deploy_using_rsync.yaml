@@ -20,6 +20,8 @@ jobs:
           npm run build
         env:
           VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
+          VUE_APP_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VUE_APP_STRIPE_PUBLISHABLE_KEY }}
+          VUE_APP_API_VERSION: ${{ secrets.VUE_APP_API_VERSION }}
       - name: Copy build
         run: |
           eval $(ssh-agent -s)
