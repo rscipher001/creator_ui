@@ -117,7 +117,7 @@
                 </b-dropdown-item>
                 <b-dropdown-item
                   v-if="props.row.isHosted"
-                  @click="visit(props.row.url)"
+                  @click="visit(props.row)"
                 >
                   Visit Page
                 </b-dropdown-item>
@@ -298,8 +298,11 @@ export default {
       });
     },
 
-    visit(url) {
-      return window.open(url);
+    visit(project) {
+      // TODO update it
+      return window.open(
+        `https://${window.location.hostname}:${10000 + project.id}`
+      );
     },
 
     async download(id, type) {
