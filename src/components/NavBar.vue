@@ -2,7 +2,7 @@
   <b-navbar type="is-primary">
     <template #brand>
       <b-navbar-item tag="router-link" :to="{ path: '/' }">
-        <img src="@/assets/logo.png" alt="Automation logo" />
+        <img src="@/assets/logo.webp" alt="Automation logo" />
       </b-navbar-item>
     </template>
     <template #start>

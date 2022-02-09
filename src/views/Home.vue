@@ -52,6 +52,198 @@
           </div>
         </div>
       </div>
+
+      <div class="column is-12 is-6-desktop mx-auto has-text-centered">
+        <h2 class="mb-4 mt-5 is-size-2 is-size-3-mobile has-text-weight-bold">
+          Features
+        </h2>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-square">
+                <img
+                  src="@/assets/images/fast.webp"
+                  alt="Light trails on fast road"
+                />
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">Fast builds</p>
+              <div class="content">
+                No need to wait for days to prototype an idea into reality. Just
+                input your requirements and we will build it for you really
+                fast.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-square">
+                <img src="@/assets/images/time.webp" alt="Wristwatch" />
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">Instant Preview</p>
+              <div class="content">
+                Play with your project right here, no need of dealing with a
+                server. Quickly reiterate and improve your software.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-square">
+                <img
+                  src="@/assets/images/programmer.webp"
+                  alt="Programmer writing some code in dark room"
+                />
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">Built for Humans</p>
+              <div class="content">
+                We generate code that is easy to read and understand, it is
+                optimized for humans and machines.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-square">
+                <img
+                  src="@/assets/images/servers.webp"
+                  alt="Servers stack with network cables"
+                />
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">Multiple DB Support</p>
+              <div class="content">
+                We support MySQL, PostgreSQL, SQLite, MSSQL &amp; Oracle DB. You
+                can use multiple DB and even change database completely.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-square">
+                <img
+                  src="@/assets/images/money.webp"
+                  alt="Lot's of colorful notes"
+                />
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">Affordable Pricing</p>
+              <div class="content">
+                Prices that doesn't make a hole in your wallet, our services
+                costs you less than that of 1 hour of a good freelancer.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-square">
+                <img
+                  src="@/assets/images/security.webp"
+                  alt="A lock with keyboard keys"
+                />
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">Ultimate Security</p>
+              <div class="content">
+                We carefully follow OWASP and generate code that is secure with
+                proper authentication and authorization in place.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-square">
+                <img
+                  src="@/assets/images/guidance.webp"
+                  alt="Two people discussing about something"
+                />
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">Rich Coding Experience</p>
+              <div class="content">
+                We generate linters, pre commit hooks, unit test, server
+                configs, editor extensions recommendation for great coding
+                experience.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-square">
+                <img
+                  src="@/assets/images/github.webp"
+                  alt="github.com homepage on a monitor"
+                />
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">Continuous Integration</p>
+              <div class="content">
+                Unit test with Github actions are generated so you can commit
+                and relax with CI will ensure things are working.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-square">
+                <img
+                  src="@/assets/images/planning.webp"
+                  alt="People planning a project on sheets"
+                />
+              </figure>
+            </div>
+            <div class="card-content">
+              <p class="title is-4">Always With You</p>
+              <div class="content">
+                We generate detailed README.md so you don't feel lost, it is
+                always there to help you if you feel lost or need any
+                assistance.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
