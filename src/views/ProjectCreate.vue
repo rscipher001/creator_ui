@@ -86,7 +86,7 @@
             </b-field>
             <b-field>
               <b-checkbox v-model="form.generate.app.generate">
-                Generate App (Not available yet)
+                Generate App
               </b-checkbox>
             </b-field>
           </div>
@@ -1477,7 +1477,7 @@ export default {
       const project = this.items.find((t) => t.id === id);
 
       // Prefill all the fields
-      this.form = JSON.parse(project.rawInput);
+      this.form = project.rawInput;
     }
   },
 
