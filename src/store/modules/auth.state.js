@@ -1,4 +1,5 @@
 import HttpService from "../../services/http.service";
+// import socketService from "../../services/socket.service";
 import ValidationException from "../../exceptions/ValidationException";
 
 export default {
@@ -31,6 +32,11 @@ export default {
       }
       if (state.user) {
         dispatch("refreshUser");
+        // if (socketService.disconnected) {
+        // socketService.on("output", (data) => {
+        //   console.log(data);
+        // });
+        // }
       }
     },
 
@@ -38,6 +44,13 @@ export default {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
       commit("setUserToken", { user, token });
+      // try {
+      //   socketService.on("output", (data) => {
+      //     console.log(data);
+      //   });
+      // } catch (e) {
+      //   console.error(e);
+      // }
     },
 
     /**
@@ -290,6 +303,9 @@ export default {
         dispatch("updateUser", user);
       } catch (e) {
         dispatch("unsetTokens");
+        // if (socketService.connected) {
+        //   socketService.disconnect();
+        // }
       }
     },
 

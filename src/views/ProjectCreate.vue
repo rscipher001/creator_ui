@@ -85,9 +85,40 @@
               </b-checkbox>
             </b-field>
             <b-field>
-              <b-checkbox disabled v-model="form.generate.app.generate">
+              <b-checkbox v-model="form.generate.app.generate">
                 Generate App (Not available yet)
               </b-checkbox>
+            </b-field>
+          </div>
+        </div>
+      </b-collapse>
+
+      <b-collapse
+        v-if="form.generate.app.generate"
+        class="card mt-5"
+        animation="slide"
+        aria-id="contentIdForA11y3"
+      >
+        <template #trigger="props">
+          <div
+            class="card-header"
+            role="button"
+            aria-controls="contentIdForA11y3"
+          >
+            <p class="card-header-title">App</p>
+            <a class="card-header-icon">
+              <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
+            </a>
+          </div>
+        </template>
+
+        <div class="card-content">
+          <div class="content">
+            <b-field label="App Name" message="Use exact app name you want">
+              <b-input v-model="form.app.appName" required></b-input>
+            </b-field>
+            <b-field label="Package Name" message="Example: com.example.com">
+              <b-input v-model="form.app.packageName" required></b-input>
             </b-field>
           </div>
         </div>
@@ -1503,7 +1534,10 @@ export default {
         defaultStorageDriver: STORAGE.LOCAL,
         types: [PROJECT_TYPE.API],
         camelCaseStrategy: true,
-
+        app: {
+          appName: "",
+          packageName: "",
+        },
         tech: {
           backend: BACKEND.ADONIS,
           frontend: FRONTEND.BUEFY,
