@@ -103,8 +103,8 @@
                 </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
-                    props.row.input.generate.spa.generate &&
-                    props.row.input.generate.api.generate &&
+                    props.row.rawInput.generate.spa.generate &&
+                    props.row.rawInput.generate.api.generate &&
                     props.row.status === 'done'
                   "
                   @click="
@@ -123,8 +123,8 @@
                 </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
-                    props.row.input &&
-                    props.row.input.generate.api.generate &&
+                    props.row.rawInput &&
+                    props.row.rawInput.generate.api.generate &&
                     props.row.status === 'done'
                   "
                   @click="download(props.row.id, 'api')"
@@ -133,8 +133,8 @@
                 </b-dropdown-item>
                 <b-dropdown-item
                   v-if="
-                    props.row.input &&
-                    props.row.input.generate.spa.generate &&
+                    props.row.rawInput &&
+                    props.row.rawInput.generate.spa.generate &&
                     props.row.status === 'done'
                   "
                   @click="download(props.row.id, 'spa')"
