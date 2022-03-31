@@ -901,7 +901,7 @@
             </b-field>
 
             <b-field label="Default Column">
-              <b-select expanded v-model="table.defaultColumn">
+              <b-select expanded v-model="table.defaultColumn" required>
                 <option v-for="(c, index) in table.columns" :key="index">
                   {{ c.name }}
                 </option>
@@ -1574,6 +1574,7 @@ export default {
             generateModel: true,
             generateMigration: false, // Doesn't matter, it will be generated either way
             generateUI: true,
+            defaultColumn: "Name",
             relations: [],
             operations: {
               index: true,
