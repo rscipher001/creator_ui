@@ -1264,7 +1264,9 @@
                           required
                         >
                           <option
-                            v-for="(inputType, inputTypeIndex) in inputTypes"
+                            v-for="(inputType, inputTypeIndex) in getInputTypes(
+                              column
+                            )"
                             :key="'inputTypeIndex' + inputTypeIndex"
                           >
                             {{ inputType }}
@@ -1274,7 +1276,7 @@
                     </div>
                     <div class="column">
                       <b-field
-                        label="Display Name"
+                        label="Display Name (By Default column name used)"
                         message="This will be used as label in UI"
                       >
                         <b-input v-model="column.input.displayName"></b-input>
@@ -1282,7 +1284,7 @@
                     </div>
                   </div>
 
-                  <div v-if="column.input.type === 'select'">
+                  <div v-if="column.input.type === 'Select'">
                     <div class="columns">
                       <div class="column">
                         <b-field
@@ -1290,8 +1292,8 @@
                           message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
                         >
                           <b-select v-model="column.input.select.type" expanded>
-                            <option value="string">String</option>
-                            <option value="kv">Key/Value</option>
+                            <option value="String">String</option>
+                            <option value="KV">Key/Value</option>
                           </b-select>
                         </b-field>
                       </div>
@@ -1313,7 +1315,7 @@
                       </div>
                     </div>
 
-                    <div v-if="column.input.select.type === 'kv'">
+                    <div v-if="column.input.select.type === 'KV'">
                       <div class="columns">
                         <div class="column">
                           <b-button @click="addSelectOption(column)"
@@ -1324,75 +1326,6 @@
                       <div
                         class="columns"
                         v-for="(option, optionIndex) in column.input.select
-                          .options"
-                        :key="'optionIndex' + optionIndex"
-                      >
-                        <div class="column">
-                          <b-field label="Label">
-                            <b-input
-                              v-model="option.label"
-                              placeholder="Label"
-                              aria-close-label="Remove this option"
-                            >
-                            </b-input>
-                          </b-field>
-                        </div>
-                        <div class="column">
-                          <b-field label="Value">
-                            <b-input
-                              v-model="option.value"
-                              placeholder="Value"
-                              aria-close-label="Remove this option"
-                            >
-                            </b-input>
-                          </b-field>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div v-if="column.input.type === 'radio'">
-                    <div class="columns">
-                      <div class="column">
-                        <b-field
-                          label="Options Type *"
-                          message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
-                        >
-                          <b-select v-model="column.input.radio.type" expanded>
-                            <option value="string">String</option>
-                            <option value="kv">Key/Value</option>
-                          </b-select>
-                        </b-field>
-                      </div>
-                    </div>
-
-                    <div
-                      class="columns"
-                      v-if="column.input.radio.type === 'String'"
-                    >
-                      <div class="column">
-                        <b-field label="Add Options">
-                          <b-taginput
-                            v-model="column.input.radio.options"
-                            placeholder="Options"
-                            aria-close-label="Remove this option"
-                          >
-                          </b-taginput>
-                        </b-field>
-                      </div>
-                    </div>
-
-                    <div v-if="column.input.radio.type === 'kv'">
-                      <div class="columns">
-                        <div class="column">
-                          <b-button @click="addRadioOption(column)"
-                            >Add An Option</b-button
-                          >
-                        </div>
-                      </div>
-                      <div
-                        class="columns"
-                        v-for="(option, optionIndex) in column.input.radio
                           .options"
                         :key="'optionIndex' + optionIndex"
                       >
@@ -1519,7 +1452,6 @@ export default {
       inputTypes: [
         UI_INPUT_TYPE.INPUT,
         UI_INPUT_TYPE.SELECT,
-        UI_INPUT_TYPE.RADIO,
         UI_INPUT_TYPE.CHECKBOX,
       ], // String input types
       errors: {},
@@ -1628,6 +1560,19 @@ export default {
       updateDraftAction: "updateDraft",
       storeAsDraftAction: "storeAsDraft",
     }),
+
+    getInputTypes(column) {
+      if (column.type === "Boolean") {
+        return [UI_INPUT_TYPE.SWITCH, UI_INPUT_TYPE.CHECKBOX];
+      }
+      if (column.type === "String" && column.meta.multiline) {
+        return [UI_INPUT_TYPE.INPUT];
+      }
+      if (column.type === "Date") {
+        return [UI_INPUT_TYPE.INPUT];
+      }
+      return [UI_INPUT_TYPE.INPUT, UI_INPUT_TYPE.SELECT];
+    },
 
     async prechecks() {
       if (this.form.auth.passwordReset && !this.form.mailEnabled) {
@@ -1826,11 +1771,6 @@ export default {
             type: "string",
             options: [],
           },
-          radio: {
-            types: ["object", "string", "number"],
-            type: "string",
-            options: [],
-          },
           checkbox: {
             options: [],
           },
@@ -1848,10 +1788,6 @@ export default {
 
     addSelectOption(column) {
       column.input.select.options.push({ value: "", label: "" });
-    },
-
-    addRadioOption(column) {
-      column.input.radio.options.push({ value: "", label: "" });
     },
 
     addRelation(table) {
@@ -2077,7 +2013,9 @@ export default {
     },
     webOrSpa: function () {
       return (
-        this.form.generate.spa.generate || this.form.generate.website.generate
+        this.form.generate.spa.generate ||
+        this.form.generate.website.generate ||
+        this.form.generate.app.generate
       );
     },
   },

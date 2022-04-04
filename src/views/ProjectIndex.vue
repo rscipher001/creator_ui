@@ -98,6 +98,9 @@
                 >
                   Show
                 </b-dropdown-item>
+                <b-dropdown-item @click="prefill(props.row.id)">
+                  Prefill
+                </b-dropdown-item>
                 <b-dropdown-item @click="pay(props.row.id)" aria-role="pay">
                   Pay
                 </b-dropdown-item>
@@ -258,6 +261,10 @@ export default {
 
     show(projectId) {
       this.$router.push(`/project/${projectId}`);
+    },
+
+    prefill(projectId) {
+      this.$router.push(`/project/${projectId}/edit`);
     },
 
     pay(projectId) {
