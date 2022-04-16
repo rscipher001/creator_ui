@@ -58,6 +58,22 @@
                   </b-taginput>
                 </b-field>
               </div>
+              <div class="column">
+                <b-field label="Database *">
+                  <b-select
+                    v-model="form.database"
+                    placeholder="Select Database"
+                    expanded
+                    required
+                  >
+                    <option value="MySQL">MySQL</option>
+                    <option value="PostgreSQL">PostgreSQL</option>
+                    <option value="MSSQL">MSSQL</option>
+                    <option value="OracleDB">OracleDB</option>
+                    <option value="SQLite">SQLite</option>
+                  </b-select>
+                </b-field>
+              </div>
             </div>
 
             <b-field
@@ -634,52 +650,6 @@
                 </b-field>
               </div>
             </div>
-          </div>
-        </div>
-      </b-collapse>
-
-      <b-collapse
-        v-if="false"
-        class="card mt-5"
-        animation="slide"
-        aria-id="contentIdForA11y3"
-      >
-        <template #trigger="props">
-          <div
-            class="card-header"
-            role="button"
-            aria-controls="contentIdForA11y3"
-          >
-            <p class="card-header-title">API Options</p>
-            <a class="card-header-icon">
-              <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
-            </a>
-          </div>
-        </template>
-
-        <div class="card-content">
-          <div class="content">
-            <b-field label="Database *">
-              <b-select
-                v-model="form.database"
-                placeholder="Select Database"
-                expanded
-                required
-              >
-                <option value="mysql">MySQL</option>
-                <option value="pg">PostgreSQL</option>
-              </b-select>
-            </b-field>
-            <b-field label="Generate CRUD">
-              <b-checkbox v-model="form.generate.api.crud">
-                Generate CRUD APIs
-              </b-checkbox>
-            </b-field>
-            <b-field label="Generate Tests">
-              <b-checkbox v-model="form.generate.api.test">
-                Generate Tests (Auth & CRUD)
-              </b-checkbox>
-            </b-field>
           </div>
         </div>
       </b-collapse>
@@ -1605,7 +1575,6 @@ export default {
           }
         }
       }
-
       return true;
     },
 
@@ -1616,6 +1585,9 @@ export default {
         // Deep copy input because it may be snakeCase before sending to server
         // We don't want to modify original data
         const input = JSON.parse(JSON.stringify(this.form));
+        if (!this.form.generate.app.generate) {
+          delete input.app;
+        }
         await this.storeAction(input);
         this.$router.push("/project");
         this.$buefy.toast.open({
