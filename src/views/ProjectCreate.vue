@@ -1381,6 +1381,13 @@ export default {
 
       // Prefill all the fields
       this.form = project.rawInput;
+      // Restore deleted data;
+      if (!this.form.app) {
+        this.form.app = {
+          appName: "",
+          packageName: "",
+        };
+      }
     }
   },
 
@@ -1585,6 +1592,7 @@ export default {
         // Deep copy input because it may be snakeCase before sending to server
         // We don't want to modify original data
         const input = JSON.parse(JSON.stringify(this.form));
+        debugger;
         if (!this.form.generate.app.generate) {
           delete input.app;
         }
