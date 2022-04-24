@@ -1599,7 +1599,7 @@ export default {
         await this.storeAction(input);
         this.$router.push("/project");
         this.$buefy.toast.open({
-          message: "project created",
+          message: "Project is being generated",
           position: "is-bottom-right",
           type: "is-success",
         });
