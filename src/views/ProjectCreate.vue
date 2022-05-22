@@ -1562,9 +1562,7 @@ export default {
       }
       if (this.form.rbac.enabled) {
         let defaultRoleCount = 0;
-        for (let i = 0; i < this.form.rbac.roles.length; i++) {
-          const role = this.form.rbac.roles[i];
-          console.log({ role });
+        for (const role of this.form.rbac.roles) {
           if (role.default) {
             defaultRoleCount++;
           }
@@ -1575,8 +1573,7 @@ export default {
         if (defaultRoleCount > 1) {
           throw new Error("You can't have more than 1 default role");
         }
-        for (let i = 0; i < this.form.rbac.matrix.length; i++) {
-          const role = this.form.rbac.matrix[i];
+        for (const role of this.form.rbac.matrix) {
           if (!role.permissions.length) {
             throw new Error(`${role.role} have no permissions`);
           }
