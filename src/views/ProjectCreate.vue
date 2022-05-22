@@ -1203,7 +1203,7 @@
                   <b-checkbox v-model="column.meta.secret">Secret</b-checkbox>
                 </b-field>
                 <b-field
-                  v-if="!column.meta.secret"
+                  v-if="!column.meta.secret && column.type != 'Boolean'"
                   message="Allow searching this column from list page"
                 >
                   <b-checkbox v-model="column.meta.filterable">

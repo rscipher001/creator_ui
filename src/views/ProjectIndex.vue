@@ -92,6 +92,9 @@
                     :icon-right="active ? 'menu-up' : 'menu-down'"
                   />
                 </template>
+                <b-dropdown-item @click="prefill(props.row.id)">
+                  Prefill
+                </b-dropdown-item>
                 <b-dropdown-item
                   @click="show(props.row.id)"
                   aria-role="showitem"
