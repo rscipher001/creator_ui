@@ -1592,7 +1592,6 @@ export default {
         // Deep copy input because it may be snakeCase before sending to server
         // We don't want to modify original data
         const input = JSON.parse(JSON.stringify(this.form));
-        debugger;
         if (!this.form.generate.app.generate) {
           delete input.app;
         }
