@@ -98,12 +98,9 @@
                 >
                   Show
                 </b-dropdown-item>
-                <b-dropdown-item @click="prefill(props.row.id)">
-                  Prefill
-                </b-dropdown-item>
-                <b-dropdown-item @click="pay(props.row.id)" aria-role="pay">
+                <!-- <b-dropdown-item @click="pay(props.row.id)" aria-role="pay">
                   Pay
-                </b-dropdown-item>
+                </b-dropdown-item> -->
                 <b-dropdown-item
                   v-if="
                     props.row.rawInput.generate.spa.generate &&
