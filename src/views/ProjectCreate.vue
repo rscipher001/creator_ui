@@ -58,6 +58,22 @@
                   </b-taginput>
                 </b-field>
               </div>
+              <div class="column">
+                <b-field label="Database *">
+                  <b-select
+                    v-model="form.database"
+                    placeholder="Select Database"
+                    expanded
+                    required
+                  >
+                    <option value="MySQL">MySQL</option>
+                    <option value="PostgreSQL">PostgreSQL</option>
+                    <option value="MSSQL">MSSQL</option>
+                    <option value="OracleDB">OracleDB</option>
+                    <option value="SQLite">SQLite</option>
+                  </b-select>
+                </b-field>
+              </div>
             </div>
 
             <b-field
@@ -650,52 +666,6 @@
             role="button"
             aria-controls="contentIdForA11y3"
           >
-            <p class="card-header-title">API Options</p>
-            <a class="card-header-icon">
-              <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
-            </a>
-          </div>
-        </template>
-
-        <div class="card-content">
-          <div class="content">
-            <b-field label="Database *">
-              <b-select
-                v-model="form.database"
-                placeholder="Select Database"
-                expanded
-                required
-              >
-                <option value="mysql">MySQL</option>
-                <option value="pg">PostgreSQL</option>
-              </b-select>
-            </b-field>
-            <b-field label="Generate CRUD">
-              <b-checkbox v-model="form.generate.api.crud">
-                Generate CRUD APIs
-              </b-checkbox>
-            </b-field>
-            <b-field label="Generate Tests">
-              <b-checkbox v-model="form.generate.api.test">
-                Generate Tests (Auth & CRUD)
-              </b-checkbox>
-            </b-field>
-          </div>
-        </div>
-      </b-collapse>
-
-      <b-collapse
-        v-if="false"
-        class="card mt-5"
-        animation="slide"
-        aria-id="contentIdForA11y3"
-      >
-        <template #trigger="props">
-          <div
-            class="card-header"
-            role="button"
-            aria-controls="contentIdForA11y3"
-          >
             <p class="card-header-title">SPA Options</p>
             <a class="card-header-icon">
               <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
@@ -901,7 +871,7 @@
             </b-field>
 
             <b-field label="Default Column">
-              <b-select expanded v-model="table.defaultColumn">
+              <b-select expanded v-model="table.defaultColumn" required>
                 <option v-for="(c, index) in table.columns" :key="index">
                   {{ c.name }}
                 </option>
@@ -1264,7 +1234,9 @@
                           required
                         >
                           <option
-                            v-for="(inputType, inputTypeIndex) in inputTypes"
+                            v-for="(inputType, inputTypeIndex) in getInputTypes(
+                              column
+                            )"
                             :key="'inputTypeIndex' + inputTypeIndex"
                           >
                             {{ inputType }}
@@ -1274,7 +1246,7 @@
                     </div>
                     <div class="column">
                       <b-field
-                        label="Display Name"
+                        label="Display Name (By Default column name used)"
                         message="This will be used as label in UI"
                       >
                         <b-input v-model="column.input.displayName"></b-input>
@@ -1282,7 +1254,7 @@
                     </div>
                   </div>
 
-                  <div v-if="column.input.type === 'select'">
+                  <div v-if="column.input.type === 'Select'">
                     <div class="columns">
                       <div class="column">
                         <b-field
@@ -1290,8 +1262,8 @@
                           message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
                         >
                           <b-select v-model="column.input.select.type" expanded>
-                            <option value="string">String</option>
-                            <option value="kv">Key/Value</option>
+                            <option value="String">String</option>
+                            <option value="KV">Key/Value</option>
                           </b-select>
                         </b-field>
                       </div>
@@ -1313,7 +1285,7 @@
                       </div>
                     </div>
 
-                    <div v-if="column.input.select.type === 'kv'">
+                    <div v-if="column.input.select.type === 'KV'">
                       <div class="columns">
                         <div class="column">
                           <b-button @click="addSelectOption(column)"
@@ -1324,75 +1296,6 @@
                       <div
                         class="columns"
                         v-for="(option, optionIndex) in column.input.select
-                          .options"
-                        :key="'optionIndex' + optionIndex"
-                      >
-                        <div class="column">
-                          <b-field label="Label">
-                            <b-input
-                              v-model="option.label"
-                              placeholder="Label"
-                              aria-close-label="Remove this option"
-                            >
-                            </b-input>
-                          </b-field>
-                        </div>
-                        <div class="column">
-                          <b-field label="Value">
-                            <b-input
-                              v-model="option.value"
-                              placeholder="Value"
-                              aria-close-label="Remove this option"
-                            >
-                            </b-input>
-                          </b-field>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div v-if="column.input.type === 'radio'">
-                    <div class="columns">
-                      <div class="column">
-                        <b-field
-                          label="Options Type *"
-                          message="Select if options are array of strings or array of objects(label, value). In string what is displayed in dropdown is also sent in API call. Label will be displayed to user and value will be sent to backend."
-                        >
-                          <b-select v-model="column.input.radio.type" expanded>
-                            <option value="string">String</option>
-                            <option value="kv">Key/Value</option>
-                          </b-select>
-                        </b-field>
-                      </div>
-                    </div>
-
-                    <div
-                      class="columns"
-                      v-if="column.input.radio.type === 'String'"
-                    >
-                      <div class="column">
-                        <b-field label="Add Options">
-                          <b-taginput
-                            v-model="column.input.radio.options"
-                            placeholder="Options"
-                            aria-close-label="Remove this option"
-                          >
-                          </b-taginput>
-                        </b-field>
-                      </div>
-                    </div>
-
-                    <div v-if="column.input.radio.type === 'kv'">
-                      <div class="columns">
-                        <div class="column">
-                          <b-button @click="addRadioOption(column)"
-                            >Add An Option</b-button
-                          >
-                        </div>
-                      </div>
-                      <div
-                        class="columns"
-                        v-for="(option, optionIndex) in column.input.radio
                           .options"
                         :key="'optionIndex' + optionIndex"
                       >
@@ -1478,6 +1381,13 @@ export default {
 
       // Prefill all the fields
       this.form = project.rawInput;
+      // Restore deleted data;
+      if (!this.form.app) {
+        this.form.app = {
+          appName: "",
+          packageName: "",
+        };
+      }
     }
   },
 
@@ -1519,7 +1429,6 @@ export default {
       inputTypes: [
         UI_INPUT_TYPE.INPUT,
         UI_INPUT_TYPE.SELECT,
-        UI_INPUT_TYPE.RADIO,
         UI_INPUT_TYPE.CHECKBOX,
       ], // String input types
       errors: {},
@@ -1574,6 +1483,7 @@ export default {
             generateModel: true,
             generateMigration: false, // Doesn't matter, it will be generated either way
             generateUI: true,
+            defaultColumn: "Name",
             relations: [],
             operations: {
               index: true,
@@ -1628,6 +1538,19 @@ export default {
       storeAsDraftAction: "storeAsDraft",
     }),
 
+    getInputTypes(column) {
+      if (column.type === "Boolean") {
+        return [UI_INPUT_TYPE.SWITCH, UI_INPUT_TYPE.CHECKBOX];
+      }
+      if (column.type === "String" && column.meta.multiline) {
+        return [UI_INPUT_TYPE.INPUT];
+      }
+      if (column.type === "Date") {
+        return [UI_INPUT_TYPE.INPUT];
+      }
+      return [UI_INPUT_TYPE.INPUT, UI_INPUT_TYPE.SELECT];
+    },
+
     async prechecks() {
       if (this.form.auth.passwordReset && !this.form.mailEnabled) {
         throw new Error("Disable password reset option or enable mailing");
@@ -1659,7 +1582,6 @@ export default {
           }
         }
       }
-
       return true;
     },
 
@@ -1670,10 +1592,14 @@ export default {
         // Deep copy input because it may be snakeCase before sending to server
         // We don't want to modify original data
         const input = JSON.parse(JSON.stringify(this.form));
+        debugger;
+        if (!this.form.generate.app.generate) {
+          delete input.app;
+        }
         await this.storeAction(input);
         this.$router.push("/project");
         this.$buefy.toast.open({
-          message: "project created",
+          message: "Project is being generated",
           position: "is-bottom-right",
           type: "is-success",
         });
@@ -1825,11 +1751,6 @@ export default {
             type: "string",
             options: [],
           },
-          radio: {
-            types: ["object", "string", "number"],
-            type: "string",
-            options: [],
-          },
           checkbox: {
             options: [],
           },
@@ -1847,10 +1768,6 @@ export default {
 
     addSelectOption(column) {
       column.input.select.options.push({ value: "", label: "" });
-    },
-
-    addRadioOption(column) {
-      column.input.radio.options.push({ value: "", label: "" });
     },
 
     addRelation(table) {
@@ -2076,7 +1993,9 @@ export default {
     },
     webOrSpa: function () {
       return (
-        this.form.generate.spa.generate || this.form.generate.website.generate
+        this.form.generate.spa.generate ||
+        this.form.generate.website.generate ||
+        this.form.generate.app.generate
       );
     },
   },

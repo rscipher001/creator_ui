@@ -56,8 +56,8 @@ export const API_INPUT_TYPE = {
 export const UI_INPUT_TYPE = {
   INPUT: "Input",
   SELECT: "Select",
-  RADIO: "Radio",
   CHECKBOX: "Checkbox",
+  SWITCH: "Switch", // Toggle switch
 };
 
 export default {
@@ -89,10 +89,5 @@ export default {
     API_INPUT_TYPE.BOOLEAN,
     API_INPUT_TYPE.FILE,
   ],
-  uiInputType: [
-    UI_INPUT_TYPE.INPUT,
-    UI_INPUT_TYPE.SELECT,
-    UI_INPUT_TYPE.RADIO,
-    UI_INPUT_TYPE.CHECKBOX,
-  ],
+  uiInputType: [UI_INPUT_TYPE.INPUT, UI_INPUT_TYPE.SELECT],
 };
