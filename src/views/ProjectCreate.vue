@@ -1545,10 +1545,10 @@ export default {
       if (column.type === "Boolean") {
         return [UI_INPUT_TYPE.SWITCH, UI_INPUT_TYPE.CHECKBOX];
       }
-      if (column.type === "String" && column.meta.multiline) {
-        return [UI_INPUT_TYPE.INPUT];
-      }
-      if (column.type === "Date") {
+      if (
+        (column.type === "String" && column.meta.multiline) ||
+        ["Date", "File"].includes(column.type)
+      ) {
         return [UI_INPUT_TYPE.INPUT];
       }
       return [UI_INPUT_TYPE.INPUT, UI_INPUT_TYPE.SELECT];
