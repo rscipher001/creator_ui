@@ -1203,7 +1203,10 @@
                   <b-checkbox v-model="column.meta.secret">Secret</b-checkbox>
                 </b-field>
                 <b-field
-                  v-if="!column.meta.secret && column.type != 'Boolean'"
+                  v-if="
+                    !column.meta.secret &&
+                    ['Boolean', 'file'].includes(column.type)
+                  "
                   message="Allow searching this column from list page"
                 >
                   <b-checkbox v-model="column.meta.filterable">
