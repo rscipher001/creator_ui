@@ -10,7 +10,7 @@
     </div>
 
     <b-notification
-      type="is-info"
+      type="is-primary"
       aria-close-label="Close notification"
       role="alert"
     >
