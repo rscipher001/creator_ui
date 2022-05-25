@@ -358,6 +358,10 @@
 
         <div class="card-content">
           <div class="content">
+            <b-message v-if="!form.rbac.enabled" type="is-info">
+              Without RBAC everyone can do user management, it is done so you
+              don't have to implement user managemnt.
+            </b-message>
             <b-field>
               <b-checkbox v-model="form.rbac.enabled">
                 Enabled RBAC (Role &amp; permission system)
