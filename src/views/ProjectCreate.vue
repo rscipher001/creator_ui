@@ -795,7 +795,10 @@
             </b-field>
 
             <b-field v-if="webOrApi" label="Basic Operations">
-              <b-checkbox v-model="table.operations.index">
+              <b-checkbox
+                v-if="!table.singleton"
+                v-model="table.operations.index"
+              >
                 Index <span class="has-text-grey">(List)</span>
               </b-checkbox>
             </b-field>
@@ -816,12 +819,12 @@
                 <span class="has-text-grey">View full detail</span>
               </b-checkbox>
             </b-field>
-            <b-field v-if="webOrApi">
+            <b-field v-if="webOrApi && !table.singleton">
               <b-checkbox v-model="table.operations.edit">
                 Edit <span class="has-text-grey">Show page for edit</span>
               </b-checkbox>
             </b-field>
-            <b-field v-if="webOrApi">
+            <b-field v-if="webOrApi && !table.singleton">
               <b-checkbox v-model="table.operations.update">
                 Update
               </b-checkbox>
@@ -831,13 +834,13 @@
                 Destroy <span class="has-text-grey">(Delete One)</span>
               </b-checkbox>
             </b-field>
-            <b-field v-if="webOrApi">
+            <b-field v-if="webOrApi && !table.singleton">
               <b-checkbox v-model="table.operations.storeMany">
                 Store Many
                 <span class="has-text-grey">(Can be used for bulk upload)</span>
               </b-checkbox>
             </b-field>
-            <b-field v-if="webOrApi">
+            <b-field v-if="webOrApi && !table.singleton">
               <b-checkbox v-model="table.operations.destroyMany">
                 Destroy Many
                 <span class="has-text-grey"
