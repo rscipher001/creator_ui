@@ -57,7 +57,7 @@ export default {
   data() {
     return {
       projectId: null,
-      pk: process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY,
+      pk: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
       confirmParams: {
         return_url: "http://localhost:8081/project/44/pay/stripe",
       },

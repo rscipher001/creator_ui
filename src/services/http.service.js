@@ -3,7 +3,7 @@ import axios from "axios";
 class HttpService {
   constructor() {
     this.client = axios.create({
-      baseURL: `${process.env.VUE_APP_API_URL}/api`,
+      baseURL: `${import.meta.env.VITE_API_URL}/api`,
     });
   }
 

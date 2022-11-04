@@ -14,8 +14,7 @@ const routes = [
   {
     path: "/login",
     name: "Login",
-    component: () =>
-      import(/* webpackChunkName: "login" */ "../views/Login.vue"),
+    component: () => import("../views/Login.vue"),
     meta: {
       guest: true,
     },
@@ -23,8 +22,7 @@ const routes = [
   {
     path: "/register",
     name: "Register",
-    component: () =>
-      import(/* webpackChunkName: "register" */ "../views/Register.vue"),
+    component: () => import("../views/Register.vue"),
     meta: {
       guest: true,
     },
@@ -32,10 +30,7 @@ const routes = [
   {
     path: "/forgot_password/request",
     name: "ForgotPasswordRequest",
-    component: () =>
-      import(
-        /* webpackChunkName: "forgotPasswordRequest" */ "../views/ForgotPasswordRequest.vue"
-      ),
+    component: () => import("../views/ForgotPasswordRequest.vue"),
     meta: {
       guest: true,
     },
@@ -43,10 +38,7 @@ const routes = [
   {
     path: "/forgot_password/verify",
     name: "ForgotPasswordVerify",
-    component: () =>
-      import(
-        /* webpackChunkName: "forgotPasswordUpdate" */ "../views/ForgotPasswordUpdate.vue"
-      ),
+    component: () => import("../views/ForgotPasswordUpdate.vue"),
     meta: {
       guest: true,
     },
@@ -54,22 +46,17 @@ const routes = [
   {
     path: "/email/verify",
     name: "VerifyEmail",
-    component: () =>
-      import(/* webpackChunkName: "verifyEmail" */ "../views/VerifyEmail.vue"),
+    component: () => import("../views/VerifyEmail.vue"),
   },
   {
     path: "/emailUpdate",
     name: "UpdateEmail",
-    component: () =>
-      import(/* webpackChunkName: "updateEmail" */ "../views/UpdateEmail.vue"),
+    component: () => import("../views/UpdateEmail.vue"),
   },
   {
     path: "/email/verificationPending",
     name: "EmailVerificationPending",
-    component: () =>
-      import(
-        /* webpackChunkName: "verificationPending" */ "../views/EmailVerificationPending.vue"
-      ),
+    component: () => import("../views/EmailVerificationPending.vue"),
     meta: {
       auth: true,
       emailUnverified: true,
@@ -78,10 +65,7 @@ const routes = [
   {
     path: "/dashboard",
     name: "Dashboard",
-    component: () =>
-      import(
-        /* webpackChunkName: "projectIndex" */ "../views/ProjectIndex.vue"
-      ),
+    component: () => import("../views/ProjectIndex.vue"),
     meta: {
       auth: true,
       ensureEmailIsVerified: true,
@@ -90,10 +74,7 @@ const routes = [
   {
     path: "/project",
     name: "ProjectIndex",
-    component: () =>
-      import(
-        /* webpackChunkName: "projectIndex" */ "../views/ProjectIndex.vue"
-      ),
+    component: () => import("../views/ProjectIndex.vue"),
     meta: {
       auth: true,
       ensureEmailIsVerified: true,
@@ -102,10 +83,7 @@ const routes = [
   {
     path: "/project/create",
     name: "ProjectCreate",
-    component: () =>
-      import(
-        /* webpackChunkName: "projectCreate" */ "../views/ProjectCreate.vue"
-      ),
+    component: () => import("../views/ProjectCreate.vue"),
     meta: {
       auth: true,
       ensureEmailIsVerified: true,
@@ -114,10 +92,7 @@ const routes = [
   {
     path: "/project/:id/edit",
     name: "ProjectEdit",
-    component: () =>
-      import(
-        /* webpackChunkName: "projectCreate" */ "../views/ProjectCreate.vue"
-      ),
+    component: () => import("../views/ProjectCreate.vue"),
     meta: {
       auth: true,
       ensureEmailIsVerified: true,
@@ -126,8 +101,7 @@ const routes = [
   {
     path: "/project/:id",
     name: "ProjectShow",
-    component: () =>
-      import(/* webpackChunkName: "projectShow" */ "../views/ProjectShow.vue"),
+    component: () => import("../views/ProjectShow.vue"),
     meta: {
       auth: true,
       ensureEmailIsVerified: true,
@@ -136,8 +110,7 @@ const routes = [
   {
     path: "/project/:id/pay/stripe",
     name: "StripePay",
-    component: () =>
-      import(/* webpackChunkName: "stripePay" */ "../views/StripePay.vue"),
+    component: () => import("../views/StripePay.vue"),
     meta: {
       auth: true,
       ensureEmailIsVerified: true,
@@ -145,8 +118,7 @@ const routes = [
   },
   {
     path: "/setting",
-    component: () =>
-      import(/* webpackChunkName: "setting" */ "../views/Setting.vue"),
+    component: () => import("../views/Setting.vue"),
     meta: {
       auth: true,
       ensureEmailIsVerified: true,
@@ -155,10 +127,7 @@ const routes = [
       {
         path: "security",
         name: "SettingSecurity",
-        component: () =>
-          import(
-            /* webpackChunkName: "settingSecurity" */ "../views/setting/Security.vue"
-          ),
+        component: () => import("../views/setting/Security.vue"),
         meta: {
           auth: true,
           ensureEmailIsVerified: true,
@@ -167,10 +136,7 @@ const routes = [
       {
         path: "account",
         name: "SettingAccount",
-        component: () =>
-          import(
-            /* webpackChunkName: "settingAccount" */ "../views/setting/Account.vue"
-          ),
+        component: () => import("../views/setting/Account.vue"),
         meta: {
           auth: true,
           ensureEmailIsVerified: true,
@@ -179,10 +145,7 @@ const routes = [
       {
         path: "/",
         name: "SettingProfile",
-        component: () =>
-          import(
-            /* webpackChunkName: "settingProfile" */ "../views/setting/Profile.vue"
-          ),
+        component: () => import("../views/setting/Profile.vue"),
         meta: {
           auth: true,
           ensureEmailIsVerified: true,
@@ -195,7 +158,7 @@ const routes = [
 
 const router = new VueRouter({
   mode: "history",
-  base: process.env.BASE_URL,
+  base: import.meta.env.BASE_URL,
   routes,
 });
 

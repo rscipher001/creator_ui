@@ -84,7 +84,7 @@ export default {
     }),
 
     getAssetUrl(url) {
-      return `${process.env.VUE_APP_API_URL}${url}`;
+      return `${import.meta.env.VITE_API_URL}${url}`;
     },
 
     async updateProfile() {

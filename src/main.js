@@ -12,8 +12,8 @@ Vue.use(Buefy);
 Vue.config.productionTip = false;
 
 // const options = {
-//   pk: process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY,
-//   apiVersion: process.env.VUE_APP_API_VERSION,
+//   pk: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
+//   apiVersion: import.meta.env.VITE_API_VERSION,
 // };
 
 // Vue.use(StripePlugin, options);

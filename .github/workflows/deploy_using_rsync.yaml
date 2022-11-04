@@ -14,9 +14,9 @@ jobs:
       - name: Install rsync
         run: sudo apt install rsync -y
       - name: Setup .env file
-        run: echo VUE_APP_API_URL=$VUE_APP_API_URL >> .env
+        run: echo VITE_API_URL=$VITE_API_URL >> .env
         env:
-          VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
       - name: Build source code
         run: |
           npm ci

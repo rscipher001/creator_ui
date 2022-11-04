@@ -315,7 +315,7 @@ export default {
     async download(id, type) {
       try {
         const url = await this.generateSignedUrl({ id, type });
-        return window.open(`${process.env.VUE_APP_API_URL}${url}`);
+        return window.open(`${import.meta.env.VITE_API_URL}${url}`);
       } catch (e) {
         console.error(e);
         this.$buefy.toast.open({
