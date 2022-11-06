@@ -213,7 +213,7 @@
       </div>
     </div>
 
-    <div v-if="meta.total > 1" class="section py-4">
+    <div v-if="meta.lastPage > 1" class="section py-4">
       <div class="columns">
         <div class="column px-0">
           <b-pagination
