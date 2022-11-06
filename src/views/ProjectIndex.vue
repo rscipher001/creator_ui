@@ -98,7 +98,27 @@
               </b-taglist>
             </b-table-column>
             <b-table-column field="status" label="Status" v-slot="props">
-              {{ capitalize(props.row.status) }}
+              <b-tag
+                icon="sync"
+                v-if="props.row.status === 'queued'"
+                class="is-warning is-light"
+              >
+                {{ capitalize(props.row.status) }}
+              </b-tag>
+              <b-tag
+                icon="check"
+                v-if="props.row.status === 'done'"
+                class="is-success is-light"
+              >
+                {{ capitalize(props.row.status) }}
+              </b-tag>
+              <b-tag
+                icon="close"
+                v-if="props.row.status === 'failed'"
+                class="is-danger is-light"
+              >
+                {{ capitalize(props.row.status) }}
+              </b-tag>
             </b-table-column>
             <b-table-column label="Action" v-slot="props">
               <b-dropdown aria-role="list">
