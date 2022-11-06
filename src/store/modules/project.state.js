@@ -159,12 +159,24 @@ export default {
       return HttpService.authGet(`/${resource}/${id}/generate/${type}`);
     },
 
-    async startHosting(_, { id }) {
-      return HttpService.authPost(`/${resource}/${id}/hosting`);
+    async startHosting({ state, commit }, { id }) {
+      const hostingResult = await HttpService.authPost(
+        `/${resource}/${id}/hosting`
+      );
+      const item = state.items.find((i) => i.id === id);
+      item.isHosted = true;
+      commit("replace", { id, item });
+      return hostingResult;
     },
 
-    async stopHosting(_, { id }) {
-      return HttpService.authDelete(`/${resource}/${id}/hosting`);
+    async stopHosting({ state, commit }, { id }) {
+      const hostingResult = await HttpService.authDelete(
+        `/${resource}/${id}/hosting`
+      );
+      const item = state.items.find((i) => i.id === id);
+      item.isHosted = false;
+      commit("replace", { id, item });
+      return hostingResult;
     },
   },
 

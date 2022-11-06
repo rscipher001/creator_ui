@@ -78,6 +78,24 @@
             </b-table-column>
             <b-table-column field="name" label="Name" v-slot="props">
               {{ props.row.name }}
+              <br />
+              <b-taglist>
+                <b-tag
+                  v-if="props.row.rawInput.generate.api.generate"
+                  type="is-primary is-light"
+                >
+                  API
+                </b-tag>
+                <b-tag
+                  v-if="props.row.rawInput.generate.spa.generate"
+                  type="is-primary is-light"
+                >
+                  SPA
+                </b-tag>
+                <b-tag v-if="props.row.isHosted" type="is-primary is-light">
+                  Hosted
+                </b-tag>
+              </b-taglist>
             </b-table-column>
             <b-table-column field="status" label="Status" v-slot="props">
               {{ capitalize(props.row.status) }}
